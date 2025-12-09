@@ -6,71 +6,75 @@ import { Button } from '@/components/ui/button'
 import { ProgressBar } from '@/components/ui/progress-bar'
 import { useRouter } from 'next/navigation'
 
-interface Section {
-    type: 'knowledge' | 'context' | 'skill' | 'disposition'
-    title: string
-    content?: string
-    question?: string
-    options?: string[]
-    correctIndex?: number
-}
+import { LESSONS, Section } from '@/data/lessons'
 
 // Mock Data for Lesson 2 (Hardcoded for MVP demo)
-const LESSON_DATA = {
-    id: 2,
-    title: "Where AI Appears in University Administration",
-    sections: [
-        {
-            type: 'knowledge',
-            title: 'Knowledge',
-            content: "AI isn't just robots. In university admin, it appears in: Email filtering (spam), Predictive text (Gmail), Translation tools (DeepL), Recruitment screening tools."
-        },
-        {
-            type: 'context',
-            title: 'Context: The Admissions Inbox',
-            content: "Imagine you are an admissions officer. You receive 5,000 emails a week during peak season. You use a tool that automatically tags emails as 'Urgent', 'Standard', or 'SPAM'. This tool is AI."
-        },
-        {
-            type: 'skill',
-            title: 'Skill: Identify the AI',
-            question: "Which of these is likely using AI?",
-            options: [
-                "A spreadsheet calculating the sum of student fees",
-                "A system flagging 'high potential' applicants based on essay keywords",
-                "An email merge sending bulk acceptances"
-            ],
-            correctIndex: 1
-        },
-        {
-            type: 'disposition',
-            title: 'Reflection',
-            content: "If the AI system flags an applicant as 'Low Potential', should you trust it blindly? What if the AI is biased against certain keywords? Your responsibility is oversight."
-        }
-    ]
-} as const
+// const LESSON_DATA = {
+//     id: 2,
+//     title: "Where AI Appears in University Administration",
+//     sections: [
+//         {
+//             type: 'knowledge',
+//             title: 'Knowledge',
+//             content: "AI isn't just robots. In university admin, it appears in: Email filtering (spam), Predictive text (Gmail), Translation tools (DeepL), Recruitment screening tools."
+//         },
+//         {
+//             type: 'context',
+//             title: 'Context: The Admissions Inbox',
+//             content: "Imagine you are an admissions officer. You receive 5,000 emails a week during peak season. You use a tool that automatically tags emails as 'Urgent', 'Standard', or 'SPAM'. This tool is AI."
+//         },
+//         {
+//             type: 'skill',
+//             title: 'Skill: Identify the AI',
+//             question: "Which of these is likely using AI?",
+//             options: [
+//                 "A spreadsheet calculating the sum of student fees",
+//                 "A system flagging 'high potential' applicants based on essay keywords",
+//                 "An email merge sending bulk acceptances"
+//             ],
+//             correctIndex: 1
+//         },
+//         {
+//             type: 'disposition',
+//             title: 'Reflection',
+//             content: "If the AI system flags an applicant as 'Low Potential', should you trust it blindly? What if the AI is biased against certain keywords? Your responsibility is oversight."
+//         }
+//     ]
+// } as const
+
+import { useProgress } from '@/lib/ProgressContext'
 
 export function LessonView({ lessonId }: { lessonId: string }) {
     const router = useRouter()
+    const { markLessonComplete } = useProgress()
     const [currentStep, setCurrentStep] = useState(0)
-    const totalSteps = LESSON_DATA.sections.length
+
+    const lesson = LESSONS[lessonId]
+
+    if (!lesson) {
+        return <div className="p-8 text-center">Lesson not found</div>
+    }
+
+    const totalSteps = lesson.sections.length
     const progress = ((currentStep + 1) / totalSteps) * 100
 
     const handleNext = () => {
         if (currentStep < totalSteps - 1) {
             setCurrentStep(currentStep + 1)
         } else {
+            markLessonComplete(Number(lessonId))
             router.push('/dashboard') // Finish
         }
     }
 
-    const section = LESSON_DATA.sections[currentStep]
+    const section = lesson.sections[currentStep]
 
     return (
         <div style={{ maxWidth: '700px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <header>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                     <span style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.6)' }}>
-                        {LESSON_DATA.title}
+                        {lesson.title}
                     </span>
                     <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>
                         {currentStep + 1} / {totalSteps}

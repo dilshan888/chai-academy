@@ -74,6 +74,13 @@ export function LoginForm() {
             <Button type="submit" fullWidth disabled={loading}>
                 {loading ? 'Signing in...' : 'Sign In'}
             </Button>
+
+            <div style={{ marginTop: '1rem', textAlign: 'center', fontSize: '0.875rem' }}>
+                Don&apos;t have an account?{' '}
+                <a href="/register" style={{ color: 'hsl(var(--primary))', fontWeight: 600, textDecoration: 'none' }}>
+                    Sign up
+                </a>
+            </div>
         </form>
     )
 }

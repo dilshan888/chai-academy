@@ -1,13 +1,11 @@
 "use client" // Client component for Logout button interactivity if needed
 
 import { ReactNode } from 'react'
+import { signOut } from 'next-auth/react' // Import signOut
 import styles from './layout.module.css'
 import { Button } from '@/components/ui/button'
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
-    // Logic for logout (e.g. signOut()) would go here, via client component wrapping
-    // For MVP layout, we'll just render Button.
-
     return (
         <div className={styles.dashboardContainer}>
             <header className={styles.header}>
@@ -15,13 +13,23 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
                     <span style={{ color: 'hsl(var(--accent))' }}>✦</span>
                     ChAI Academy
                 </div>
-                <Button
-                    variant="secondary"
-                    style={{ fontSize: '0.875rem', padding: '0.4rem 1rem' }}
-                    onClick={() => { console.log('Logout clicked') }}
-                >
-                    Logout
-                </Button>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <a href="/settings">
+                        <Button
+                            variant="secondary"
+                            style={{ fontSize: '0.875rem', padding: '0.4rem 1rem' }}
+                        >
+                            Settings
+                        </Button>
+                    </a>
+                    <Button
+                        variant="secondary"
+                        style={{ fontSize: '0.875rem', padding: '0.4rem 1rem' }}
+                        onClick={() => signOut({ callbackUrl: '/login' })}
+                    >
+                        Logout
+                    </Button>
+                </div>
             </header>
             <main className={styles.main}>
                 {children}

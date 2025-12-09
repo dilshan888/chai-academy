@@ -4,6 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -12,46 +13,26 @@ enum Role {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String?
-  name      String?
-  role      Role     @default(LEARNER)
-  createdAt DateTime @default(now())
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  password      String?
+  role          Role      @default(LEARNER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   
-  progress    Progress[]
-  quizResults QuizResult[]
-}
-
-model Lesson {
-  id          String   @id @default(uuid())
-  title       String
-  order       Int      @unique
-  content     Json     // Stores the KSDC structure
-  scenario    Json?    // Detailed scenario data if separate
-  
-  progress    Progress[]
+  progress      Progress[]
 }
 
 model Progress {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   userId    String
-  lessonId  String
+  lessonId  Int
   completed Boolean  @default(false)
-  completedAt DateTime?
-  
-  user      User     @relation(fields: [userId], references: [id])
-  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  score     Int?
+  completedAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])
-}
-
-model QuizResult {
-  id        String   @id @default(uuid())
-  userId    String
-  score     Int
-  passed    Boolean
-  createdAt DateTime @default(now())
-
-  user      User     @relation(fields: [userId], references: [id])
 }

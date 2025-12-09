@@ -1,23 +1,47 @@
 "use client"
 
+import { useEffect, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ProgressBar } from '@/components/ui/progress-bar'
 
-const USERS = [
-    { id: '1', name: 'Alice Smith', email: 'alice@uni.edu', role: 'Staff', progress: 100 },
-    { id: '2', name: 'Bob Jones', email: 'bob@uni.edu', role: 'Admin', progress: 45 },
-    { id: '3', name: 'Charlie Day', email: 'charlie@uni.edu', role: 'Faculty', progress: 12 },
-    { id: '4', name: 'Diana Prince', email: 'diana@uni.edu', role: 'Staff', progress: 0 },
-    { id: '5', name: 'Evan Peters', email: 'evan@uni.edu', role: 'Staff', progress: 85 },
-]
+interface AdminUser {
+    id: string
+    name: string
+    email: string
+    role: string
+    progress: number
+}
+
+// const USERS = [...] // Removing static data logic
+
 
 export function AdminDashboardView() {
+    const [users, setUsers] = useState<AdminUser[]>([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/admin/users')
+                if (res.ok) {
+                    const data = await res.json()
+                    setUsers(data)
+                }
+            } catch (error) {
+                console.error("Failed to load users", error)
+            } finally {
+                setLoading(false)
+            }
+        }
+        loadUsers()
+    }, [])
+
     const handleExport = () => {
-        // Simple CSV export logic
         const csvContent = "data:text/csv;charset=utf-8,"
             + "ID,Name,Email,Role,Progress\n"
-            + USERS.map(u => `${u.id},${u.name},${u.email},${u.role},${u.progress}%`).join("\n")
+            + users.map(u => `${u.id},${u.name},${u.email},${u.role},${u.progress}%`).join("\n")
+        // ...
 
         const encodedUri = encodeURI(csvContent)
         const link = document.createElement("a")
@@ -45,15 +69,21 @@ export function AdminDashboardView() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                 <Card>
                     <div style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground)/0.6)' }}>Total Learners</div>
-                    <div style={{ fontSize: '2rem', fontWeight: 700 }}>{USERS.length}</div>
+                    <div style={{ fontSize: '2rem', fontWeight: 700 }}>{users.length}</div>
                 </Card>
                 <Card>
                     <div style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground)/0.6)' }}>Avg. Completion</div>
-                    <div style={{ fontSize: '2rem', fontWeight: 700 }}>48%</div>
+                    <div style={{ fontSize: '2rem', fontWeight: 700 }}>
+                        {users.length > 0
+                            ? Math.round(users.reduce((acc, u) => acc + u.progress, 0) / users.length)
+                            : 0}%
+                    </div>
                 </Card>
                 <Card>
                     <div style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground)/0.6)' }}>Certified</div>
-                    <div style={{ fontSize: '2rem', fontWeight: 700 }}>1</div>
+                    <div style={{ fontSize: '2rem', fontWeight: 700 }}>
+                        {users.filter(u => u.progress === 100).length}
+                    </div>
                 </Card>
             </div>
 
@@ -69,7 +99,7 @@ export function AdminDashboardView() {
                             </tr>
                         </thead>
                         <tbody>
-                            {USERS.map((user) => (
+                            {users.map((user) => (
                                 <tr key={user.id} style={{ borderBottom: '1px solid hsl(var(--border))' }}>
                                     <td style={{ padding: '1rem' }}>
                                         <div style={{ fontWeight: 500 }}>{user.name}</div>

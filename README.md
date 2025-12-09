@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ChAI Academy 🤖🎓
 
-## Getting Started
+**AI Literacy & EU AI Act Training for University Administrative Staff**
 
-First, run the development server:
+ChAI Academy is a lightweight, calm, and privacy-focused learning platform designed to help university staff understand the basics of Artificial Intelligence and the new EU AI Act regulations.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+*   **Interactive Lessons**: Short, digestible modules on AI basics, Privacy, and High-Risk classifications.
+*   **Scenario-Based Learning**: Real-world university admin scenarios (e.g., "The CV Sorter", "The Grade Dispute").
+*   **Progress Tracking**: Percentage-based tracking saved locally to your browser (no database required for MVP).
+*   **Interactive Quizzes**: Immediate feedback on understanding.
+*   **Admin Dashboard**: Overview of learner progress with exportable reports.
+*   **Certified & Accessible**: High-contrast, calm design system for adult learners.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+*   **Frontend**: Next.js 15 (App Router)
+*   **Styling**: Vanilla CSS (CSS Modules) with a custom Design System variables.
+*   **State Management**: React Context + LocalStorage (Zero-config persistence).
+*   **Deployment**: Vercel (Edge Network).
 
-## Learn More
+## 🏃‍♂️ Getting Started
 
-To learn more about Next.js, take a look at the following resources:
+### Prerequisites
+*   Node.js 18+ installed on your machine.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Installation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1.  Clone the repository:
+    ```bash
+    git clone https://gitlab.informatik.uni-bremen.de/dilshan1/chai-academy.git
+    cd chai-academy
+    ```
 
-## Deploy on Vercel
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3.  **Database Setup (Important)**:
+    *   Create a Postgres database (e.g., Neon.tech).
+    *   Create a `.env` file with `DATABASE_URL="your-connection-string"`.
+    *   Run `npx prisma db push` to create tables.
+    *   Run `npm run dev`.
+    *   Visit `http://localhost:3000/api/seed` **ONCE** to create the initial users.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4.  Open [http://localhost:3000](http://localhost:3000) for the app.
+
+## 🔑 Credentials (Real Database)
+
+After seeding (`/api/seed`), use these logins:
+
+*   **Learner**: `staff@uni.edu` / `chai-academy`
+*   **Admin**: `admin@uni.edu` / `chai-academy`
+
+## 🎮 How to Demo
+
+1.  **Login** as `staff@uni.edu`.
+2.  **Start a Lesson** (e.g., Lesson 2).
+3.  Complete the quiz to see the **Progress Bar** update.
+4.  Go back to the Dashboard to see the "Done" status.
+5.  **Reset Progress**: Scroll to the bottom of the Dashboard and click "Reset My Progress" to clear your data for the next demo.
+6.  **Logout** and login as Admin to see the reporting view.
+
+## 📄 License
+University Project - Digital Media / Sem 3
