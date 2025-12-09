@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  LEARNER
+  ADMIN
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String?
+  name      String?
+  role      Role     @default(LEARNER)
+  createdAt DateTime @default(now())
+  
+  progress    Progress[]
+  quizResults QuizResult[]
+}
+
+model Lesson {
+  id          String   @id @default(uuid())
+  title       String
+  order       Int      @unique
+  content     Json     // Stores the KSDC structure
+  scenario    Json?    // Detailed scenario data if separate
+  
+  progress    Progress[]
+}
+
+model Progress {
+  id        String   @id @default(uuid())
+  userId    String
+  lessonId  String
+  completed Boolean  @default(false)
+  completedAt DateTime?
+  
+  user      User     @relation(fields: [userId], references: [id])
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+
+  @@unique([userId, lessonId])
+}
+
+model QuizResult {
+  id        String   @id @default(uuid())
+  userId    String
+  score     Int
+  passed    Boolean
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+}

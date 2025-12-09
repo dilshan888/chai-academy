@@ -1,0 +1,79 @@
+"use client"
+
+import { useState } from 'react'
+import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import styles from './forms.module.css'
+
+export function LoginForm() {
+    const router = useRouter()
+    const [loading, setLoading] = useState(false)
+    const [email, setEmail] = useState('')
+    // Password state for local testing, though MVP spec implies simple "Role" selection 
+    // users might just need email login. But we added password field.
+    const [password, setPassword] = useState('')
+    const [error, setError] = useState('')
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setLoading(true)
+        setError('')
+
+        const res = await signIn('credentials', {
+            redirect: false,
+            email,
+            password,
+        })
+
+        if (!res?.error) {
+            router.push('/dashboard')
+        } else {
+            setError('Invalid credentials')
+        }
+        setLoading(false)
+    }
+
+    return (
+        <form onSubmit={handleSubmit} className={styles.formStack}>
+            <div style={{ textAlign: 'center' }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+                    Welcome Back
+                </h2>
+                <p style={{ color: 'hsl(var(--foreground) / 0.6)', fontSize: '0.875rem' }}>
+                    Sign in to continue your progress
+                </p>
+            </div>
+
+            {error && <div className={styles.error}>{error}</div>}
+
+            <div className={styles.field}>
+                <label>Email Address</label>
+                <input
+                    type="email"
+                    required
+                    className={styles.input}
+                    value={email}
+                    placeholder="admin@university.edu"
+                    onChange={e => setEmail(e.target.value)}
+                />
+            </div>
+
+            <div className={styles.field}>
+                <label>Password</label>
+                <input
+                    type="password"
+                    required
+                    className={styles.input}
+                    value={password}
+                    placeholder="••••••••"
+                    onChange={e => setPassword(e.target.value)}
+                />
+            </div>
+
+            <Button type="submit" fullWidth disabled={loading}>
+                {loading ? 'Signing in...' : 'Sign In'}
+            </Button>
+        </form>
+    )
+}

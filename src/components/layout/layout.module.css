@@ -1,0 +1,37 @@
+.dashboardContainer {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    height: 64px;
+    border-bottom: 1px solid hsl(var(--border));
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+    background: hsl(var(--card));
+    justify-content: space-between;
+}
+
+.main {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1024px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.authContainer {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: hsl(var(--background));
+    padding: 1rem;
+}
+
+.authCard {
+    width: 100%;
+    max-width: 440px;
+}
