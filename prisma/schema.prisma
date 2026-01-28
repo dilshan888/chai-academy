@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// User Model
+// ============================================
+enum UserRole {
+  ADMIN
+  INSTRUCTOR
+  STAFF
+}
+
+model User {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  name       String
+  role       UserRole @default(STAFF)
+  department String?
+  avatarUrl  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  enrollments Enrollment[]
+  progress    Progress[]
+
+  @@map("users")
+}
+
+// ============================================
+// Course Model
+// ============================================
+enum CourseCategory {
+  AI_FUNDAMENTALS
+  PROMPT_ENGINEERING
+  AI_TOOLS
+  AI_ETHICS
+  DATA_LITERACY
+  ADVANCED_AI
+}
+
+model Course {
+  id            String         @id @default(cuid())
+  title         String
+  description   String
+  category      CourseCategory
+  estimatedTime Int            // in minutes
+  thumbnailUrl  String?
+  isPublished   Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Relations
+  lessons     Lesson[]
+  enrollments Enrollment[]
+
+  @@map("courses")
+}
+
+// ============================================
+// Lesson Model
+// ============================================
+model Lesson {
+  id        String   @id @default(cuid())
+  title     String
+  content   String   @db.Text
+  order     Int
+  duration  Int      // in minutes
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String
+
+  progress Progress[]
+
+  @@unique([courseId, order])
+  @@map("lessons")
+}
+
+// ============================================
+// Enrollment Model
+// ============================================
+model Enrollment {
+  id         String   @id @default(cuid())
+  enrolledAt DateTime @default(now())
+
+  // Relations
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String
+
+  @@unique([userId, courseId])
+  @@map("enrollments")
+}
+
+// ============================================
+// Progress Model
+// ============================================
+model Progress {
+  id          String    @id @default(cuid())
+  isCompleted Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId String
+
+  @@unique([userId, lessonId])
+  @@map("progress")
+}
