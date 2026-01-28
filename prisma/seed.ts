@@ -2,12 +2,18 @@ import "dotenv/config";
 import { PrismaClient, UserRole, CourseCategory } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
+import bcrypt from "bcryptjs";
 
 const pool = new Pool({
     connectionString: process.env.DIRECT_URL || process.env.DATABASE_URL,
 });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
+
+// Hash password helper
+async function hashPassword(password: string): Promise<string> {
+    return bcrypt.hash(password, 10);
+}
 
 async function main() {
     console.log("🌱 Starting database seed...");
@@ -21,11 +27,12 @@ async function main() {
 
     console.log("✅ Cleared existing data");
 
-    // Create Users
+    // Create Users with passwords
     const adminUser = await prisma.user.create({
         data: {
             email: "admin@chaiacademy.edu",
             name: "Dr. Sarah Johnson",
+            password: await hashPassword("admin123"), // Default password
             role: UserRole.ADMIN,
             department: "Computer Science",
             avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
@@ -36,6 +43,7 @@ async function main() {
         data: {
             email: "john.doe@chaiacademy.edu",
             name: "John Doe",
+            password: await hashPassword("password123"), // Default password
             role: UserRole.STAFF,
             department: "Business Administration",
             avatarUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
