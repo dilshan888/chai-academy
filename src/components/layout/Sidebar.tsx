@@ -104,15 +104,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 </nav>
 
                 <div className={styles.userSection}>
-                    {!isAdmin && (
-                        <div className={styles.helpCard}>
-                            <div className={styles.helpTitle}>Help Center</div>
-                            <p className={styles.helpText}>
-                                Stuck on a module? Our support team is here.
-                            </p>
-                            <button className={styles.helpButton}>Get Support</button>
-                        </div>
-                    )}
+
                     <div className={styles.userInfo}>
                         <div className={styles.userAvatar}>{initials}</div>
                         <div className={styles.userDetails}>
