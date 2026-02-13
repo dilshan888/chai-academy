@@ -6,43 +6,19 @@ import { Button } from '@/components/ui/button'
 import { ProgressBar } from '@/components/ui/progress-bar'
 import { useRouter } from 'next/navigation'
 
-import { LESSONS, Section } from '@/data/lessons'
-
-// Mock Data for Lesson 2 (Hardcoded for MVP demo)
-// const LESSON_DATA = {
-//     id: 2,
-//     title: "Where AI Appears in University Administration",
-//     sections: [
-//         {
-//             type: 'knowledge',
-//             title: 'Knowledge',
-//             content: "AI isn't just robots. In university admin, it appears in: Email filtering (spam), Predictive text (Gmail), Translation tools (DeepL), Recruitment screening tools."
-//         },
-//         {
-//             type: 'context',
-//             title: 'Context: The Admissions Inbox',
-//             content: "Imagine you are an admissions officer. You receive 5,000 emails a week during peak season. You use a tool that automatically tags emails as 'Urgent', 'Standard', or 'SPAM'. This tool is AI."
-//         },
-//         {
-//             type: 'skill',
-//             title: 'Skill: Identify the AI',
-//             question: "Which of these is likely using AI?",
-//             options: [
-//                 "A spreadsheet calculating the sum of student fees",
-//                 "A system flagging 'high potential' applicants based on essay keywords",
-//                 "An email merge sending bulk acceptances"
-//             ],
-//             correctIndex: 1
-//         },
-//         {
-//             type: 'disposition',
-//             title: 'Reflection',
-//             content: "If the AI system flags an applicant as 'Low Potential', should you trust it blindly? What if the AI is biased against certain keywords? Your responsibility is oversight."
-//         }
-//     ]
-// } as const
-
+import { LESSONS } from '@/data/lessons'
 import { useProgress } from '@/lib/ProgressContext'
+
+interface QuizStepProps {
+    data: {
+        question?: string
+        options?: string[]
+        correctIndex?: number
+        type?: string
+        title?: string
+    }
+    onComplete: () => void
+}
 
 export function LessonView({ lessonId }: { lessonId: string }) {
     const router = useRouter()
@@ -123,7 +99,7 @@ export function LessonView({ lessonId }: { lessonId: string }) {
     )
 }
 
-function QuizStep({ data, onComplete }: any) {
+function QuizStep({ data, onComplete }: QuizStepProps) {
     const [selected, setSelected] = useState<number | null>(null)
     const [showResult, setShowResult] = useState(false)
 
@@ -137,7 +113,7 @@ function QuizStep({ data, onComplete }: any) {
         <div>
             <p style={{ marginBottom: '1.5rem', fontWeight: 500 }}>{data.question}</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
-                {data.options.map((opt: string, idx: number) => (
+                {(data.options || []).map((opt: string, idx: number) => (
                     <button
                         key={idx}
                         onClick={() => !showResult && setSelected(idx)}
@@ -148,7 +124,7 @@ function QuizStep({ data, onComplete }: any) {
                             border: '1px solid',
                             textAlign: 'left',
                             background: selected === idx ? 'hsl(var(--accent) / 0.05)' : 'transparent',
-                            borderColor: paramsBorderColor(idx, selected, showResult, data.correctIndex),
+                            borderColor: paramsBorderColor(idx, selected, showResult, data.correctIndex || 0),
                             cursor: showResult ? 'default' : 'pointer',
                             fontSize: '1rem',
                             fontFamily: 'inherit',

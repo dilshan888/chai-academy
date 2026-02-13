@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { useSession } from 'next-auth/react'
 
 interface ProgressContextType {
     completedLessons: number[]
@@ -13,10 +14,13 @@ interface ProgressContextType {
 const ProgressContext = createContext<ProgressContextType | undefined>(undefined)
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
+    const { status } = useSession()
     const [completedLessons, setCompletedLessons] = useState<number[]>([])
 
     // Load from API on mount
     useEffect(() => {
+        if (status !== 'authenticated') return // Don't fetch if not logged in
+
         async function loadProgress() {
             try {
                 const res = await fetch('/api/progress')
@@ -29,7 +33,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
             }
         }
         loadProgress()
-    }, [])
+    }, [status])
 
     const markLessonComplete = async (id: number) => {
         if (!completedLessons.includes(id)) {
@@ -55,8 +59,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
     const resetProgress = async () => {
         setCompletedLessons([])
-        // Reset logic for API could be implemented if needed, but for now just client side clear
-        // or a specific DELETE endpoint. For now we just reset UI.
+        // Reset logic for API could be implemented if needed.
     }
 
     // Calculate percentage (Assuming 6 lessons total)

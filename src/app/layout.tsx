@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 import { ProgressProvider } from "@/lib/ProgressContext";
 
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import { ThemeProvider } from "@/components/providers/ThemeContext";
 
 // ...
 
@@ -24,9 +25,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <ProgressProvider>
-            {children}
-          </ProgressProvider>
+          <ThemeProvider defaultTheme="system" storageKey="chai-academy-theme">
+            <ProgressProvider>
+              {children}
+            </ProgressProvider>
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>

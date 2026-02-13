@@ -16,6 +16,8 @@ interface AdminUser {
 // const USERS = [...] // Removing static data logic
 
 
+import Link from 'next/link'
+
 export function AdminDashboardView() {
     const [users, setUsers] = useState<AdminUser[]>([])
     const [loading, setLoading] = useState(true)
@@ -41,7 +43,6 @@ export function AdminDashboardView() {
         const csvContent = "data:text/csv;charset=utf-8,"
             + "ID,Name,Email,Role,Progress\n"
             + users.map(u => `${u.id},${u.name},${u.email},${u.role},${u.progress}%`).join("\n")
-        // ...
 
         const encodedUri = encodeURI(csvContent)
         const link = document.createElement("a")
@@ -53,17 +54,30 @@ export function AdminDashboardView() {
     }
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', maxWidth: '1200px', margin: '0 auto', padding: '1rem' }}>
+            <header style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '1rem',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                borderBottom: '1px solid hsl(var(--border))',
+                paddingBottom: '1.5rem'
+            }}>
                 <div>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+                    <h1 style={{ fontSize: '2rem', fontWeight: 800, margin: 0, color: 'hsl(var(--foreground))' }}>
                         Admin Dashboard
                     </h1>
-                    <p style={{ color: 'hsl(var(--foreground) / 0.7)' }}>
+                    <p style={{ color: 'hsl(var(--foreground) / 0.7)', marginTop: '0.5rem' }}>
                         Overview of learner progress
                     </p>
                 </div>
-                <Button onClick={handleExport}>Export Report</Button>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <Link href="/create-lesson" style={{ textDecoration: 'none' }}>
+                        <Button variant="primary">Create Lesson</Button>
+                    </Link>
+                    <Button onClick={handleExport} variant="secondary">Export Report</Button>
+                </div>
             </header>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>

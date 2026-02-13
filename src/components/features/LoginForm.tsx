@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
+import { signIn, getSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import styles from './forms.module.css'
@@ -27,7 +27,13 @@ export function LoginForm() {
         })
 
         if (!res?.error) {
-            router.push('/dashboard')
+            // Check role to determine redirect
+            const session = await getSession()
+            if (session?.user?.role === 'ADMIN') {
+                router.push('/admin')
+            } else {
+                router.push('/dashboard')
+            }
         } else {
             setError('Invalid credentials')
         }
@@ -67,6 +73,7 @@ export function LoginForm() {
                     className={styles.input}
                     value={password}
                     placeholder="••••••••"
+                    autoComplete="current-password"
                     onChange={e => setPassword(e.target.value)}
                 />
             </div>

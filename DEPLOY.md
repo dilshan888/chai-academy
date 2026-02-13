@@ -33,3 +33,20 @@ git push -u origin main
 3. Import the `chai-academy` repository.
 4. Click **Deploy**.
 5. Wait ~1 minute, and your site is live!
+
+## 4. Command Line Deployment (Vercel CLI)
+
+If you prefer using the terminal over the dashboard:
+
+### Setup
+Install the Vercel CLI globally:
+```bash
+npm install -g vercel
+```
+
+### Commands
+- **Login**: `vercel login`
+- **Link Project**: `vercel link`
+- **Run Locally** (Development): `vercel dev`
+- **Deploy Preview**: `vercel`
+- **Deploy to Production**: `vercel --prod`

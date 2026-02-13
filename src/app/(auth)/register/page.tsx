@@ -67,6 +67,7 @@ export default function RegisterPage() {
                             required
                             placeholder="John Doe"
                             value={formData.name}
+                            autoComplete="name"
                             onChange={e => setFormData({ ...formData, name: e.target.value })}
                             style={{ padding: '0.75rem', borderRadius: '6px', border: '1px solid hsl(var(--border))', background: 'hsl(var(--background))' }}
                         />
@@ -79,6 +80,7 @@ export default function RegisterPage() {
                             required
                             placeholder="name@example.com"
                             value={formData.email}
+                            autoComplete="email"
                             onChange={e => setFormData({ ...formData, email: e.target.value })}
                             style={{ padding: '0.75rem', borderRadius: '6px', border: '1px solid hsl(var(--border))', background: 'hsl(var(--background))' }}
                         />
@@ -92,6 +94,7 @@ export default function RegisterPage() {
                             minLength={6}
                             placeholder="Min. 6 characters"
                             value={formData.password}
+                            autoComplete="new-password"
                             onChange={e => setFormData({ ...formData, password: e.target.value })}
                             style={{ padding: '0.75rem', borderRadius: '6px', border: '1px solid hsl(var(--border))', background: 'hsl(var(--background))' }}
                         />

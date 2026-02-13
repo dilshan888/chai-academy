@@ -1,9 +1,11 @@
-"use client" // Client component for Logout button interactivity if needed
+"use client"
 
 import { ReactNode } from 'react'
-import { signOut } from 'next-auth/react' // Import signOut
+import { signOut } from 'next-auth/react'
 import styles from './layout.module.css'
 import { Button } from '@/components/ui/button'
+import { ChatWidget } from '@/components/features/ChatWidget'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
     return (
@@ -13,7 +15,8 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
                     <span style={{ color: 'hsl(var(--accent))' }}>✦</span>
                     ChAI Academy
                 </div>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>    
+                    <ThemeToggle />
                     <a href="/settings">
                         <Button
                             variant="secondary"
@@ -30,10 +33,11 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
                         Logout
                     </Button>
                 </div>
-            </header>
+            </header >
             <main className={styles.main}>
                 {children}
             </main>
-        </div>
+            <ChatWidget />
+        </div >
     )
 }

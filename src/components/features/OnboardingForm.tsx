@@ -52,9 +52,9 @@ export function OnboardingForm() {
                     onChange={e => setExperience(e.target.value)}
                 >
                     <option value="">Select experience level...</option>
-                    <option value="novice">I'm new to it</option>
+                    <option value="novice">I&apos;m new to it</option>
                     <option value="intermediate">I use it sometimes</option>
-                    <option value="expert">I'm very confident</option>
+                    <option value="expert">I&apos;m very confident</option>
                 </select>
             </div>
 

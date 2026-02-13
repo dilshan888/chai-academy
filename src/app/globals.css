@@ -1,10 +1,12 @@
 :root {
-  /* HSL Color Variables for easy theme switching */
+  /* HSL Color Variables */
+  /* Brand Color: #9d2447 -> HSL 343 63% 38% */
+  
   --background: 210 40% 98%; /* Slate 50 */
   --foreground: 222 47% 11%; /* Slate 900 */
   
-  --primary: 222 47% 11%;    /* Slate 900 */
-  --primary-foreground: 210 40% 98%;
+  --primary: 343 63% 38%;    /* Brand Color */
+  --primary-foreground: 0 0% 100%; /* White */
 
   --card: 0 0% 100%;
   --card-foreground: 222 47% 11%;
@@ -12,26 +14,34 @@
   --border: 214 32% 91%;     /* Slate 200 */
   --input: 214 32% 91%;
   
-  --accent: 221 83% 53%;     /* Blue/Indigo */
-  --accent-foreground: 210 40% 98%;
+  --accent: 343 63% 38%;     /* Brand Color (used as accent too for now) */
+  --accent-foreground: 0 0% 100%;
+
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
 
   --radius: 0.5rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: 222 47% 11%; /* Slate 950 */
-    --foreground: 210 40% 98%; /* Slate 50 */
-    
-    --primary: 210 40% 98%;
-    --primary-foreground: 222 47% 11%;
+/* Dark Mode (applied via .dark class) */
+.dark {
+  --background: 222 47% 11%; /* Slate 900/950 */
+  --foreground: 210 40% 98%; /* Slate 50 */
+  
+  --primary: 343 63% 48%;    /* Slightly lighter brand color for dark mode */
+  --primary-foreground: 0 0% 100%;
 
-    --card: 217 33% 17%;       /* Slate 900 */
-    --card-foreground: 210 40% 98%;
+  --card: 217 33% 17%;       /* Slate 900 */
+  --card-foreground: 210 40% 98%;
 
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-  }
+  --border: 217 33% 17%;
+  --input: 217 33% 17%;
+
+  --accent: 343 63% 48%;
+  --accent-foreground: 0 0% 100%;
+
+  --muted: 217 33% 17%;
+  --muted-foreground: 215 20.2% 65.1%;
 }
 
 body {
