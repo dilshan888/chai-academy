@@ -37,7 +37,7 @@ const NAV_ITEMS: NavItem[] = [
     { href: '/achievements', label: 'Achievements', icon: Trophy, staffOnly: true },
     { href: '/certificates', label: 'Certificates', icon: Award, staffOnly: true },
     { href: '/research', label: 'Research Hub', icon: Beaker, disabled: true, staffOnly: true },
-    { href: '/settings', label: 'Settings', icon: Settings, staffOnly: true },
+    { href: '/profile', label: 'Profile', icon: Settings, staffOnly: true },
 
     // Admin items
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, adminOnly: true },

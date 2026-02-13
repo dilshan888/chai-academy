@@ -60,9 +60,9 @@ export async function GET(req: NextRequest) {
             badgeCount: badgeMap.get(entry.userId) ?? 0,
         }))
 
-        // Get requesting user's rank
+        // Get requesting user's rank (always global, not filtered by department)
         const allRanked = await prisma.userGamification.findMany({
-            where: { user: userFilter },
+            where: { user: { role: 'LEARNER' } },
             orderBy: { totalXP: 'desc' },
             select: { userId: true },
         })
@@ -70,11 +70,36 @@ export async function GET(req: NextRequest) {
         const totalUsers = allRanked.length
         const percentile = totalUsers > 0 ? Math.round(((totalUsers - myRank) / totalUsers) * 100) : 0
 
+        // Department rankings
+        const deptUsers = await prisma.user.findMany({
+            where: { role: 'LEARNER', department: { not: null } },
+            select: { department: true, gamification: { select: { totalXP: true } } },
+        })
+
+        const deptMap = new Map<string, { count: number; totalXP: number }>()
+        for (const u of deptUsers) {
+            if (!u.department) continue
+            const existing = deptMap.get(u.department) || { count: 0, totalXP: 0 }
+            existing.count++
+            existing.totalXP += u.gamification?.totalXP ?? 0
+            deptMap.set(u.department, existing)
+        }
+
+        const departmentRankings = Array.from(deptMap.entries())
+            .map(([name, data]) => ({
+                name,
+                count: data.count,
+                totalXP: data.totalXP,
+                avgXP: data.count > 0 ? Math.round(data.totalXP / data.count) : 0,
+            }))
+            .sort((a, b) => b.avgXP - a.avgXP)
+
         return NextResponse.json({
             leaderboard,
             myRank: myRank || null,
             totalUsers,
             percentile,
+            departmentRankings,
         })
     } catch (error) {
         console.error('Failed to fetch leaderboard', error)
