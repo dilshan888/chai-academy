@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ProgressBar } from '@/components/ui/progress-bar'
 import { useRouter } from 'next/navigation'
+import { AlertTriangle, Zap } from 'lucide-react'
 
 import { LESSONS } from '@/data/lessons'
 import { useProgress } from '@/lib/ProgressContext'
@@ -20,30 +21,122 @@ interface QuizStepProps {
     onComplete: () => void
 }
 
+interface ScenarioInfo {
+    id: string
+    title: string
+    riskLevel: string
+    xpReward: number
+    completed: boolean
+}
+
 export function LessonView({ lessonId }: { lessonId: string }) {
     const router = useRouter()
     const { markLessonComplete } = useProgress()
     const [currentStep, setCurrentStep] = useState(0)
+    const [lessonDone, setLessonDone] = useState(false)
+    const [scenario, setScenario] = useState<ScenarioInfo | null>(null)
 
     const lesson = LESSONS[lessonId]
+
+    // Fetch related scenario
+    useEffect(() => {
+        async function loadScenario() {
+            try {
+                const res = await fetch(`/api/scenarios?lessonId=${lessonId}`)
+                if (res.ok) {
+                    const data = await res.json()
+                    if (data.scenarios?.length > 0) {
+                        setScenario(data.scenarios[0])
+                    }
+                }
+            } catch (e) {
+                // Scenario fetch is non-critical
+            }
+        }
+        loadScenario()
+    }, [lessonId])
 
     if (!lesson) {
         return <div className="p-8 text-center">Lesson not found</div>
     }
 
     const totalSteps = lesson.sections.length
-    const progress = ((currentStep + 1) / totalSteps) * 100
+    const progress = lessonDone ? 100 : ((currentStep + 1) / totalSteps) * 100
 
     const handleNext = () => {
         if (currentStep < totalSteps - 1) {
             setCurrentStep(currentStep + 1)
         } else {
             markLessonComplete(Number(lessonId))
-            router.push('/dashboard') // Finish
+            setLessonDone(true)
         }
     }
 
     const section = lesson.sections[currentStep]
+
+    // Show completion screen with scenario link
+    if (lessonDone) {
+        return (
+            <div style={{ maxWidth: '700px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                <header>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                        <span style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.6)' }}>
+                            {lesson.title}
+                        </span>
+                        <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>
+                            Complete
+                        </span>
+                    </div>
+                    <ProgressBar progress={100} />
+                </header>
+
+                <Card>
+                    <div style={{ textAlign: 'center', padding: '1.5rem 0' }}>
+                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
+                        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+                            Lesson Complete!
+                        </h2>
+                        <p style={{ color: 'hsl(var(--muted-foreground))', marginBottom: '2rem' }}>
+                            Great work finishing &ldquo;{lesson.title}&rdquo;
+                        </p>
+
+                        {scenario && !scenario.completed && (
+                            <div style={{
+                                background: 'hsl(var(--accent) / 0.05)',
+                                border: '1px solid hsl(var(--accent) / 0.15)',
+                                borderRadius: 'var(--radius)',
+                                padding: '1.25rem',
+                                marginBottom: '1.5rem',
+                                textAlign: 'left',
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, fontSize: '0.95rem', color: 'hsl(var(--accent))', marginBottom: '0.5rem' }}>
+                                    <AlertTriangle size={16} />
+                                    Try the Interactive Scenario
+                                </div>
+                                <p style={{ fontSize: '0.85rem', color: 'hsl(var(--foreground))', lineHeight: 1.5, marginBottom: '0.75rem' }}>
+                                    Put your knowledge to the test with &ldquo;{scenario.title}&rdquo; — a real-world decision-making challenge.
+                                </p>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                    <Button onClick={() => router.push(`/scenario/${scenario.id}`)}>
+                                        Start Scenario
+                                    </Button>
+                                    <span style={{ fontSize: '0.78rem', color: '#10B981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                        <Zap size={12} /> +{scenario.xpReward} XP
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem' }}>
+                            <Button variant="secondary" onClick={() => router.push('/dashboard')}>
+                                Back to Dashboard
+                            </Button>
+                        </div>
+                    </div>
+                </Card>
+            </div>
+        )
+    }
 
     return (
         <div style={{ maxWidth: '700px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>

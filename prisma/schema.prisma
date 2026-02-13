@@ -32,6 +32,7 @@ model User {
   achievements  UserAchievement[]
   streakHistory StreakRecord[]
   xpHistory     XPTransaction[]
+  scenarioResponses ScenarioResponse[]
 }
 
 model Progress {
@@ -133,4 +134,37 @@ model UserAchievement {
   achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
 
   @@unique([userId, achievementId])
+}
+
+// === Scenario Models ===
+
+model Scenario {
+  id         String   @id @default(cuid())
+  lessonId   Int
+  title      String
+  riskLevel  String   // HIGH, LIMITED, MINIMAL, UNACCEPTABLE
+  situation  String   @db.Text
+  prompt     String
+  options    Json     // Array of {id, label, description, impacts, feedback, isOptimal}
+  proTip     String   @db.Text
+  xpReward   Int      @default(30)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  responses  ScenarioResponse[]
+
+  @@unique([lessonId])
+}
+
+model ScenarioResponse {
+  id           String   @id @default(cuid())
+  userId       String
+  scenarioId   String
+  chosenOption String
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scenario     Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, scenarioId])
 }
