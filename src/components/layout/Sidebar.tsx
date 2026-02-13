@@ -10,6 +10,9 @@ import {
     Beaker,
     Settings,
     GraduationCap,
+    Users,
+    BarChart3,
+    FileText,
 } from 'lucide-react'
 import styles from './sidebar.module.css'
 
@@ -18,19 +21,37 @@ interface SidebarProps {
     onClose: () => void
 }
 
-const NAV_ITEMS = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/courses', label: 'My Courses', icon: BookOpen },
-    { href: '/achievements', label: 'Achievements', icon: Trophy },
-    { href: '/certificates', label: 'Certificates', icon: Award },
-    { href: '/research', label: 'Research Hub', icon: Beaker, disabled: true },
-    { href: '/settings', label: 'Settings', icon: Settings },
+interface NavItem {
+    href: string
+    label: string
+    icon: React.ComponentType<{ className?: string; size?: number }>
+    disabled?: boolean
+    adminOnly?: boolean
+    staffOnly?: boolean
+}
+
+const NAV_ITEMS: NavItem[] = [
+    // Staff (Learner) items
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, staffOnly: true },
+    { href: '/courses', label: 'My Courses', icon: BookOpen, staffOnly: true },
+    { href: '/achievements', label: 'Achievements', icon: Trophy, staffOnly: true },
+    { href: '/certificates', label: 'Certificates', icon: Award, staffOnly: true },
+    { href: '/research', label: 'Research Hub', icon: Beaker, disabled: true, staffOnly: true },
+    { href: '/settings', label: 'Settings', icon: Settings, staffOnly: true },
+
+    // Admin items
+    { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, adminOnly: true },
+    { href: '/admin/users', label: 'User Management', icon: Users, adminOnly: true, disabled: true },
+    { href: '/admin/analytics', label: 'Analytics', icon: BarChart3, adminOnly: true, disabled: true },
+    { href: '/create-lesson', label: 'Content Manager', icon: FileText, adminOnly: true },
+    { href: '/settings', label: 'Settings', icon: Settings, adminOnly: true },
 ]
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
     const pathname = usePathname()
     const { data: session } = useSession()
 
+    const isAdmin = session?.user?.role === 'ADMIN'
     const userName = session?.user?.name || 'User'
     const initials = userName
         .split(' ')
@@ -38,6 +59,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         .join('')
         .toUpperCase()
         .slice(0, 2)
+
+    // Filter nav items by role
+    const visibleItems = NAV_ITEMS.filter((item) => {
+        if (isAdmin) return !item.staffOnly
+        return !item.adminOnly
+    })
 
     return (
         <>
@@ -49,12 +76,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     </div>
                     <div className={styles.brandText}>
                         <span className={styles.brandName}>ChAI Academy</span>
-                        <span className={styles.brandSub}>Staff Portal</span>
+                        <span className={styles.brandSub}>
+                            {isAdmin ? 'Admin Portal' : 'Staff Portal'}
+                        </span>
                     </div>
                 </div>
 
                 <nav className={styles.nav}>
-                    {NAV_ITEMS.map((item) => {
+                    {visibleItems.map((item) => {
                         const Icon = item.icon
                         const isActive = pathname === item.href
                         const isDisabled = item.disabled
@@ -75,19 +104,21 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 </nav>
 
                 <div className={styles.userSection}>
-                    <div className={styles.helpCard}>
-                        <div className={styles.helpTitle}>Help Center</div>
-                        <p className={styles.helpText}>
-                            Stuck on a module? Our support team is here.
-                        </p>
-                        <button className={styles.helpButton}>Get Support</button>
-                    </div>
+                    {!isAdmin && (
+                        <div className={styles.helpCard}>
+                            <div className={styles.helpTitle}>Help Center</div>
+                            <p className={styles.helpText}>
+                                Stuck on a module? Our support team is here.
+                            </p>
+                            <button className={styles.helpButton}>Get Support</button>
+                        </div>
+                    )}
                     <div className={styles.userInfo}>
                         <div className={styles.userAvatar}>{initials}</div>
                         <div className={styles.userDetails}>
                             <span className={styles.userName}>{userName}</span>
                             <span className={styles.userRole}>
-                                {session?.user?.role === 'ADMIN' ? 'Administrator' : 'Staff Member'}
+                                {isAdmin ? 'Administrator' : 'Staff Member'}
                             </span>
                         </div>
                     </div>
