@@ -18,10 +18,20 @@ model User {
   email         String?   @unique
   password      String?
   role          Role      @default(LEARNER)
+  department    String?
+  jobTitle      String?
+  avatarUrl     String?
+  weeklyEmailSummary Boolean @default(true)
+  learningPace  String   @default("balanced")
+  onboardingComplete Boolean @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  
+
   progress      Progress[]
+  gamification  UserGamification?
+  achievements  UserAchievement[]
+  streakHistory StreakRecord[]
+  xpHistory     XPTransaction[]
 }
 
 model Progress {
@@ -46,7 +56,7 @@ model Lesson {
   difficulty  String   @default("beginner")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   content     LessonContent?
   progress    Progress[]
 }
@@ -56,4 +66,71 @@ model LessonContent {
   lessonId  String   @unique
   lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   steps     Json
+}
+
+// === Gamification Models ===
+
+model UserGamification {
+  id               String    @id @default(cuid())
+  userId           String    @unique
+  totalXP          Int       @default(0)
+  level            Int       @default(1)
+  currentStreak    Int       @default(0)
+  longestStreak    Int       @default(0)
+  lastActivityDate DateTime?
+  streakMultiplier Float     @default(1.0)
+
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model XPTransaction {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Int
+  reason    String
+  sourceId  String?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model StreakRecord {
+  id     String   @id @default(cuid())
+  userId String
+  date   DateTime @db.Date
+
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+}
+
+// === Achievement Models ===
+
+model Achievement {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  iconEmoji   String   @default("🏆")
+  category    String
+  xpReward    Int      @default(50)
+  criteria    Json
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  users       UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
 }

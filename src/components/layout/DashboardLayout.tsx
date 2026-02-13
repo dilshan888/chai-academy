@@ -1,43 +1,29 @@
 "use client"
 
-import { ReactNode } from 'react'
-import { signOut } from 'next-auth/react'
+import { ReactNode, useState } from 'react'
 import styles from './layout.module.css'
-import { Button } from '@/components/ui/button'
+import { Sidebar } from './Sidebar'
+import { Header } from './Header'
 import { ChatWidget } from '@/components/features/ChatWidget'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { XPNotificationContainer } from '@/components/ui/XPNotification'
 
 export function DashboardLayout({ children }: { children: ReactNode }) {
+    const [sidebarOpen, setSidebarOpen] = useState(false)
+
     return (
         <div className={styles.dashboardContainer}>
-            <header className={styles.header}>
-                <div style={{ fontWeight: 700, fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ color: 'hsl(var(--accent))' }}>✦</span>
-                    ChAI Academy
-                </div>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>    
-                    <ThemeToggle />
-                    <a href="/settings">
-                        <Button
-                            variant="secondary"
-                            style={{ fontSize: '0.875rem', padding: '0.4rem 1rem' }}
-                        >
-                            Settings
-                        </Button>
-                    </a>
-                    <Button
-                        variant="secondary"
-                        style={{ fontSize: '0.875rem', padding: '0.4rem 1rem' }}
-                        onClick={() => signOut({ callbackUrl: '/login' })}
-                    >
-                        Logout
-                    </Button>
-                </div>
-            </header >
+            <div className={styles.sidebarArea}>
+                <Sidebar
+                    isOpen={sidebarOpen}
+                    onClose={() => setSidebarOpen(false)}
+                />
+            </div>
+            <Header onMenuToggle={() => setSidebarOpen((prev) => !prev)} />
             <main className={styles.main}>
                 {children}
             </main>
             <ChatWidget />
-        </div >
+            <XPNotificationContainer />
+        </div>
     )
 }
