@@ -12,6 +12,9 @@ export async function GET() {
     }
 
     try {
+        // Get total lesson count dynamically
+        const totalLessons = await prisma.lesson.count()
+
         const users = await prisma.user.findMany({
             where: { role: 'LEARNER' },
             include: {
@@ -23,7 +26,7 @@ export async function GET() {
 
         const dashboardData = users.map((user) => {
             const completedCount = user.progress.filter((p) => p.completed).length
-            const percentage = Math.round((completedCount / 6) * 100)
+            const percentage = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0
 
             return {
                 id: user.id,

@@ -110,7 +110,7 @@ export function ProfileView() {
 
     // Build lesson list for timeline
     const lessonList = Object.values(LESSONS).sort((a, b) => a.id - b.id)
-    const firstIncomplete = lessonList.find((l) => !completedLessons.includes(l.id))
+    const firstIncomplete = lessonList.find((l) => !completedLessons.includes(String(l.id)))
 
     if (loading) {
         return <div className={styles.loading}>Loading profile...</div>
@@ -279,7 +279,7 @@ export function ProfileView() {
                     <h2 className={styles.timelineTitle}>Learning Path</h2>
                     <div className={styles.timeline}>
                         {lessonList.map((lesson) => {
-                            const isCompleted = completedLessons.includes(lesson.id)
+                            const isCompleted = completedLessons.includes(String(lesson.id))
                             const isCurrent = !isCompleted && firstIncomplete?.id === lesson.id
 
                             return (

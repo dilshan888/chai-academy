@@ -22,9 +22,9 @@ interface XPNotification {
 }
 
 interface ProgressContextType {
-    completedLessons: number[]
-    markLessonComplete: (id: number, score?: number) => Promise<void>
-    isLessonComplete: (id: number) => boolean
+    completedLessons: string[]
+    markLessonComplete: (id: string, score?: number) => Promise<void>
+    isLessonComplete: (id: string) => boolean
     overallProgress: number
     resetProgress: () => void
     stats: GamificationStats
@@ -51,7 +51,7 @@ const ProgressContext = createContext<ProgressContextType | undefined>(undefined
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
     const { status } = useSession()
-    const [completedLessons, setCompletedLessons] = useState<number[]>([])
+    const [completedLessons, setCompletedLessons] = useState<string[]>([])
     const [stats, setStats] = useState<GamificationStats>(DEFAULT_STATS)
     const [xpNotifications, setXpNotifications] = useState<XPNotification[]>([])
 
@@ -101,7 +101,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         refreshStats()
     }, [refreshStats])
 
-    const markLessonComplete = async (id: number, score?: number) => {
+    const markLessonComplete = async (id: string, score?: number) => {
         if (!completedLessons.includes(id)) {
             // Optimistic update
             const newProgress = [...completedLessons, id]
@@ -158,7 +158,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         }
     }
 
-    const isLessonComplete = (id: number) => completedLessons.includes(id)
+    const isLessonComplete = (id: string) => completedLessons.includes(id)
 
     const resetProgress = () => {
         setCompletedLessons([])

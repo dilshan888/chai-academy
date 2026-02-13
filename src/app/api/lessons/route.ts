@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 // GET /api/lessons
 // Fetch all lessons (metadata only, or with limited content)
@@ -32,6 +34,12 @@ export async function GET() {
 // Create a new lesson
 export async function POST(req: Request) {
     try {
+        // Admin-only protection
+        const session = await getServerSession(authOptions);
+        if (!session?.user || session.user.role !== 'ADMIN') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+        }
+
         const body = await req.json();
         const { title, slug, description, difficulty, steps } = body;
 

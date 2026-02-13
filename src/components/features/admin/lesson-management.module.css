@@ -1,0 +1,362 @@
+/* Lesson Management Page */
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header */
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid hsl(var(--border));
+    padding-bottom: 1.5rem;
+}
+
+.headerTitle {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin: 0;
+    color: hsl(var(--foreground));
+}
+
+.headerSub {
+    color: hsl(var(--muted-foreground));
+    margin-top: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.headerActions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+/* Stats row */
+.statsRow {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 640px) {
+    .statsRow {
+        grid-template-columns: 1fr;
+    }
+}
+
+.statCard {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.statCardLabel {
+    font-size: 0.78rem;
+    color: hsl(var(--muted-foreground));
+    font-weight: 500;
+}
+
+.statCardValue {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+/* Lesson Table */
+.tableCard {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.tableHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid hsl(var(--border));
+}
+
+.tableTitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.tableCount {
+    font-size: 0.8rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.tableScroll {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.table thead tr {
+    border-bottom: 1px solid hsl(var(--border));
+    text-align: left;
+}
+
+.table th {
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-size: 0.78rem;
+    color: hsl(var(--muted-foreground));
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid hsl(var(--border));
+    transition: background 0.15s;
+}
+
+.table tbody tr:hover {
+    background: hsl(var(--muted) / 0.5);
+}
+
+.table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.table td {
+    padding: 0.75rem 1rem;
+}
+
+.lessonTitle {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.lessonSlug {
+    font-size: 0.73rem;
+    color: hsl(var(--muted-foreground));
+    font-family: monospace;
+}
+
+.difficultyBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.diffBeginner {
+    color: #15803d;
+    background: #dcfce7;
+}
+
+.diffIntermediate {
+    color: #c2410c;
+    background: #ffedd5;
+}
+
+.diffAdvanced {
+    color: #9333ea;
+    background: #f3e8ff;
+}
+
+.dateCell {
+    font-size: 0.82rem;
+    color: hsl(var(--muted-foreground));
+}
+
+/* Action Buttons */
+.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.actionBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--card));
+    cursor: pointer;
+    transition: all 0.15s;
+    color: hsl(var(--foreground));
+}
+
+.actionBtn:hover {
+    background: hsl(var(--muted));
+}
+
+.deleteBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid #fecaca;
+    background: hsl(var(--card));
+    cursor: pointer;
+    transition: all 0.15s;
+    color: #dc2626;
+}
+
+.deleteBtn:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+}
+
+/* Delete Confirmation Dialog */
+.dialogOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.dialog {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 2rem;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.dialogTitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+}
+
+.dialogText {
+    font-size: 0.88rem;
+    color: hsl(var(--muted-foreground));
+    line-height: 1.5;
+    margin: 0 0 1.5rem;
+}
+
+.dialogActions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+.dialogCancel {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--card));
+    cursor: pointer;
+    transition: all 0.15s;
+    color: hsl(var(--foreground));
+}
+
+.dialogCancel:hover {
+    background: hsl(var(--muted));
+}
+
+.dialogDelete {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: none;
+    background: #dc2626;
+    color: white;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.dialogDelete:hover {
+    background: #b91c1c;
+}
+
+.dialogDelete:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Loading */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.9rem;
+}
+
+/* Empty state */
+.emptyState {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.emptyIcon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.emptyTitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: hsl(var(--foreground));
+}
+
+.emptyText {
+    font-size: 0.88rem;
+    margin-bottom: 1.5rem;
+}
