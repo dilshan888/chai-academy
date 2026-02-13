@@ -67,7 +67,7 @@ export function LessonView({ lessonId }: { lessonId: string }) {
         if (currentStep < totalSteps - 1) {
             setCurrentStep(currentStep + 1)
         } else {
-            markLessonComplete(Number(lessonId))
+            markLessonComplete(lessonId)
             setLessonDone(true)
         }
     }

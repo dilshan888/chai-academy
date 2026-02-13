@@ -111,8 +111,9 @@ export async function updateStreak(
 ): Promise<{ currentStreak: number; multiplier: number }> {
     await ensureGamificationRecord(userId)
 
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+    // Use UTC midnight to match PostgreSQL @db.Date behavior
+    const now = new Date()
+    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
 
     // Record today's activity (upsert to avoid duplicates)
     await prisma.streakRecord.upsert({
@@ -135,11 +136,16 @@ export async function updateStreak(
 
     for (const record of records) {
         const recordDate = new Date(record.date)
-        recordDate.setHours(0, 0, 0, 0)
+        // Normalize to UTC midnight for comparison
+        const normalizedRecord = new Date(Date.UTC(
+            recordDate.getUTCFullYear(),
+            recordDate.getUTCMonth(),
+            recordDate.getUTCDate()
+        ))
 
-        if (recordDate.getTime() === checkDate.getTime()) {
+        if (normalizedRecord.getTime() === checkDate.getTime()) {
             streak++
-            checkDate.setDate(checkDate.getDate() - 1)
+            checkDate.setUTCDate(checkDate.getUTCDate() - 1)
         } else {
             break
         }

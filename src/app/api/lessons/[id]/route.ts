@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 // GET /api/lessons/[id]
 // Fetch a specific lesson by ID, including its content steps
@@ -41,6 +43,12 @@ export async function PATCH(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        // Admin-only protection
+        const session = await getServerSession(authOptions);
+        if (!session?.user || session.user.role !== 'ADMIN') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+        }
+
         const { id } = await params;
         const body = await req.json();
         const { title, slug, description, difficulty, steps } = body;
@@ -90,6 +98,12 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        // Admin-only protection
+        const session = await getServerSession(authOptions);
+        if (!session?.user || session.user.role !== 'ADMIN') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+        }
+
         const { id } = await params;
 
         await prisma.lesson.delete({

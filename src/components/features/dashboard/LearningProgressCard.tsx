@@ -6,12 +6,12 @@ import { Button } from '@/components/ui/button'
 import styles from './dashboard.module.css'
 
 const TRACK_LESSONS = [
-    { id: 1, title: "What AI Is (and Is Not)" },
-    { id: 2, title: "Where AI Appears in University Administration" },
-    { id: 3, title: "Data, Privacy, and GDPR Basics" },
-    { id: 4, title: "EU AI Act Overview for Admin Work" },
-    { id: 5, title: "High Risk vs Low Risk AI Systems" },
-    { id: 6, title: "Human Oversight and Responsibility" },
+    { id: '1', title: "What AI Is (and Is Not)" },
+    { id: '2', title: "Where AI Appears in University Administration" },
+    { id: '3', title: "Data, Privacy, and GDPR Basics" },
+    { id: '4', title: "EU AI Act Overview for Admin Work" },
+    { id: '5', title: "High Risk vs Low Risk AI Systems" },
+    { id: '6', title: "Human Oversight and Responsibility" },
 ]
 
 export function LearningProgressCard() {

@@ -43,7 +43,7 @@ const NAV_ITEMS: NavItem[] = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, adminOnly: true },
     { href: '/admin/users', label: 'User Management', icon: Users, adminOnly: true, disabled: true },
     { href: '/admin/analytics', label: 'Analytics', icon: BarChart3, adminOnly: true, disabled: true },
-    { href: '/create-lesson', label: 'Content Manager', icon: FileText, adminOnly: true },
+    { href: '/admin/lessons', label: 'Content Manager', icon: FileText, adminOnly: true },
     { href: '/settings', label: 'Settings', icon: Settings, adminOnly: true },
 ]
 

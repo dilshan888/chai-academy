@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
     DndContext,
     closestCenter,
@@ -34,12 +35,21 @@ export interface LessonBlock {
 
 import styles from './LessonEditor.module.css';
 
-export default function LessonEditor() {
+interface LessonEditorProps {
+    lessonId?: string; // If provided, edit mode
+}
+
+export default function LessonEditor({ lessonId }: LessonEditorProps) {
+    const router = useRouter();
+    const isEditMode = Boolean(lessonId);
+
     const [title, setTitle] = useState("");
     const [slug, setSlug] = useState("");
+    const [description, setDescription] = useState("");
     const [difficulty, setDifficulty] = useState("beginner");
     const [blocks, setBlocks] = useState<LessonBlock[]>([]);
     const [isSaving, setIsSaving] = useState(false);
+    const [isLoading, setIsLoading] = useState(isEditMode);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -47,6 +57,55 @@ export default function LessonEditor() {
             coordinateGetter: sortableKeyboardCoordinates,
         })
     );
+
+    // Load existing lesson data in edit mode
+    useEffect(() => {
+        if (!lessonId) return;
+
+        async function loadLesson() {
+            try {
+                const res = await fetch(`/api/lessons/${lessonId}`);
+                if (!res.ok) throw new Error("Failed to load lesson");
+                const data = await res.json();
+
+                setTitle(data.title || "");
+                setSlug(data.slug || "");
+                setDescription(data.description || "");
+                setDifficulty(data.difficulty || "beginner");
+
+                // Convert API steps back to editor blocks
+                if (data.content?.steps && Array.isArray(data.content.steps)) {
+                    const loadedBlocks: LessonBlock[] = data.content.steps.map(
+                        (step: any) => {
+                            const block: LessonBlock = {
+                                id: crypto.randomUUID(),
+                                type: step.type || "text",
+                            };
+                            if (step.type === "text") {
+                                block.content = step.content || "";
+                            } else if (step.type === "quiz") {
+                                block.question = step.question || "";
+                                block.options = step.options || ["", ""];
+                                block.answer = step.answer || "";
+                            } else if (step.type === "image") {
+                                block.imageUrl = step.url || "";
+                                block.altText = step.alt || "";
+                            }
+                            return block;
+                        }
+                    );
+                    setBlocks(loadedBlocks);
+                }
+            } catch (error) {
+                console.error("Failed to load lesson:", error);
+                alert("Failed to load lesson data.");
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        loadLesson();
+    }, [lessonId]);
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
@@ -102,12 +161,16 @@ export default function LessonEditor() {
                 return b;
             });
 
-            const response = await fetch("/api/lessons", {
-                method: "POST",
+            const url = isEditMode ? `/api/lessons/${lessonId}` : "/api/lessons";
+            const method = isEditMode ? "PATCH" : "POST";
+
+            const response = await fetch(url, {
+                method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     title,
                     slug,
+                    description: description || undefined,
                     difficulty,
                     steps,
                 }),
@@ -118,9 +181,8 @@ export default function LessonEditor() {
                 throw new Error(error.error || "Failed to save");
             }
 
-            alert("Lesson saved successfully!");
-            // Optional: redirect
-            // window.location.href = '/admin';
+            // Redirect to lesson management page
+            router.push("/admin/lessons");
         } catch (e: any) {
             alert("Error: " + e.message);
         } finally {
@@ -128,11 +190,39 @@ export default function LessonEditor() {
         }
     };
 
+    if (isLoading) {
+        return (
+            <div className={styles.editorContainer}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4rem', color: 'gray' }}>
+                    Loading lesson data...
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className={styles.editorContainer}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Create New Lesson</h1>
-                <div style={{ fontSize: '0.9rem', color: 'gray' }}>Admin Mode</div>
+                <h1 className={styles.title}>
+                    {isEditMode ? "Edit Lesson" : "Create New Lesson"}
+                </h1>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ fontSize: '0.9rem', color: 'gray' }}>Admin Mode</div>
+                    <button
+                        onClick={() => router.push('/admin/lessons')}
+                        style={{
+                            padding: '0.4rem 0.8rem',
+                            fontSize: '0.82rem',
+                            border: '1px solid hsl(var(--border))',
+                            borderRadius: '6px',
+                            background: 'hsl(var(--card))',
+                            cursor: 'pointer',
+                            color: 'hsl(var(--foreground))',
+                        }}
+                    >
+                        ← Back to Lessons
+                    </button>
+                </div>
             </div>
 
             <div className={styles.metaGrid}>
@@ -166,6 +256,21 @@ export default function LessonEditor() {
                         <option value="advanced">Advanced</option>
                     </select>
                 </div>
+            </div>
+
+            {/* Description field */}
+            <div style={{ marginBottom: '1rem' }}>
+                <label className={styles.label} style={{ display: 'block', marginBottom: '0.5rem' }}>
+                    Description (optional)
+                </label>
+                <textarea
+                    className={styles.input}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="A brief description of this lesson..."
+                    rows={2}
+                    style={{ resize: 'vertical', minHeight: '60px', width: '100%', fontFamily: 'inherit' }}
+                />
             </div>
 
             <div className={styles.contentArea}>
@@ -219,7 +324,10 @@ export default function LessonEditor() {
                     className={styles.saveBtn}
                     style={{ opacity: isSaving ? 0.7 : 1 }}
                 >
-                    {isSaving ? "Publishing..." : "Publish Lesson"}
+                    {isSaving
+                        ? (isEditMode ? "Saving..." : "Publishing...")
+                        : (isEditMode ? "Save Changes" : "Publish Lesson")
+                    }
                 </button>
             </div>
         </div>

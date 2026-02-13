@@ -352,7 +352,25 @@ export async function GET() {
             })
         }
 
-        // 5. Seed Scenarios
+        // 5. Seed Lesson records (required for Progress foreign key)
+        const LESSON_SEEDS = [
+            { id: '1', title: 'What AI Is (and Is Not)', slug: 'what-ai-is', difficulty: 'beginner' },
+            { id: '2', title: 'Where AI Appears in University Administration', slug: 'ai-in-admin', difficulty: 'beginner' },
+            { id: '3', title: 'Data, Privacy, and GDPR Basics', slug: 'data-privacy-gdpr', difficulty: 'beginner' },
+            { id: '4', title: 'EU AI Act Overview for Admin Work', slug: 'eu-ai-act-overview', difficulty: 'intermediate' },
+            { id: '5', title: 'High Risk vs Low Risk AI Systems', slug: 'high-vs-low-risk', difficulty: 'intermediate' },
+            { id: '6', title: 'Human Oversight and Responsibility', slug: 'human-oversight', difficulty: 'intermediate' },
+        ]
+
+        for (const lesson of LESSON_SEEDS) {
+            await prisma.lesson.upsert({
+                where: { slug: lesson.slug },
+                update: { id: lesson.id, title: lesson.title },
+                create: lesson,
+            })
+        }
+
+        // 6. Seed Scenarios
         for (const scenario of SCENARIOS) {
             await prisma.scenario.upsert({
                 where: { lessonId: scenario.lessonId },
@@ -366,6 +384,7 @@ export async function GET() {
             users: [admin.email, learner.email],
             achievements: ACHIEVEMENTS.length,
             scenarios: SCENARIOS.length,
+            lessons: LESSON_SEEDS.length,
         })
     } catch (error) {
         return NextResponse.json({ error: 'Failed to seed database', details: error }, { status: 500 })
