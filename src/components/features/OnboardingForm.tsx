@@ -5,15 +5,44 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import styles from './forms.module.css'
 
+const DEPARTMENTS = [
+    'Computing',
+    'Business',
+    'Engineering',
+    'Arts',
+    'Sciences',
+    'Law',
+    'Education',
+    'Health',
+    'Other',
+]
+
 export function OnboardingForm() {
     const router = useRouter()
 
     const [role, setRole] = useState('')
     const [experience, setExperience] = useState('')
+    const [department, setDepartment] = useState('')
+    const [saving, setSaving] = useState(false)
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        router.push('/dashboard')
+        setSaving(true)
+
+        try {
+            await fetch('/api/user', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    jobTitle: role,
+                    department,
+                    onboardingComplete: true,
+                }),
+            })
+            router.push('/dashboard')
+        } catch {
+            setSaving(false)
+        }
     }
 
     return (
@@ -28,6 +57,21 @@ export function OnboardingForm() {
             </div>
 
             <div className={styles.field}>
+                <label>What department are you in?</label>
+                <select
+                    className={styles.input}
+                    required
+                    value={department}
+                    onChange={e => setDepartment(e.target.value)}
+                >
+                    <option value="">Select a department...</option>
+                    {DEPARTMENTS.map(d => (
+                        <option key={d} value={d}>{d}</option>
+                    ))}
+                </select>
+            </div>
+
+            <div className={styles.field}>
                 <label>What is your primary role?</label>
                 <select
                     className={styles.input}
@@ -36,10 +80,10 @@ export function OnboardingForm() {
                     onChange={e => setRole(e.target.value)}
                 >
                     <option value="">Select a role...</option>
-                    <option value="admin">Administrator / HR</option>
-                    <option value="staff">Administrative Staff</option>
-                    <option value="faculty">Faculty Support</option>
-                    <option value="other">Other</option>
+                    <option value="Administrator / HR">Administrator / HR</option>
+                    <option value="Administrative Staff">Administrative Staff</option>
+                    <option value="Faculty Support">Faculty Support</option>
+                    <option value="Other">Other</option>
                 </select>
             </div>
 
@@ -58,8 +102,8 @@ export function OnboardingForm() {
                 </select>
             </div>
 
-            <Button type="submit" fullWidth>
-                Start Learning
+            <Button type="submit" fullWidth disabled={saving}>
+                {saving ? 'Saving...' : 'Start Learning'}
             </Button>
         </form>
     )

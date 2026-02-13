@@ -1,0 +1,220 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+    background: hsl(var(--card));
+    border-right: 1px solid hsl(var(--border));
+    display: flex;
+    flex-direction: column;
+    z-index: 30;
+    transition: transform 0.3s ease;
+}
+
+.brand {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0 1.25rem;
+    border-bottom: 1px solid hsl(var(--border));
+    flex-shrink: 0;
+}
+
+.brandIcon {
+    width: 36px;
+    height: 36px;
+    background: hsl(var(--accent));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: hsl(var(--accent-foreground));
+}
+
+.brandText {
+    display: flex;
+    flex-direction: column;
+}
+
+.brandName {
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.2;
+}
+
+.brandSub {
+    font-size: 0.7rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.nav {
+    flex: 1;
+    padding: 1rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    overflow-y: auto;
+}
+
+.navLink {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+}
+
+.navLink:hover {
+    background: hsl(var(--muted));
+    color: hsl(var(--foreground));
+}
+
+.navLinkActive {
+    background: hsl(var(--accent) / 0.1);
+    color: hsl(var(--accent));
+    font-weight: 600;
+}
+
+.navLinkDisabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.navIcon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.comingSoon {
+    font-size: 0.6rem;
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+    padding: 0.125rem 0.375rem;
+    border-radius: 999px;
+    margin-left: auto;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+}
+
+.userSection {
+    padding: 1rem 0.75rem;
+    border-top: 1px solid hsl(var(--border));
+    flex-shrink: 0;
+}
+
+.helpCard {
+    background: hsl(var(--accent) / 0.08);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.helpTitle {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: hsl(var(--accent));
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.375rem;
+}
+
+.helpText {
+    font-size: 0.8rem;
+    color: hsl(var(--muted-foreground));
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+}
+
+.helpButton {
+    width: 100%;
+    padding: 0.5rem;
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+
+.helpButton:hover {
+    opacity: 0.9;
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.userAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.userDetails {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.userName {
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.userRole {
+    font-size: 0.7rem;
+    color: hsl(var(--muted-foreground));
+}
+
+/* Mobile overlay */
+.overlay {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebarOpen {
+        transform: translateX(0);
+    }
+
+    .overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 29;
+    }
+}
