@@ -45,13 +45,13 @@ export async function POST(req: Request) {
             where: {
                 userId_lessonId: {
                     userId: session.user.id,
-                    lessonId: Number(lessonId)
+                    lessonId: String(lessonId)
                 }
             },
             update: { completed: true, completedAt: new Date() },
             create: {
                 userId: session.user.id,
-                lessonId: Number(lessonId),
+                lessonId: String(lessonId),
                 completed: true
             }
         })

@@ -153,7 +153,7 @@ export function EditorBlock({ block, onUpdate, onRemove }: EditorBlockProps) {
                                 <img
                                     src={block.imageUrl}
                                     alt="preview"
-                                    style={{ maxLength: '100%', maxHeight: '200px', objectFit: 'contain', margin: '0 auto' }}
+                                    style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'contain', margin: '0 auto' }}
                                 />
                             </div>
                         )}

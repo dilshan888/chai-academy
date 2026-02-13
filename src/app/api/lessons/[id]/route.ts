@@ -5,10 +5,10 @@ import { NextResponse } from "next/server";
 // Fetch a specific lesson by ID, including its content steps
 export async function GET(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         const lesson = await prisma.lesson.findUnique({
             where: { id },
@@ -38,10 +38,10 @@ export async function GET(
 // Update a lesson
 export async function PATCH(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const body = await req.json();
         const { title, slug, description, difficulty, steps } = body;
 
@@ -87,10 +87,10 @@ export async function PATCH(
 // DELETE /api/lessons/[id]
 export async function DELETE(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         await prisma.lesson.delete({
             where: { id },

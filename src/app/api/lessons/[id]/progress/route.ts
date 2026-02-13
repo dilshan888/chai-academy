@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 // POST /api/lessons/[id]/progress
 export async function POST(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -22,7 +22,7 @@ export async function POST(
             // return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { id: lessonId } = params;
+        const { id: lessonId } = await params;
         const body = await req.json();
         const { completed, score } = body;
 
