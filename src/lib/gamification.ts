@@ -278,11 +278,8 @@ export async function checkAndAwardBadges(
 }
 
 export async function getUserStats(userId: string) {
-    await ensureGamificationRecord(userId)
-
-    const gamification = await prisma.userGamification.findUnique({
-        where: { userId },
-    })
+    // Returns the gamification record, so we don't need to fetch it again
+    const gamification = await ensureGamificationRecord(userId)
 
     // Get today's XP
     const today = new Date()
@@ -290,25 +287,25 @@ export async function getUserStats(userId: string) {
     const tomorrow = new Date(today)
     tomorrow.setDate(tomorrow.getDate() + 1)
 
-    const todayTransactions = await prisma.xPTransaction.findMany({
-        where: {
-            userId,
-            createdAt: { gte: today, lt: tomorrow },
-        },
-    })
-    const todayXP = todayTransactions.reduce((sum, t) => sum + t.amount, 0)
+    const [todayXPAggregate, recentTransactions, badgeCount] = await Promise.all([
+        prisma.xPTransaction.aggregate({
+            _sum: { amount: true },
+            where: {
+                userId,
+                createdAt: { gte: today, lt: tomorrow },
+            },
+        }),
+        prisma.xPTransaction.findMany({
+            where: { userId },
+            orderBy: { createdAt: 'desc' },
+            take: 10,
+        }),
+        prisma.userAchievement.count({
+            where: { userId },
+        }),
+    ])
 
-    // Get recent transactions
-    const recentTransactions = await prisma.xPTransaction.findMany({
-        where: { userId },
-        orderBy: { createdAt: 'desc' },
-        take: 10,
-    })
-
-    // Get badge count
-    const badgeCount = await prisma.userAchievement.count({
-        where: { userId },
-    })
+    const todayXP = todayXPAggregate._sum.amount ?? 0
 
     const totalXP = gamification?.totalXP ?? 0
     const level = gamification?.level ?? 1
