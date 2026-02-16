@@ -99,8 +99,8 @@ export function ScenarioView({ scenarioId }: { scenarioId: string }) {
 
     const riskClass = scenario.riskLevel === 'HIGH' ? styles.riskHigh
         : scenario.riskLevel === 'LIMITED' ? styles.riskLimited
-        : scenario.riskLevel === 'MINIMAL' ? styles.riskMinimal
-        : styles.riskUnacceptable
+            : scenario.riskLevel === 'MINIMAL' ? styles.riskMinimal
+                : styles.riskUnacceptable
 
     return (
         <div className={styles.container}>
@@ -176,7 +176,7 @@ export function ScenarioView({ scenarioId }: { scenarioId: string }) {
                             )}
                         </div>
                         <div className={styles.feedbackBody}>{selectedOption.feedback}</div>
-                        {feedback && (
+                        {feedback && feedback.xpGained > 0 && (
                             <div className={styles.xpReveal}>
                                 <Zap size={14} />
                                 +{feedback.xpGained} XP earned
