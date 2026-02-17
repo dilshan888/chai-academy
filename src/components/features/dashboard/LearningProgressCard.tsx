@@ -1,11 +1,12 @@
 "use client"
 
+import { useState, useEffect } from 'react'
 import { useProgress } from '@/lib/ProgressContext'
 import { ProgressBar } from '@/components/ui/progress-bar'
 import { Button } from '@/components/ui/button'
 import styles from './dashboard.module.css'
 
-const TRACK_LESSONS = [
+const STATIC_LESSONS = [
     { id: '1', title: "What AI Is (and Is Not)" },
     { id: '2', title: "Where AI Appears in University Administration" },
     { id: '3', title: "Data, Privacy, and GDPR Basics" },
@@ -14,12 +15,40 @@ const TRACK_LESSONS = [
     { id: '6', title: "Human Oversight and Responsibility" },
 ]
 
+interface DBLesson {
+    id: string
+    title: string
+    slug: string
+}
+
 export function LearningProgressCard() {
     const { overallProgress, isLessonComplete } = useProgress()
+    const [allLessons, setAllLessons] = useState(STATIC_LESSONS)
 
-    // Find next lesson
-    const nextLesson = TRACK_LESSONS.find(l => !isLessonComplete(l.id))
+    useEffect(() => {
+        async function fetchDBLessons() {
+            try {
+                const res = await fetch('/api/lessons')
+                if (res.ok) {
+                    const data: DBLesson[] = await res.json()
+                    const dbEntries = data.map((l) => ({ id: l.id, title: l.title }))
+                    setAllLessons([...STATIC_LESSONS, ...dbEntries])
+                }
+            } catch (e) {
+                // Keep static lessons as fallback
+            }
+        }
+        fetchDBLessons()
+    }, [])
+
+    // Find next incomplete lesson
+    const nextLesson = allLessons.find(l => !isLessonComplete(l.id))
     const currentLessonId = nextLesson?.id ?? null
+    // DB lessons use /lessons/[id], static use /lesson/[id]
+    const isDBLesson = currentLessonId && !STATIC_LESSONS.some(l => l.id === currentLessonId)
+    const lessonHref = currentLessonId
+        ? isDBLesson ? `/lessons/${currentLessonId}` : `/lesson/${currentLessonId}`
+        : '#'
 
     return (
         <div className={styles.progressCard}>
@@ -46,7 +75,7 @@ export function LearningProgressCard() {
 
             <div className={styles.progressCardFooter}>
                 {currentLessonId ? (
-                    <a href={`/lesson/${currentLessonId}`}>
+                    <a href={lessonHref}>
                         <Button variant="primary">Resume Learning</Button>
                     </a>
                 ) : (

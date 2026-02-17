@@ -17,6 +17,7 @@ interface QuizStepProps {
         correctIndex?: number
         type?: string
         title?: string
+        explanation?: string
     }
     onComplete: () => void
 }
@@ -69,6 +70,12 @@ export function LessonView({ lessonId }: { lessonId: string }) {
         } else {
             markLessonComplete(lessonId)
             setLessonDone(true)
+        }
+    }
+
+    const handlePrev = () => {
+        if (currentStep > 0) {
+            setCurrentStep(currentStep - 1)
         }
     }
 
@@ -181,11 +188,43 @@ export function LessonView({ lessonId }: { lessonId: string }) {
                 </div>
 
                 {section.type !== 'skill' && (
-                    <div style={{ marginTop: '2.5rem', display: 'flex', justifyContent: 'flex-end' }}>
-                        <Button onClick={handleNext} style={{ fontSize: '1rem', padding: '0.75rem 2rem' }}>
-                            {currentStep === totalSteps - 1 ? 'Finish Lesson' : 'Continue'}
-                        </Button>
-                    </div>
+                    <>
+                        {section.sourceUrl && (
+                            <div style={{ marginTop: '1.5rem' }}>
+                                <a
+                                    href={section.sourceUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '0.35rem',
+                                        fontSize: '0.85rem',
+                                        color: 'hsl(var(--accent))',
+                                        fontWeight: 600,
+                                        textDecoration: 'none',
+                                        padding: '0.4rem 0.75rem',
+                                        borderRadius: '0.375rem',
+                                        border: '1px solid hsl(var(--accent) / 0.2)',
+                                        background: 'hsl(var(--accent) / 0.05)',
+                                        transition: 'background 0.15s',
+                                    }}
+                                >
+                                    📖 Read More: {section.sourceLabel || 'Source'}
+                                </a>
+                            </div>
+                        )}
+                        <div style={{ marginTop: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            {currentStep > 0 ? (
+                                <Button variant="secondary" onClick={handlePrev} style={{ fontSize: '1rem', padding: '0.75rem 1.5rem' }}>
+                                    ← Previous
+                                </Button>
+                            ) : <div />}
+                            <Button onClick={handleNext} style={{ fontSize: '1rem', padding: '0.75rem 2rem' }}>
+                                {currentStep === totalSteps - 1 ? 'Finish Lesson' : 'Continue'}
+                            </Button>
+                        </div>
+                    </>
                 )}
             </Card>
         </div>
@@ -237,11 +276,11 @@ function QuizStep({ data, onComplete }: QuizStepProps) {
                 <div style={{ animation: 'fadeIn 0.3s ease' }}>
                     {isCorrect ? (
                         <div style={{ color: '#15803d', fontWeight: 600, background: '#dcfce7', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #bbf7d0' }}>
-                            Correct! That works based on patterns, not just data entry.
+                            {data.explanation || 'Correct! Well done.'}
                         </div>
                     ) : (
                         <div style={{ color: '#b91c1c', fontWeight: 600, background: '#fee2e2', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #fecaca' }}>
-                            Not quite. Try thinking about which one involves prediction based on complex patterns.
+                            {data.explanation || 'Not quite. Try again!'}
                         </div>
                     )}
 

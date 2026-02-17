@@ -29,6 +29,8 @@ export interface LessonBlock {
     question?: string; // For quiz
     options?: string[]; // For quiz
     answer?: string; // For quiz
+    explanation?: string; // For quiz
+    sourceUrl?: string; // For text - "Read More" link
     imageUrl?: string; // For image (mapped to 'url')
     altText?: string; // For image (mapped to 'alt')
 }

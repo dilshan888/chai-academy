@@ -45,7 +45,7 @@ const DEFAULT_STATS: GamificationStats = {
     badgeCount: 0,
 }
 
-const TOTAL_LESSONS = 6
+const STATIC_LESSON_COUNT = 6
 
 const ProgressContext = createContext<ProgressContextType | undefined>(undefined)
 
@@ -54,8 +54,9 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     const [completedLessons, setCompletedLessons] = useState<string[]>([])
     const [stats, setStats] = useState<GamificationStats>(DEFAULT_STATS)
     const [xpNotifications, setXpNotifications] = useState<XPNotification[]>([])
+    const [totalLessons, setTotalLessons] = useState(STATIC_LESSON_COUNT)
 
-    // Load progress from API
+    // Load progress and total lesson count from API
     useEffect(() => {
         if (status !== 'authenticated') return
 
@@ -70,7 +71,21 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
                 console.error("Failed to load progress", e)
             }
         }
+
+        async function loadLessonCount() {
+            try {
+                const res = await fetch('/api/lessons')
+                if (res.ok) {
+                    const data = await res.json()
+                    setTotalLessons(STATIC_LESSON_COUNT + (data?.length ?? 0))
+                }
+            } catch (e) {
+                // Fallback to static count
+            }
+        }
+
         loadProgress()
+        loadLessonCount()
     }, [status])
 
     // Load gamification stats
@@ -165,7 +180,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         setStats(DEFAULT_STATS)
     }
 
-    const overallProgress = Math.round((completedLessons.length / TOTAL_LESSONS) * 100)
+    const overallProgress = totalLessons > 0 ? Math.round((completedLessons.length / totalLessons) * 100) : 0
 
     const dismissXPNotification = (id: string) => {
         setXpNotifications((prev) => prev.filter((n) => n.id !== id))

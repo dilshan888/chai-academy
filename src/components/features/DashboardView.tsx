@@ -5,6 +5,7 @@ import { StatCards } from './dashboard/StatCards'
 import { LearningProgressCard } from './dashboard/LearningProgressCard'
 import { RecommendedCourses } from './dashboard/RecommendedCourses'
 import { AchievementsPanel } from './dashboard/AchievementsPanel'
+import { LearningPathCard } from './dashboard/LearningPathCard'
 import styles from './dashboard/dashboard.module.css'
 
 export function DashboardView() {
@@ -35,6 +36,9 @@ export function DashboardView() {
             </div>
 
             <div className={styles.sideColumn}>
+                {/* Learning Path Overview */}
+                <LearningPathCard />
+
                 {/* Achievements Panel */}
                 <AchievementsPanel />
             </div>
