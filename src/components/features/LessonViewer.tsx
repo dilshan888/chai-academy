@@ -1,7 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Check, ChevronRight, ChevronLeft, RotateCcw } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ProgressBar } from "@/components/ui/progress-bar";
 
 type BlockType = "text" | "quiz" | "image";
 
@@ -20,36 +23,35 @@ export interface LessonStep {
 
 interface LessonViewerProps {
     lessonId: string;
+    lessonTitle?: string;
     initialSteps: LessonStep[];
     onComplete: () => void;
 }
 
-export default function LessonViewer({ lessonId, initialSteps, onComplete }: LessonViewerProps) {
+export default function LessonViewer({ lessonId, lessonTitle, initialSteps, onComplete }: LessonViewerProps) {
+    const router = useRouter();
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
     const [quizSelected, setQuizSelected] = useState<string | null>(null);
     const [quizSubmitted, setQuizSubmitted] = useState(false);
     const [isCompleted, setIsCompleted] = useState(false);
 
-    // Fallback for empty lesson
     if (!initialSteps || initialSteps.length === 0) {
-        return <div className="p-6 text-center">This lesson has no content.</div>;
+        return <div style={{ padding: '2rem', textAlign: 'center' }}>This lesson has no content.</div>;
     }
 
     const currentStep = initialSteps[currentStepIndex];
     const isLastStep = currentStepIndex === initialSteps.length - 1;
     const isQuizCorrect = quizSubmitted && quizSelected === currentStep.answer;
     const isQuizWrong = quizSubmitted && quizSelected !== currentStep.answer;
+    const progress = isCompleted ? 100 : ((currentStepIndex + 1) / initialSteps.length) * 100;
 
     const handleNext = () => {
         if (currentStep.type === "quiz") {
             if (!quizSubmitted) {
-                // First click: check the answer
                 setQuizSubmitted(true);
             } else if (isQuizCorrect) {
-                // Correct answer: advance
                 advance();
             }
-            // If wrong: do nothing — user must click "Try Again" first
         } else {
             advance();
         }
@@ -76,202 +78,257 @@ export default function LessonViewer({ lessonId, initialSteps, onComplete }: Les
             }
         } else {
             setCurrentStepIndex((prev) => prev + 1);
-            // Reset quiz state
             setQuizSelected(null);
             setQuizSubmitted(false);
         }
     };
 
+    // Completion screen — matches LessonView style
     if (isCompleted) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4 text-center p-6">
-                <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
-                    <Check size={32} />
-                </div>
-                <h2 className="text-2xl font-bold">Lesson Completed!</h2>
-                <p className="text-gray-600">Great job finished this lesson.</p>
-                <button
-                    onClick={() => window.location.href = '/dashboard'} // Simple exit
-                    className="mt-4 px-6 py-2 bg-black text-white rounded-full hover:bg-gray-800"
-                >
-                    Back to Dashboard
-                </button>
+            <div style={{ maxWidth: '700px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                <header>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                        <span style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.6)' }}>
+                            {lessonTitle || 'Lesson'}
+                        </span>
+                        <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>
+                            Complete
+                        </span>
+                    </div>
+                    <ProgressBar progress={100} />
+                </header>
+
+                <Card>
+                    <div style={{ textAlign: 'center', padding: '1.5rem 0' }}>
+                        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
+                        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+                            Lesson Complete!
+                        </h2>
+                        <p style={{ color: 'hsl(var(--muted-foreground))', marginBottom: '2rem' }}>
+                            Great work finishing &ldquo;{lessonTitle || 'this lesson'}&rdquo;
+                        </p>
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem' }}>
+                            <Button variant="secondary" onClick={() => router.push('/dashboard')}>
+                                Back to Dashboard
+                            </Button>
+                            <Button onClick={() => router.push('/courses')}>
+                                More Courses
+                            </Button>
+                        </div>
+                    </div>
+                </Card>
             </div>
         );
     }
 
-    // Button label logic
-    let nextButtonLabel = isLastStep ? "Finish" : "Next";
-    let nextDisabled = false;
-
-    if (currentStep.type === "quiz") {
-        if (!quizSubmitted) {
-            nextButtonLabel = "Check Answer";
-            nextDisabled = !quizSelected;
-        } else if (isQuizWrong) {
-            nextButtonLabel = "Try Again";
-            nextDisabled = false;
-        }
-    }
+    // Step type label
+    const typeLabel = currentStep.type === "quiz" ? "Quiz" : currentStep.type === "image" ? "Visual" : "Knowledge";
 
     return (
-        <div className="max-w-md mx-auto bg-white min-h-[600px] shadow-lg rounded-xl overflow-hidden flex flex-col">
-            {/* Progress Bar */}
-            <div className="h-1 bg-gray-100 w-full">
-                <div
-                    className="h-full bg-blue-600 transition-all duration-300"
-                    style={{ width: `${((currentStepIndex + 1) / initialSteps.length) * 100}%` }}
-                />
-            </div>
+        <div style={{ maxWidth: '700px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {/* Header with progress */}
+            <header>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '0.875rem', color: 'hsl(var(--foreground) / 0.6)' }}>
+                        {lessonTitle || 'Lesson'}
+                    </span>
+                    <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>
+                        {currentStepIndex + 1} / {initialSteps.length}
+                    </span>
+                </div>
+                <ProgressBar progress={progress} />
+            </header>
 
-            <div className="flex-1 p-6 flex flex-col items-center justify-center">
-                {/* Content Rendering */}
-                {currentStep.type === "text" && (
-                    <div className="w-full">
-                        <div className="prose text-lg text-center font-medium">
-                            {currentStep.content}
+            <Card key={currentStepIndex}>
+                {/* Section type badge */}
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                    <span style={{
+                        textTransform: 'uppercase',
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        letterSpacing: '0.05em',
+                        color: 'hsl(var(--accent))',
+                        background: 'hsl(var(--accent) / 0.1)',
+                        padding: '0.2rem 0.6rem',
+                        borderRadius: '0.25rem'
+                    }}>
+                        {typeLabel}
+                    </span>
+                    <span style={{
+                        fontSize: '0.75rem',
+                        fontWeight: 500,
+                        color: 'hsl(var(--muted-foreground))',
+                        padding: '0.2rem 0.6rem',
+                        borderRadius: '0.25rem',
+                        background: 'hsl(var(--muted) / 0.5)'
+                    }}>
+                        Step {currentStepIndex + 1}
+                    </span>
+                </div>
+
+                {/* Content */}
+                <div style={{ fontSize: '1.125rem', lineHeight: '1.7', color: 'hsl(var(--foreground))' }}>
+                    {/* Text block */}
+                    {currentStep.type === "text" && (
+                        <>
+                            <p>{currentStep.content}</p>
+                            {currentStep.sourceUrl && (
+                                <div style={{ marginTop: '1.5rem' }}>
+                                    <a
+                                        href={currentStep.sourceUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '0.35rem',
+                                            fontSize: '0.85rem',
+                                            color: 'hsl(var(--accent))',
+                                            fontWeight: 600,
+                                            textDecoration: 'none',
+                                            padding: '0.4rem 0.75rem',
+                                            borderRadius: '0.375rem',
+                                            border: '1px solid hsl(var(--accent) / 0.2)',
+                                            background: 'hsl(var(--accent) / 0.05)',
+                                        }}
+                                    >
+                                        📖 Read More: {currentStep.sourceLabel || 'Source'}
+                                    </a>
+                                </div>
+                            )}
+                        </>
+                    )}
+
+                    {/* Image block */}
+                    {currentStep.type === "image" && (
+                        <div style={{ textAlign: 'center' }}>
+                            <img
+                                src={currentStep.url}
+                                alt={currentStep.alt || "Lesson image"}
+                                style={{ maxWidth: '100%', height: 'auto', borderRadius: 'var(--radius)', marginBottom: '0.5rem' }}
+                            />
+                            {currentStep.alt && (
+                                <p style={{ fontSize: '0.85rem', color: 'hsl(var(--muted-foreground))' }}>{currentStep.alt}</p>
+                            )}
                         </div>
-                        {currentStep.sourceUrl && (
-                            <div style={{ marginTop: '1.25rem', textAlign: 'center' }}>
-                                <a
-                                    href={currentStep.sourceUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '0.35rem',
-                                        fontSize: '0.8rem',
-                                        color: '#2563eb',
-                                        fontWeight: 600,
-                                        textDecoration: 'none',
-                                        padding: '0.35rem 0.65rem',
-                                        borderRadius: '0.375rem',
-                                        border: '1px solid #bfdbfe',
-                                        background: '#eff6ff',
-                                    }}
-                                >
-                                    📖 Read More{currentStep.sourceLabel ? `: ${currentStep.sourceLabel}` : ''}
-                                </a>
-                            </div>
-                        )}
-                    </div>
-                )}
+                    )}
 
-                {currentStep.type === "image" && (
-                    <div className="w-full space-y-2">
-                        <img
-                            src={currentStep.url}
-                            alt={currentStep.alt || "Lesson image"}
-                            className="w-full h-64 object-cover rounded-lg" // Placeholder styling
-                        />
-                        {currentStep.alt && <p className="text-sm text-gray-500 text-center">{currentStep.alt}</p>}
+                    {/* Quiz block */}
+                    {currentStep.type === "quiz" && (
+                        <div>
+                            <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem' }}>
+                                {currentStep.question}
+                            </h3>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                {currentStep.options?.map((opt, idx) => {
+                                    const isSelected = quizSelected === opt;
+                                    let borderColor = 'hsl(var(--border))';
+                                    let bg = 'transparent';
+                                    let textColor = 'hsl(var(--foreground))';
+                                    let opacity = 1;
+
+                                    if (quizSubmitted) {
+                                        if (opt === currentStep.answer) {
+                                            borderColor = '#22c55e';
+                                            bg = '#f0fdf4';
+                                            textColor = '#166534';
+                                        } else if (isSelected && opt !== currentStep.answer) {
+                                            borderColor = '#ef4444';
+                                            bg = '#fef2f2';
+                                            textColor = '#991b1b';
+                                        } else {
+                                            opacity = 0.5;
+                                        }
+                                    } else if (isSelected) {
+                                        borderColor = 'hsl(var(--accent))';
+                                        bg = 'hsl(var(--accent) / 0.05)';
+                                    }
+
+                                    return (
+                                        <button
+                                            key={idx}
+                                            onClick={() => !quizSubmitted && setQuizSelected(opt)}
+                                            disabled={quizSubmitted}
+                                            style={{
+                                                width: '100%',
+                                                padding: '1rem',
+                                                textAlign: 'left',
+                                                border: `1px solid ${borderColor}`,
+                                                borderRadius: 'var(--radius)',
+                                                background: bg,
+                                                color: textColor,
+                                                opacity,
+                                                cursor: quizSubmitted ? 'default' : 'pointer',
+                                                fontSize: '1rem',
+                                                transition: 'all 0.15s',
+                                            }}
+                                        >
+                                            {opt}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Feedback */}
+                            {quizSubmitted && (
+                                <div style={{
+                                    marginTop: '1rem',
+                                    padding: '0.75rem 1rem',
+                                    background: isQuizCorrect ? '#f0fdf4' : '#fef2f2',
+                                    border: `1px solid ${isQuizCorrect ? '#bbf7d0' : '#fecaca'}`,
+                                    borderRadius: '0.5rem',
+                                    fontSize: '0.9rem',
+                                    color: isQuizCorrect ? '#166534' : '#991b1b',
+                                    lineHeight: 1.5,
+                                }}>
+                                    {isQuizCorrect
+                                        ? (currentStep.explanation ? `💡 ${currentStep.explanation}` : '✅ Correct! Well done.')
+                                        : (currentStep.explanation ? `💡 ${currentStep.explanation}` : '❌ That\'s not quite right. Try again!')
+                                    }
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+
+                {/* Navigation buttons */}
+                {currentStep.type !== "quiz" && (
+                    <div style={{ marginTop: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        {currentStepIndex > 0 ? (
+                            <Button variant="secondary" onClick={handlePrev} style={{ fontSize: '1rem', padding: '0.75rem 1.5rem' }}>
+                                ← Previous
+                            </Button>
+                        ) : <div />}
+                        <Button onClick={handleNext} style={{ fontSize: '1rem', padding: '0.75rem 2rem' }}>
+                            {isLastStep ? 'Finish Lesson' : 'Continue'}
+                        </Button>
                     </div>
                 )}
 
                 {currentStep.type === "quiz" && (
-                    <div className="w-full space-y-6">
-                        <h3 className="text-xl font-semibold text-center">{currentStep.question}</h3>
-                        <div className="space-y-3">
-                            {currentStep.options?.map((opt, idx) => {
-                                const isSelected = quizSelected === opt;
-                                let styleClass = "border-gray-200 hover:border-blue-500";
-
-                                if (quizSubmitted) {
-                                    if (opt === currentStep.answer) styleClass = "border-green-500 bg-green-50 text-green-700";
-                                    else if (isSelected && opt !== currentStep.answer) styleClass = "border-red-500 bg-red-50 text-red-700";
-                                    else styleClass = "border-gray-200 opacity-50";
-                                } else if (isSelected) {
-                                    styleClass = "border-blue-600 bg-blue-50 ring-1 ring-blue-600";
-                                }
-
-                                return (
-                                    <button
-                                        key={idx}
-                                        onClick={() => !quizSubmitted && setQuizSelected(opt)}
-                                        className={`w-full p-4 text-left border rounded-lg transition-all ${styleClass}`}
-                                        disabled={quizSubmitted}
-                                    >
-                                        {opt}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                        {quizSubmitted && currentStep.explanation && (
-                            <div style={{
-                                marginTop: '0.5rem',
-                                padding: '0.75rem 1rem',
-                                background: isQuizCorrect ? '#f0fdf4' : '#fef2f2',
-                                border: `1px solid ${isQuizCorrect ? '#bbf7d0' : '#fecaca'}`,
-                                borderRadius: '0.5rem',
-                                fontSize: '0.9rem',
-                                color: isQuizCorrect ? '#166534' : '#991b1b',
-                                lineHeight: 1.5,
-                            }}>
-                                <strong>💡 Explanation:</strong> {currentStep.explanation}
-                            </div>
-                        )}
-                        {isQuizWrong && !currentStep.explanation && (
-                            <div style={{
-                                padding: '0.75rem 1rem',
-                                background: '#fef2f2',
-                                border: '1px solid #fecaca',
-                                borderRadius: '0.5rem',
-                                fontSize: '0.9rem',
-                                color: '#991b1b',
-                                fontWeight: 600,
-                            }}>
-                                ❌ That's not quite right. Try again!
-                            </div>
-                        )}
-                        {isQuizCorrect && !currentStep.explanation && (
-                            <div style={{
-                                padding: '0.75rem 1rem',
-                                background: '#f0fdf4',
-                                border: '1px solid #bbf7d0',
-                                borderRadius: '0.5rem',
-                                fontSize: '0.9rem',
-                                color: '#166534',
-                                fontWeight: 600,
-                            }}>
-                                ✅ Correct! Well done.
-                            </div>
+                    <div style={{ marginTop: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        {currentStepIndex > 0 ? (
+                            <Button variant="secondary" onClick={handlePrev} style={{ fontSize: '1rem', padding: '0.75rem 1.5rem' }}>
+                                ← Previous
+                            </Button>
+                        ) : <div />}
+                        {isQuizWrong ? (
+                            <Button onClick={handleRetry} style={{ fontSize: '1rem', padding: '0.75rem 2rem' }}>
+                                🔄 Try Again
+                            </Button>
+                        ) : (
+                            <Button
+                                onClick={handleNext}
+                                disabled={!quizSelected && !quizSubmitted}
+                                style={{ fontSize: '1rem', padding: '0.75rem 2rem' }}
+                            >
+                                {!quizSubmitted ? 'Check Answer' : (isLastStep ? 'Finish Lesson' : 'Continue')}
+                            </Button>
                         )}
                     </div>
                 )}
-            </div>
-
-            <div className="p-6 border-t bg-gray-50 flex gap-3">
-                {/* Back button */}
-                {currentStepIndex > 0 && (
-                    <button
-                        onClick={handlePrev}
-                        className="py-3 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 flex items-center gap-1"
-                    >
-                        <ChevronLeft size={18} />
-                        Back
-                    </button>
-                )}
-
-                {/* Next / Check / Try Again button */}
-                <button
-                    onClick={isQuizWrong ? handleRetry : handleNext}
-                    disabled={nextDisabled}
-                    className="flex-1 py-3 bg-black text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                    {isQuizWrong ? (
-                        <>
-                            <RotateCcw size={16} />
-                            Try Again
-                        </>
-                    ) : (
-                        <>
-                            {nextButtonLabel}
-                            <ChevronRight size={18} />
-                        </>
-                    )}
-                </button>
-            </div>
+            </Card>
         </div>
     );
 }
