@@ -58,9 +58,8 @@ export async function POST(
         // Award XP
         const options = scenario.options as unknown as ScenarioOption[]
         const isOptimal = options.find((o) => o.id === chosenOption)?.isOptimal ?? false
-        const baseXP = scenario.xpReward
         const bonusXP = isOptimal ? 20 : 0
-        const totalXP = baseXP + bonusXP
+        const totalXP = isOptimal ? (scenario.xpReward + bonusXP) : 0
 
         await awardXP(session.user.id, totalXP, 'Scenario Complete', id)
         await updateStreak(session.user.id)

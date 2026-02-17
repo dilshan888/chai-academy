@@ -177,6 +177,12 @@
     }
 }
 
+.courseCardLink {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
 .courseCard {
     background: hsl(var(--card));
     border: 1px solid hsl(var(--border));
