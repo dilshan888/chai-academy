@@ -121,6 +121,7 @@ export function AdminDashboardView() {
                 <StatCard
                     label="Avg. Completion"
                     value={`${stats.avgCompletion}%`}
+                    sub="of total lessons completed"
                     icon={<TrendingUp size={14} />}
                     iconBg="hsl(210 80% 50% / 0.1)"
                     iconColor="hsl(210 80% 50%)"
@@ -164,7 +165,7 @@ export function AdminDashboardView() {
                                 <tr>
                                     <th>Name</th>
                                     <th>Department</th>
-                                    <th>Progress</th>
+                                    <th title="Percentage of total lessons completed by this learner">Progress</th>
                                     <th>XP</th>
                                     <th>Level</th>
                                     <th>Streak</th>

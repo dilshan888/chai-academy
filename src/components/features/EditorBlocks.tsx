@@ -60,13 +60,27 @@ export function EditorBlock({ block, onUpdate, onRemove }: EditorBlockProps) {
                 </div>
 
                 {block.type === "text" && (
-                    <textarea
-                        className={styles.textarea}
-                        placeholder="Type your lesson content here..."
-                        value={block.content || ""}
-                        onChange={(e) => onUpdate(block.id, { content: e.target.value })}
-                        rows={4}
-                    />
+                    <div>
+                        <textarea
+                            className={styles.textarea}
+                            placeholder="Type your lesson content here..."
+                            value={block.content || ""}
+                            onChange={(e) => onUpdate(block.id, { content: e.target.value })}
+                            rows={4}
+                        />
+                        <div style={{ marginTop: '0.5rem' }}>
+                            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem', color: '#64748b' }}>
+                                Source Link (optional "Read More")
+                            </label>
+                            <input
+                                className={styles.input || styles.optionInput}
+                                placeholder="https://example.com/source"
+                                value={block.sourceUrl || ""}
+                                onChange={(e) => onUpdate(block.id, { sourceUrl: e.target.value })}
+                                style={{ width: '100%', padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid #e2e8f0', fontSize: '0.85rem' }}
+                            />
+                        </div>
+                    </div>
                 )}
 
                 {block.type === "quiz" && (
@@ -122,6 +136,19 @@ export function EditorBlock({ block, onUpdate, onRemove }: EditorBlockProps) {
                             >
                                 + Add Another Option
                             </button>
+                        </div>
+                        <div style={{ marginTop: '0.75rem' }}>
+                            <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.35rem', color: '#64748b' }}>
+                                Explanation (shown after answer)
+                            </label>
+                            <textarea
+                                className={styles.textarea}
+                                placeholder="Explain why the correct answer is right and why others are wrong..."
+                                value={block.explanation || ""}
+                                onChange={(e) => onUpdate(block.id, { explanation: e.target.value })}
+                                rows={3}
+                                style={{ fontSize: '0.85rem' }}
+                            />
                         </div>
                     </div>
                 )}
