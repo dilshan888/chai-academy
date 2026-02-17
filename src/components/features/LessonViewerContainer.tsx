@@ -5,10 +5,11 @@ import LessonViewer, { LessonStep } from "./LessonViewer";
 
 interface LessonViewerContainerProps {
     lessonId: string;
+    lessonTitle?: string;
     steps: LessonStep[];
 }
 
-export default function LessonViewerContainer({ lessonId, steps }: LessonViewerContainerProps) {
+export default function LessonViewerContainer({ lessonId, lessonTitle, steps }: LessonViewerContainerProps) {
     const router = useRouter();
 
     const handleComplete = async () => {
@@ -17,12 +18,11 @@ export default function LessonViewerContainer({ lessonId, steps }: LessonViewerC
                 method: "POST",
                 body: JSON.stringify({ completed: true }),
             });
-            // Optional: Redirect or show confetti
-            // router.push('/dashboard'); 
         } catch (e) {
             console.error("Failed to save progress", e);
         }
     };
 
-    return <LessonViewer lessonId={lessonId} initialSteps={steps} onComplete={handleComplete} />;
+    return <LessonViewer lessonId={lessonId} lessonTitle={lessonTitle} initialSteps={steps} onComplete={handleComplete} />;
 }
+
