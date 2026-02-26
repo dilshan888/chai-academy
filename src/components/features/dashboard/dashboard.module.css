@@ -421,3 +421,74 @@
     color: hsl(var(--muted-foreground));
     margin-top: 0.1rem;
 }
+
+/* Learning Phases */
+.phasesContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.learningPhase {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.learningPhaseHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid hsl(var(--border));
+}
+
+.phaseIcon {
+    color: hsl(var(--muted-foreground));
+}
+
+.learningPhaseTitle {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.learningPathItemWrapper {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.learningPathNameRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.phaseBadge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badgeBeginner {
+    background-color: rgba(34, 197, 94, 0.15);
+    /* Green */
+    color: #16a34a;
+}
+
+.badgeIntermediate {
+    background-color: rgba(234, 179, 8, 0.15);
+    /* Yellow */
+    color: #ca8a04;
+}
+
+.badgeAdvanced {
+    background-color: rgba(239, 68, 68, 0.15);
+    /* Red */
+    color: #dc2626;
+}

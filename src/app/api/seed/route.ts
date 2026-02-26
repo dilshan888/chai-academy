@@ -360,12 +360,15 @@ export async function GET() {
             { id: '4', title: 'EU AI Act Overview for Admin Work', slug: 'eu-ai-act-overview', difficulty: 'intermediate' },
             { id: '5', title: 'High Risk vs Low Risk AI Systems', slug: 'high-vs-low-risk', difficulty: 'intermediate' },
             { id: '6', title: 'Human Oversight and Responsibility', slug: 'human-oversight', difficulty: 'intermediate' },
+            { id: '7', title: 'Auditing High-Risk AI in Admissions & HR', slug: 'auditing-high-risk-ai', difficulty: 'advanced' },
+            { id: '8', title: 'Developing University AI Policies', slug: 'developing-uni-ai-policies', difficulty: 'advanced' },
+            { id: '9', title: 'Managing AI Vendor Procurement', slug: 'managing-ai-vendor', difficulty: 'advanced' },
         ]
 
         for (const lesson of LESSON_SEEDS) {
             await prisma.lesson.upsert({
                 where: { slug: lesson.slug },
-                update: { id: lesson.id, title: lesson.title },
+                update: { id: lesson.id, title: lesson.title, difficulty: lesson.difficulty },
                 create: lesson,
             })
         }

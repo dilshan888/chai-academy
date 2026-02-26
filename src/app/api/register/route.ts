@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 
 export async function POST(req: Request) {
     try {
-        const { name, email, password } = await req.json()
+        const { name, email, password, gamificationOptIn, learningPace } = await req.json()
 
         // 1. Validate Input
         if (!email || !password || !name) {
@@ -33,7 +33,9 @@ export async function POST(req: Request) {
                 name,
                 email,
                 password: passwordHash,
-                role: 'LEARNER' // Default role
+                role: 'LEARNER', // Default role
+                learningPace: learningPace || 'beginner',
+                optOutOfLeaderboard: gamificationOptIn !== undefined ? !gamificationOptIn : false,
             },
             select: {
                 id: true,
@@ -42,6 +44,16 @@ export async function POST(req: Request) {
                 role: true
             }
         })
+
+        // 5. Initialize Gamification Record (if opted in)
+        // If they explicitly opted IN (or it wasn't provided so we default to in), create the record
+        if (gamificationOptIn === true || gamificationOptIn === undefined) {
+            await prisma.userGamification.create({
+                data: {
+                    userId: user.id
+                }
+            })
+        }
 
         return NextResponse.json({ message: 'User created successfully', user }, { status: 201 })
 

@@ -17,6 +17,7 @@ interface UserProfile {
     jobTitle: string | null
     learningPace: string
     weeklyEmailSummary: boolean
+    optOutOfLeaderboard: boolean
     createdAt: string
 }
 
@@ -47,6 +48,7 @@ export function ProfileView() {
     const [password, setPassword] = useState('')
     const [learningPace, setLearningPace] = useState('balanced')
     const [weeklyEmail, setWeeklyEmail] = useState(true)
+    const [optOutLeaderboard, setOptOutLeaderboard] = useState(false)
     const [saving, setSaving] = useState(false)
     const [message, setMessage] = useState({ type: '', text: '' })
 
@@ -64,6 +66,7 @@ export function ProfileView() {
                     setJobTitle(user.jobTitle || '')
                     setLearningPace(user.learningPace || 'balanced')
                     setWeeklyEmail(user.weeklyEmailSummary ?? true)
+                    setOptOutLeaderboard(user.optOutOfLeaderboard ?? false)
                 }
             } catch (e) {
                 console.error('Failed to load profile', e)
@@ -90,6 +93,7 @@ export function ProfileView() {
                     password: password || undefined,
                     learningPace,
                     weeklyEmailSummary: weeklyEmail,
+                    optOutOfLeaderboard: optOutLeaderboard,
                 }),
             })
 
@@ -252,6 +256,20 @@ export function ProfileView() {
                             onClick={() => setWeeklyEmail(!weeklyEmail)}
                         >
                             <div className={`${styles.toggleKnob} ${weeklyEmail ? styles.toggleKnobOn : styles.toggleKnobOff}`} />
+                        </button>
+                    </div>
+
+                    <div className={styles.toggleRow}>
+                        <div>
+                            <div className={styles.toggleLabel}>Opt-out of Public Leaderboard</div>
+                            <div className={styles.toggleDesc}>Hide your profile from the global ranking list</div>
+                        </div>
+                        <button
+                            type="button"
+                            className={`${styles.toggle} ${optOutLeaderboard ? styles.toggleOn : styles.toggleOff}`}
+                            onClick={() => setOptOutLeaderboard(!optOutLeaderboard)}
+                        >
+                            <div className={`${styles.toggleKnob} ${optOutLeaderboard ? styles.toggleKnobOn : styles.toggleKnobOff}`} />
                         </button>
                     </div>
                 </div>

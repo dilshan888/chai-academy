@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { StatCards } from './dashboard/StatCards'
 import { LearningProgressCard } from './dashboard/LearningProgressCard'
@@ -11,6 +12,22 @@ import styles from './dashboard/dashboard.module.css'
 export function DashboardView() {
     const { data: session } = useSession()
     const userName = session?.user?.name || 'User'
+    const [gamificationEnabled, setGamificationEnabled] = useState(true)
+
+    useEffect(() => {
+        async function loadSettings() {
+            try {
+                const res = await fetch('/api/gamification/settings')
+                if (res.ok) {
+                    const data = await res.json()
+                    setGamificationEnabled(data.globalGamificationEnabled)
+                }
+            } catch (e) {
+                console.error('Failed to fetch settings', e)
+            }
+        }
+        loadSettings()
+    }, [])
 
     return (
         <div className={styles.dashboardGrid}>
@@ -26,7 +43,7 @@ export function DashboardView() {
                 </section>
 
                 {/* Stat Cards: XP, Streak, Level */}
-                <StatCards />
+                {gamificationEnabled && <StatCards />}
 
                 {/* Learning Progress */}
                 <LearningProgressCard />
@@ -40,7 +57,7 @@ export function DashboardView() {
                 <LearningPathCard />
 
                 {/* Achievements Panel */}
-                <AchievementsPanel />
+                {gamificationEnabled && <AchievementsPanel />}
             </div>
         </div>
     )

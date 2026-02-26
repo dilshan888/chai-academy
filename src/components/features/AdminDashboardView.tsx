@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Users, TrendingUp, Award, Zap, Flame, Shield } from 'lucide-react'
+import { Users, TrendingUp, Award, Zap, Flame, Shield, Settings } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ProgressBar } from '@/components/ui/progress-bar'
 import styles from './admin/admin-dashboard.module.css'
@@ -46,14 +46,25 @@ interface DashboardResponse {
 export function AdminDashboardView() {
     const [data, setData] = useState<DashboardResponse | null>(null)
     const [loading, setLoading] = useState(true)
+    const [globalGamification, setGlobalGamification] = useState(true)
+    const [updatingSettings, setUpdatingSettings] = useState(false)
 
     useEffect(() => {
         async function loadData() {
             try {
-                const res = await fetch('/api/admin/users')
-                if (res.ok) {
-                    const json = await res.json()
+                const [usersRes, settingsRes] = await Promise.all([
+                    fetch('/api/admin/users'),
+                    fetch('/api/admin/settings')
+                ])
+                if (usersRes.ok) {
+                    const json = await usersRes.json()
                     setData(json)
+                }
+                if (settingsRes.ok) {
+                    const settings = await settingsRes.json()
+                    if (settings['GAMIFICATION_ENABLED'] === 'false') {
+                        setGlobalGamification(false)
+                    }
                 }
             } catch (error) {
                 console.error("Failed to load admin data", error)
@@ -63,6 +74,23 @@ export function AdminDashboardView() {
         }
         loadData()
     }, [])
+
+    const toggleGamification = async () => {
+        setUpdatingSettings(true)
+        const newValue = !globalGamification
+        try {
+            await fetch('/api/admin/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 'GAMIFICATION_ENABLED': newValue ? 'true' : 'false' })
+            })
+            setGlobalGamification(newValue)
+        } catch (error) {
+            console.error('Failed to update settings', error)
+        } finally {
+            setUpdatingSettings(false)
+        }
+    }
 
     const handleExport = () => {
         if (!data) return
@@ -102,6 +130,14 @@ export function AdminDashboardView() {
                     </p>
                 </div>
                 <div className={styles.headerActions}>
+                    <Button
+                        onClick={toggleGamification}
+                        variant={globalGamification ? "primary" : "secondary"}
+                        disabled={updatingSettings}
+                    >
+                        <Settings size={16} style={{ marginRight: 8, display: 'inline', verticalAlign: 'middle' }} />
+                        {globalGamification ? 'Gamification: ON' : 'Gamification: OFF'}
+                    </Button>
                     <Link href="/create-lesson" style={{ textDecoration: 'none' }}>
                         <Button variant="primary">Create Lesson</Button>
                     </Link>
