@@ -12,6 +12,12 @@ enum Role {
   ADMIN
 }
 
+model SystemSetting {
+  id    String @id @default(cuid())
+  key   String @unique // e.g., 'GAMIFICATION_ENABLED'
+  value String // 'true' or 'false'
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -24,6 +30,7 @@ model User {
   weeklyEmailSummary Boolean @default(true)
   learningPace  String   @default("balanced")
   onboardingComplete Boolean @default(false)
+  optOutOfLeaderboard Boolean @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

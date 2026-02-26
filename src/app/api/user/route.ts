@@ -25,6 +25,7 @@ export async function GET() {
                 weeklyEmailSummary: true,
                 learningPace: true,
                 onboardingComplete: true,
+                optOutOfLeaderboard: true,
                 createdAt: true,
                 gamification: true,
             },
@@ -50,7 +51,7 @@ export async function PATCH(req: Request) {
 
     try {
         const body = await req.json()
-        const { name, password, department, jobTitle, learningPace, weeklyEmailSummary, onboardingComplete } = body
+        const { name, password, department, jobTitle, learningPace, weeklyEmailSummary, onboardingComplete, optOutOfLeaderboard } = body
 
         // Prepare update data
         const updateData: Record<string, unknown> = {}
@@ -84,6 +85,10 @@ export async function PATCH(req: Request) {
 
         if (onboardingComplete !== undefined) {
             updateData.onboardingComplete = onboardingComplete
+        }
+
+        if (optOutOfLeaderboard !== undefined) {
+            updateData.optOutOfLeaderboard = optOutOfLeaderboard
         }
 
         if (Object.keys(updateData).length === 0) {

@@ -16,8 +16,22 @@ export async function GET(req: NextRequest) {
         const department = searchParams.get('department')
         const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100)
 
+        // Check global gamification setting
+        const setting = await prisma.systemSetting.findUnique({
+            where: { key: 'GAMIFICATION_ENABLED' }
+        })
+        if (setting && setting.value === 'false') {
+            return NextResponse.json({
+                leaderboard: [],
+                myRank: null,
+                totalUsers: 0,
+                percentile: 0,
+                departmentRankings: [],
+            })
+        }
+
         // Build user filter
-        const userFilter: Record<string, unknown> = { role: 'LEARNER' }
+        const userFilter: any = { role: 'LEARNER', optOutOfLeaderboard: false }
         if (department) {
             userFilter.department = department
         }
@@ -62,7 +76,7 @@ export async function GET(req: NextRequest) {
 
         // Get requesting user's rank (always global, not filtered by department)
         const allRanked = await prisma.userGamification.findMany({
-            where: { user: { role: 'LEARNER' } },
+            where: { user: { role: 'LEARNER', optOutOfLeaderboard: false } },
             orderBy: { totalXP: 'desc' },
             select: { userId: true },
         })

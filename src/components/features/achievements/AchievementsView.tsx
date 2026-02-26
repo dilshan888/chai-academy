@@ -49,11 +49,22 @@ export function AchievementsView() {
     const [deptFilter, setDeptFilter] = useState('')
     const [departments, setDepartments] = useState<string[]>([])
     const [loading, setLoading] = useState(true)
+    const [gamificationEnabled, setGamificationEnabled] = useState(true)
 
     // Fetch leaderboard
     useEffect(() => {
         async function loadLeaderboard() {
             try {
+                // Fetch settings
+                const setRes = await fetch('/api/gamification/settings')
+                if (setRes.ok) {
+                    const setJson = await setRes.json()
+                    setGamificationEnabled(setJson.globalGamificationEnabled)
+                    if (!setJson.globalGamificationEnabled) {
+                        setActiveTab('showcase')
+                    }
+                }
+
                 const url = deptFilter
                     ? `/api/gamification/leaderboard?department=${encodeURIComponent(deptFilter)}`
                     : '/api/gamification/leaderboard'
@@ -116,16 +127,18 @@ export function AchievementsView() {
 
             {/* Stats Row */}
             <div className={styles.statsRow}>
-                <div className={styles.statCard}>
-                    <div className={styles.statCardHeader}>
-                        <span className={styles.statCardLabel}>Your Rank</span>
-                        <div className={styles.statCardIcon} style={{ background: 'hsl(var(--accent) / 0.1)', color: 'hsl(var(--accent))' }}>
-                            <TrendingUp size={14} />
+                {gamificationEnabled && (
+                    <div className={styles.statCard}>
+                        <div className={styles.statCardHeader}>
+                            <span className={styles.statCardLabel}>Your Rank</span>
+                            <div className={styles.statCardIcon} style={{ background: 'hsl(var(--accent) / 0.1)', color: 'hsl(var(--accent))' }}>
+                                <TrendingUp size={14} />
+                            </div>
                         </div>
+                        <div className={styles.statCardValue}>#{myRank || '-'}</div>
+                        <div className={styles.statCardSub}>of {totalUsers} learners</div>
                     </div>
-                    <div className={styles.statCardValue}>#{myRank || '-'}</div>
-                    <div className={styles.statCardSub}>of {totalUsers} learners</div>
-                </div>
+                )}
                 <div className={styles.statCard}>
                     <div className={styles.statCardHeader}>
                         <span className={styles.statCardLabel}>Total XP</span>
@@ -136,16 +149,18 @@ export function AchievementsView() {
                     <div className={styles.statCardValue}>{stats.totalXP.toLocaleString()}</div>
                     <div className={styles.statCardSub}>Level {stats.level} - {stats.levelTitle}</div>
                 </div>
-                <div className={styles.statCard}>
-                    <div className={styles.statCardHeader}>
-                        <span className={styles.statCardLabel}>Percentile</span>
-                        <div className={styles.statCardIcon} style={{ background: 'hsl(142 76% 36% / 0.1)', color: '#10B981' }}>
-                            <Target size={14} />
+                {gamificationEnabled && (
+                    <div className={styles.statCard}>
+                        <div className={styles.statCardHeader}>
+                            <span className={styles.statCardLabel}>Percentile</span>
+                            <div className={styles.statCardIcon} style={{ background: 'hsl(142 76% 36% / 0.1)', color: '#10B981' }}>
+                                <Target size={14} />
+                            </div>
                         </div>
+                        <div className={styles.statCardValue}>Top {100 - percentile}%</div>
+                        <div className={styles.statCardSub}>among all learners</div>
                     </div>
-                    <div className={styles.statCardValue}>Top {100 - percentile}%</div>
-                    <div className={styles.statCardSub}>among all learners</div>
-                </div>
+                )}
                 <div className={styles.statCard}>
                     <div className={styles.statCardHeader}>
                         <span className={styles.statCardLabel}>Badges</span>
@@ -160,12 +175,14 @@ export function AchievementsView() {
 
             {/* Tabs */}
             <div className={styles.tabs}>
-                <button
-                    className={`${styles.tab} ${activeTab === 'leaderboards' ? styles.tabActive : ''}`}
-                    onClick={() => setActiveTab('leaderboards')}
-                >
-                    Leaderboards
-                </button>
+                {gamificationEnabled && (
+                    <button
+                        className={`${styles.tab} ${activeTab === 'leaderboards' ? styles.tabActive : ''}`}
+                        onClick={() => setActiveTab('leaderboards')}
+                    >
+                        Leaderboards
+                    </button>
+                )}
                 <button
                     className={`${styles.tab} ${activeTab === 'showcase' ? styles.tabActive : ''}`}
                     onClick={() => setActiveTab('showcase')}
