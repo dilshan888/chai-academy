@@ -358,6 +358,8 @@ export async function GET() {
                 title: 'Phase 1: Foundations of AI',
                 slug: 'foundations',
                 description: 'Essential concepts and regulatory frameworks for university staff.',
+                duration: '1.5 hours',
+                xpReward: 500,
                 sortOrder: 1,
                 modules: [
                     {
@@ -504,6 +506,8 @@ export async function GET() {
                 title: 'Phase 2: Governance & Responsibility',
                 slug: 'governance',
                 description: 'Managing high-risk systems and university-wide policy.',
+                duration: '2 hours',
+                xpReward: 750,
                 sortOrder: 2,
                 modules: [
                     {
@@ -577,7 +581,7 @@ export async function GET() {
                     const { steps, ...meta } = lesson
                     await prisma.lesson.upsert({
                         where: { slug: meta.slug },
-                        update: { 
+                        update: {
                             ...meta,
                             moduleId: module.id,
                             content: {
@@ -587,7 +591,7 @@ export async function GET() {
                                 }
                             }
                         },
-                        create: { 
+                        create: {
                             ...meta,
                             moduleId: module.id,
                             content: {
@@ -623,9 +627,9 @@ export async function GET() {
         })
     } catch (error: any) {
         console.error('Seed error:', error)
-        return NextResponse.json({ 
-            error: 'Failed to seed database', 
-            details: error.message || String(error) 
+        return NextResponse.json({
+            error: 'Failed to seed database',
+            details: error.message || String(error)
         }, { status: 500 })
     }
 }

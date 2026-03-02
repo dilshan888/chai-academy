@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress-bar";
-import { AlertTriangle, Zap } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Zap } from "lucide-react";
 
 type BlockType = "text" | "quiz" | "image";
 
@@ -186,6 +186,29 @@ export default function LessonViewer({ lessonId, lessonTitle, initialSteps, onCo
 
     return (
         <div style={{ maxWidth: '700px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {/* Back button */}
+            <button
+                onClick={() => router.back()}
+                style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    color: 'hsl(var(--muted-foreground))',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: 0,
+                    alignSelf: 'flex-start',
+                    transition: 'color 0.15s',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = 'hsl(var(--accent))')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'hsl(var(--muted-foreground))')}
+            >
+                <ArrowLeft size={16} /> Back to Course
+            </button>
+
             {/* Header with progress */}
             <header>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
