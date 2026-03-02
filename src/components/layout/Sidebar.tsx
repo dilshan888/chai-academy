@@ -1,7 +1,7 @@
 "use client"
 
 import { usePathname } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import {
     LayoutDashboard,
     BookOpen,
@@ -12,8 +12,7 @@ import {
     Users,
     BarChart3,
     FileText,
-    Layers,
-    FolderOpen,
+    LogOut,
 } from 'lucide-react'
 import styles from './sidebar.module.css'
 
@@ -104,7 +103,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 </nav>
 
                 <div className={styles.userSection}>
-
                     <div className={styles.userInfo}>
                         <div className={styles.userAvatar}>{initials}</div>
                         <div className={styles.userDetails}>
@@ -114,6 +112,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                             </span>
                         </div>
                     </div>
+                    <button
+                        className={styles.logoutButton}
+                        onClick={() => signOut({ callbackUrl: '/login' })}
+                        aria-label="Logout"
+                        title="Logout"
+                    >
+                        <LogOut size={18} />
+                    </button>
                 </div>
             </aside>
         </>
