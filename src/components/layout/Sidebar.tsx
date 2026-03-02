@@ -6,13 +6,14 @@ import {
     LayoutDashboard,
     BookOpen,
     Trophy,
-    Award,
     Beaker,
     Settings,
     GraduationCap,
     Users,
     BarChart3,
     FileText,
+    Layers,
+    FolderOpen,
 } from 'lucide-react'
 import styles from './sidebar.module.css'
 
@@ -35,16 +36,15 @@ const NAV_ITEMS: NavItem[] = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, staffOnly: true },
     { href: '/courses', label: 'My Courses', icon: BookOpen, staffOnly: true },
     { href: '/achievements', label: 'Achievements', icon: Trophy, staffOnly: true },
-    { href: '/certificates', label: 'Certificates', icon: Award, staffOnly: true },
     { href: '/research', label: 'Research Hub', icon: Beaker, disabled: true, staffOnly: true },
     { href: '/profile', label: 'Profile', icon: Settings, staffOnly: true },
 
     // Admin items
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, adminOnly: true },
     { href: '/admin/users', label: 'User Management', icon: Users, adminOnly: true, disabled: true },
-    { href: '/admin/analytics', label: 'Analytics', icon: BarChart3, adminOnly: true, disabled: true },
+    { href: '/admin/analytics', label: 'Analytics', icon: BarChart3, adminOnly: true },
     { href: '/admin/lessons', label: 'Content Manager', icon: FileText, adminOnly: true },
-    { href: '/settings', label: 'Settings', icon: Settings, adminOnly: true },
+    { href: '/admin/settings', label: 'Settings', icon: Settings, adminOnly: true },
 ]
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {

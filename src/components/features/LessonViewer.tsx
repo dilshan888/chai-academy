@@ -11,6 +11,7 @@ type BlockType = "text" | "quiz" | "image";
 
 export interface LessonStep {
     type: BlockType;
+    sectionType?: string; // e.g. 'knowledge', 'context', 'skill', 'disposition'
     content?: string;
     question?: string;
     options?: string[];
@@ -181,7 +182,7 @@ export default function LessonViewer({ lessonId, lessonTitle, initialSteps, onCo
     }
 
     // Step type label
-    const typeLabel = currentStep.type === "quiz" ? "Quiz" : currentStep.type === "image" ? "Visual" : "Knowledge";
+    const typeLabel = currentStep.sectionType || (currentStep.type === "quiz" ? "Quiz" : currentStep.type === "image" ? "Visual" : "Knowledge");
 
     return (
         <div style={{ maxWidth: '700px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -195,7 +196,7 @@ export default function LessonViewer({ lessonId, lessonTitle, initialSteps, onCo
                         {currentStepIndex + 1} / {initialSteps.length}
                     </span>
                 </div>
-                <ProgressBar progress={100} />
+                <ProgressBar progress={progress} />
             </header>
 
             <Card key={currentStepIndex}>

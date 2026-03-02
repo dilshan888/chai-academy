@@ -247,6 +247,16 @@
     gap: 0.25rem;
 }
 
+.recommendedEmpty {
+    padding: 1.5rem;
+    background: hsl(var(--muted) / 0.3);
+    border-radius: var(--radius);
+    text-align: center;
+    font-size: 0.875rem;
+    color: hsl(var(--muted-foreground));
+    line-height: 1.5;
+}
+
 /* Achievements Panel */
 .achievementsPanel {
     background: hsl(var(--card));
@@ -491,4 +501,30 @@
     background-color: rgba(239, 68, 68, 0.15);
     /* Red */
     color: #dc2626;
+}
+
+/* Phase progress counter */
+.phaseProgressBadge {
+    margin-left: auto;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
+    background: hsl(var(--muted) / 0.5);
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+}
+
+/* Module sub-group within a phase */
+.moduleGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.moduleGroupTitle {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground) / 0.7);
+    padding-left: 0.25rem;
+    margin-bottom: 0.1rem;
 }

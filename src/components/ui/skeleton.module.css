@@ -1,0 +1,316 @@
+/* Skeleton Loading Animations */
+.skeleton {
+    background: hsl(var(--muted));
+    border-radius: var(--radius);
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        hsl(var(--foreground) / 0.04) 50%,
+        transparent 100%
+    );
+    animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Skeleton variants */
+.text {
+    height: 0.85rem;
+    width: 100%;
+}
+
+.textShort {
+    height: 0.85rem;
+    width: 60%;
+}
+
+.title {
+    height: 1.75rem;
+    width: 40%;
+}
+
+.subtitle {
+    height: 1rem;
+    width: 55%;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.card {
+    height: 100%;
+    min-height: 120px;
+}
+
+.button {
+    height: 36px;
+    width: 100px;
+    border-radius: 6px;
+}
+
+/* Layout helpers */
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid hsl(var(--border));
+    padding-bottom: 1.5rem;
+}
+
+.headerContent {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.statsRow {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 640px) {
+    .statsRow {
+        grid-template-columns: 1fr;
+    }
+}
+
+.statsRowFour {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 900px) {
+    .statsRowFour {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    .statsRowFour {
+        grid-template-columns: 1fr;
+    }
+}
+
+.statsRowFive {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 1024px) {
+    .statsRowFive {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .statsRowFive {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.statCard {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.tableCard {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.tableHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid hsl(var(--border));
+}
+
+.tableRows {
+    padding: 0;
+}
+
+.tableRow {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1.5rem;
+    border-bottom: 1px solid hsl(var(--border));
+}
+
+.tableRow:last-child {
+    border-bottom: none;
+}
+
+.twoColumn {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+    .twoColumn {
+        grid-template-columns: 1fr;
+    }
+}
+
+.twoColumnEqual {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+    .twoColumnEqual {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Course card grid */
+.courseGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.courseCard {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Achievement grid */
+.achievementGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+}
+
+.achievementCard {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.achievementIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
+/* Tabs skeleton */
+.tabs {
+    display: flex;
+    gap: 0.25rem;
+    border-bottom: 1px solid hsl(var(--border));
+    padding-bottom: 0;
+}
+
+.tab {
+    height: 36px;
+    width: 100px;
+    border-radius: 6px 6px 0 0;
+}
+
+/* Profile skeleton */
+.profileHeader {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.profileAvatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.profileInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+/* Chart area skeleton */
+.chartArea {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.chartHeader {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid hsl(var(--border));
+}
+
+.chartBody {
+    padding: 1.5rem;
+    height: 250px;
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
+.chartBar {
+    flex: 1;
+    border-radius: 4px 4px 0 0;
+}
+
+/* Flex row helper */
+.flexRow {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.flex1 {
+    flex: 1;
+}

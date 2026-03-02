@@ -12,6 +12,14 @@ enum Role {
   ADMIN
 }
 
+enum NotificationType {
+  LESSON_COMPLETE
+  LEVEL_UP
+  BADGE_EARNED
+  STREAK_MILESTONE
+  SYSTEM
+}
+
 model SystemSetting {
   id    String @id @default(cuid())
   key   String @unique // e.g., 'GAMIFICATION_ENABLED'
@@ -40,6 +48,7 @@ model User {
   streakHistory StreakRecord[]
   xpHistory     XPTransaction[]
   scenarioResponses ScenarioResponse[]
+  notifications     Notification[]
 }
 
 model Progress {
@@ -56,17 +65,53 @@ model Progress {
   @@unique([userId, lessonId])
 }
 
+// === Curriculum Structure: Phase → Module → Lesson → Blocks ===
+
+model Phase {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  modules     Module[]
+}
+
+model Module {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  sortOrder   Int      @default(0)
+  phaseId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  phase       Phase    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  lessons     Lesson[]
+
+  @@index([phaseId])
+}
+
 model Lesson {
   id          String   @id @default(cuid())
   title       String
   slug        String   @unique
   description String?
   difficulty  String   @default("beginner")
+  sortOrder   Int      @default(0)
+  moduleId    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  module      Module?  @relation(fields: [moduleId], references: [id], onDelete: SetNull)
   content     LessonContent?
   progress    Progress[]
+  scenario    Scenario?
+
+  @@index([moduleId])
 }
 
 model LessonContent {
@@ -147,7 +192,7 @@ model UserAchievement {
 
 model Scenario {
   id         String   @id @default(cuid())
-  lessonId   Int
+  lessonId   String   @unique
   title      String
   riskLevel  String   // HIGH, LIMITED, MINIMAL, UNACCEPTABLE
   situation  String   @db.Text
@@ -158,9 +203,8 @@ model Scenario {
   sortOrder  Int      @default(0)
   createdAt  DateTime @default(now())
 
+  lesson     Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   responses  ScenarioResponse[]
-
-  @@unique([lessonId])
 }
 
 model ScenarioResponse {
@@ -174,4 +218,21 @@ model ScenarioResponse {
   scenario     Scenario @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
 
   @@unique([userId, scenarioId])
+}
+
+// === Notification Model ===
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
 }

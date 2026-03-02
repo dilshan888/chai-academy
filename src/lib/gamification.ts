@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import type { NotificationType } from '@prisma/client'
 
 // === Level Thresholds ===
 const LEVEL_THRESHOLDS = [
@@ -22,6 +23,21 @@ export const XP_AMOUNTS = {
 // === Streak Config ===
 const STREAK_MULTIPLIER_INCREMENT = 0.1
 const STREAK_MULTIPLIER_CAP = 2.0
+
+// === Streak Milestones (days) ===
+const STREAK_MILESTONES = [3, 7, 14, 30, 60, 100]
+
+// === Notification Helper ===
+export async function createNotification(
+    userId: string,
+    type: NotificationType,
+    title: string,
+    message: string
+) {
+    return prisma.notification.create({
+        data: { userId, type, title, message },
+    })
+}
 
 export function calculateLevel(totalXP: number): number {
     let level = 1
@@ -95,6 +111,15 @@ export async function awardXP(
             where: { userId },
             data: { level: newLevel },
         })
+
+        // Create level-up notification
+        const newTitle = getLevelTitle(newLevel)
+        await createNotification(
+            userId,
+            'LEVEL_UP',
+            `Level Up! You're now Level ${newLevel}`,
+            `Congratulations! You've reached ${newTitle} status with ${updated.totalXP} XP.`
+        )
     }
 
     return {
@@ -171,6 +196,16 @@ export async function updateStreak(
             streakMultiplier: clampedMultiplier,
         },
     })
+
+    // Create notification for streak milestones
+    if (STREAK_MILESTONES.includes(streak)) {
+        await createNotification(
+            userId,
+            'STREAK_MILESTONE',
+            `${streak}-Day Streak!`,
+            `You've been learning for ${streak} days in a row. Your streak multiplier is now ${clampedMultiplier.toFixed(1)}x!`
+        )
+    }
 
     return { currentStreak: streak, multiplier: clampedMultiplier }
 }
@@ -255,6 +290,14 @@ export async function checkAndAwardBadges(
                 iconEmoji: achievement.iconEmoji,
                 xpReward: achievement.xpReward,
             })
+
+            // Create badge notification
+            await createNotification(
+                userId,
+                'BADGE_EARNED',
+                `Badge Earned: ${achievement.title}`,
+                `${achievement.iconEmoji} ${achievement.description}${achievement.xpReward > 0 ? ` (+${achievement.xpReward} XP)` : ''}`
+            )
         }
     }
 

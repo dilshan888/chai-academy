@@ -16,6 +16,18 @@ export async function GET(
             where: { id },
             include: {
                 content: true, // Include the JSON content
+                module: {
+                    select: {
+                        id: true,
+                        title: true,
+                        phase: {
+                            select: {
+                                id: true,
+                                title: true,
+                            },
+                        },
+                    },
+                },
             },
         });
 
@@ -51,7 +63,7 @@ export async function PATCH(
 
         const { id } = await params;
         const body = await req.json();
-        const { title, slug, description, difficulty, steps } = body;
+        const { title, slug, description, difficulty, steps, moduleId, sortOrder } = body;
 
         const updatedLesson = await prisma.$transaction(async (tx) => {
             // Update metadata
@@ -62,6 +74,8 @@ export async function PATCH(
                     slug,
                     description,
                     difficulty,
+                    moduleId,
+                    sortOrder,
                 },
             });
 

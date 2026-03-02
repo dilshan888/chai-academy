@@ -317,6 +317,16 @@
     background: #ffedd5;
 }
 
+:global(.dark) .statusCertified {
+    color: #86efac;
+    background: hsl(142 76% 36% / 0.15);
+}
+
+:global(.dark) .statusInProgress {
+    color: #fdba74;
+    background: hsl(25 95% 53% / 0.15);
+}
+
 .statusNotStarted {
     color: hsl(var(--muted-foreground));
     background: hsl(var(--muted));

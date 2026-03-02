@@ -3,9 +3,20 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Plus, Pencil, Trash2, BookOpen } from 'lucide-react'
+import { Plus, Pencil, Trash2, BookOpen, Shield } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import styles from './admin/lesson-management.module.css'
+
+interface PhaseItem {
+    id: string
+    title: string
+}
+
+interface ModuleItem {
+    id: string
+    title: string
+    phaseId: string
+}
 
 interface LessonItem {
     id: string
@@ -15,18 +26,35 @@ interface LessonItem {
     difficulty: string
     createdAt: string
     updatedAt: string
+    moduleId: string | null
+    module: { id: string; title: string; phase: { id: string; title: string } } | null
 }
 
-export function LessonManagementView() {
+export function LessonManagementView({ showHeader = true }: { showHeader?: boolean }) {
     const router = useRouter()
     const [lessons, setLessons] = useState<LessonItem[]>([])
     const [loading, setLoading] = useState(true)
     const [deleteTarget, setDeleteTarget] = useState<LessonItem | null>(null)
     const [deleting, setDeleting] = useState(false)
 
+    const [phases, setPhases] = useState<PhaseItem[]>([])
+    const [modules, setModules] = useState<ModuleItem[]>([])
+    const [selectedPhaseId, setSelectedPhaseId] = useState<string>('')
+    const [selectedModuleId, setSelectedModuleId] = useState<string>('')
+
     useEffect(() => {
         loadLessons()
+        loadPhases()
     }, [])
+
+    useEffect(() => {
+        if (selectedPhaseId) {
+            loadModules(selectedPhaseId)
+        } else {
+            setModules([])
+        }
+        setSelectedModuleId('')
+    }, [selectedPhaseId])
 
     async function loadLessons() {
         try {
@@ -41,6 +69,43 @@ export function LessonManagementView() {
             setLoading(false)
         }
     }
+
+    async function loadPhases() {
+        try {
+            const res = await fetch('/api/phases')
+            if (res.ok) {
+                const data = await res.json()
+                setPhases(data)
+            }
+        } catch (error) {
+            console.error('Failed to load phases', error)
+        }
+    }
+
+    async function loadModules(phaseId: string) {
+        try {
+            const res = await fetch(`/api/modules?phaseId=${phaseId}`)
+            if (res.ok) {
+                const data = await res.json()
+                setModules(data)
+            }
+        } catch (error) {
+            console.error('Failed to load modules', error)
+        }
+    }
+
+    const filteredLessons = lessons.filter((lesson) => {
+        if (selectedPhaseId && lesson.module?.phase?.id !== selectedPhaseId) {
+            return false
+        }
+        if (selectedModuleId && lesson.moduleId !== selectedModuleId) {
+            return false
+        }
+        return true
+    })
+
+    const assignedCount = lessons.filter(l => l.moduleId).length
+    const unassignedCount = lessons.filter(l => !l.moduleId).length
 
     async function handleDelete() {
         if (!deleteTarget) return
@@ -85,14 +150,25 @@ export function LessonManagementView() {
     return (
         <div className={styles.container}>
             {/* Header */}
-            <header className={styles.header}>
-                <div>
-                    <h1 className={styles.headerTitle}>Content Manager</h1>
-                    <p className={styles.headerSub}>
-                        Create, edit, and manage your lessons
-                    </p>
-                </div>
-                <div className={styles.headerActions}>
+            {showHeader ? (
+                <header className={styles.header}>
+                    <div>
+                        <h1 className={styles.headerTitle}>Content Manager</h1>
+                        <p className={styles.headerSub}>
+                            Create, edit, and manage your lessons
+                        </p>
+                    </div>
+                    <div className={styles.headerActions}>
+                        <Link href="/admin/lessons/create" style={{ textDecoration: 'none' }}>
+                            <Button variant="primary">
+                                <Plus size={16} style={{ marginRight: '0.25rem' }} />
+                                Create Lesson
+                            </Button>
+                        </Link>
+                    </div>
+                </header>
+            ) : (
+                <div className={styles.noHeaderActions}>
                     <Link href="/admin/lessons/create" style={{ textDecoration: 'none' }}>
                         <Button variant="primary">
                             <Plus size={16} style={{ marginRight: '0.25rem' }} />
@@ -100,7 +176,7 @@ export function LessonManagementView() {
                         </Button>
                     </Link>
                 </div>
-            </header>
+            )}
 
             {/* Stats */}
             <div className={styles.statsRow}>
@@ -109,21 +185,42 @@ export function LessonManagementView() {
                     <span className={styles.statCardValue}>{lessons.length}</span>
                 </div>
                 <div className={styles.statCard}>
-                    <span className={styles.statCardLabel}>Beginner</span>
-                    <span className={styles.statCardValue}>
-                        {lessons.filter(l => l.difficulty === 'beginner').length}
-                    </span>
+                    <span className={styles.statCardLabel}>Assigned</span>
+                    <span className={styles.statCardValue}>{assignedCount}</span>
                 </div>
                 <div className={styles.statCard}>
-                    <span className={styles.statCardLabel}>Intermediate / Advanced</span>
-                    <span className={styles.statCardValue}>
-                        {lessons.filter(l => l.difficulty !== 'beginner').length}
-                    </span>
+                    <span className={styles.statCardLabel}>Unassigned</span>
+                    <span className={styles.statCardValue}>{unassignedCount}</span>
                 </div>
             </div>
 
+            {/* Filter Row */}
+            <div className={styles.filterRow}>
+                <select
+                    className={styles.filterSelect}
+                    value={selectedPhaseId}
+                    onChange={(e) => setSelectedPhaseId(e.target.value)}
+                >
+                    <option value="">All Phases</option>
+                    {phases.map((phase) => (
+                        <option key={phase.id} value={phase.id}>{phase.title}</option>
+                    ))}
+                </select>
+                <select
+                    className={styles.filterSelect}
+                    value={selectedModuleId}
+                    onChange={(e) => setSelectedModuleId(e.target.value)}
+                    disabled={!selectedPhaseId}
+                >
+                    <option value="">All Modules</option>
+                    {modules.map((mod) => (
+                        <option key={mod.id} value={mod.id}>{mod.title}</option>
+                    ))}
+                </select>
+            </div>
+
             {/* Lesson Table */}
-            {lessons.length === 0 ? (
+            {filteredLessons.length === 0 ? (
                 <div className={styles.tableCard}>
                     <div className={styles.emptyState}>
                         <div className={styles.emptyIcon}><BookOpen size={48} /></div>
@@ -143,13 +240,14 @@ export function LessonManagementView() {
                 <div className={styles.tableCard}>
                     <div className={styles.tableHeader}>
                         <span className={styles.tableTitle}>All Lessons</span>
-                        <span className={styles.tableCount}>{lessons.length} lessons</span>
+                        <span className={styles.tableCount}>{filteredLessons.length} lessons</span>
                     </div>
                     <div className={styles.tableScroll}>
                         <table className={styles.table}>
                             <thead>
                                 <tr>
                                     <th>Lesson</th>
+                                    <th>Phase / Module</th>
                                     <th>Difficulty</th>
                                     <th>Created</th>
                                     <th>Updated</th>
@@ -157,11 +255,21 @@ export function LessonManagementView() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {lessons.map((lesson) => (
+                                {filteredLessons.map((lesson) => (
                                     <tr key={lesson.id}>
                                         <td>
                                             <div className={styles.lessonTitle}>{lesson.title}</div>
                                             <div className={styles.lessonSlug}>/{lesson.slug}</div>
+                                        </td>
+                                        <td>
+                                            {lesson.module ? (
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                                    <span className={styles.phaseBadge}>{lesson.module.phase.title}</span>
+                                                    <span className={styles.moduleBadge}>{lesson.module.title}</span>
+                                                </div>
+                                            ) : (
+                                                <span className={styles.unassignedBadge}>Unassigned</span>
+                                            )}
                                         </td>
                                         <td>
                                             <span className={`${styles.difficultyBadge} ${getDifficultyClass(lesson.difficulty)}`}>
@@ -176,6 +284,13 @@ export function LessonManagementView() {
                                         </td>
                                         <td>
                                             <div className={styles.actions}>
+                                                <button
+                                                    className={styles.actionBtn}
+                                                    onClick={() => router.push(`/admin/scenarios/${lesson.id}`)}
+                                                    title="Manage Scenario"
+                                                >
+                                                    <Shield size={13} /> Scenario
+                                                </button>
                                                 <button
                                                     className={styles.actionBtn}
                                                     onClick={() => router.push(`/admin/lessons/${lesson.id}/edit`)}

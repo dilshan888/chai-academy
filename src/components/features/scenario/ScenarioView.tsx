@@ -18,7 +18,7 @@ interface ScenarioOption {
 
 interface ScenarioData {
     id: string
-    lessonId: number
+    lessonId: string
     title: string
     riskLevel: string
     situation: string

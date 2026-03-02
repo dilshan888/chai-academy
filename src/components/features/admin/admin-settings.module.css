@@ -1,0 +1,228 @@
+/* Admin Settings Page */
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Header */
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    border-bottom: 1px solid hsl(var(--border));
+    padding-bottom: 1.5rem;
+}
+
+.headerTitle {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin: 0;
+    color: hsl(var(--foreground));
+}
+
+.headerSub {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Settings Section */
+.section {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid hsl(var(--border));
+}
+
+.sectionIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.sectionTitle {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+    color: hsl(var(--foreground));
+}
+
+.sectionBody {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Setting Row */
+.settingRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.settingInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    flex: 1;
+}
+
+.settingLabel {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+}
+
+.settingDescription {
+    font-size: 0.8rem;
+    color: hsl(var(--muted-foreground));
+    line-height: 1.4;
+}
+
+/* Toggle Switch */
+.toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.toggleInput {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.toggleTrack {
+    position: absolute;
+    inset: 0;
+    background: hsl(var(--muted));
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.toggleInput:checked + .toggleTrack {
+    background: hsl(var(--primary));
+}
+
+.toggleTrack::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease;
+}
+
+.toggleInput:checked + .toggleTrack::after {
+    transform: translateX(20px);
+}
+
+.toggleInput:disabled + .toggleTrack {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Status Badge */
+.statusBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.statusOn {
+    color: #15803d;
+    background: #dcfce7;
+}
+
+:global(.dark) .statusOn {
+    color: #86efac;
+    background: hsl(142 76% 36% / 0.15);
+}
+
+.statusOff {
+    color: hsl(var(--muted-foreground));
+    background: hsl(var(--muted));
+}
+
+/* Divider */
+.divider {
+    border: none;
+    border-top: 1px solid hsl(var(--border));
+    margin: 0;
+}
+
+/* Info Banner */
+.infoBanner {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: hsl(var(--accent) / 0.08);
+    border: 1px solid hsl(var(--accent) / 0.2);
+    border-radius: var(--radius);
+    font-size: 0.82rem;
+    color: hsl(var(--muted-foreground));
+    line-height: 1.5;
+}
+
+.infoBannerIcon {
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: hsl(var(--primary));
+}
+
+/* Loading */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.9rem;
+}
+
+/* Save Feedback */
+.saveFeedback {
+    font-size: 0.8rem;
+    color: #15803d;
+    font-weight: 500;
+    animation: fadeInOut 2s ease;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    15% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { opacity: 0; }
+}

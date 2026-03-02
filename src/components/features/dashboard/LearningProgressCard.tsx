@@ -6,24 +6,25 @@ import { ProgressBar } from '@/components/ui/progress-bar'
 import { Button } from '@/components/ui/button'
 import styles from './dashboard.module.css'
 
-const STATIC_LESSONS = [
-    { id: '1', title: "What AI Is (and Is Not)" },
-    { id: '2', title: "Where AI Appears in University Administration" },
-    { id: '3', title: "Data, Privacy, and GDPR Basics" },
-    { id: '4', title: "EU AI Act Overview for Admin Work" },
-    { id: '5', title: "High Risk vs Low Risk AI Systems" },
-    { id: '6', title: "Human Oversight and Responsibility" },
-]
-
 interface DBLesson {
     id: string
     title: string
     slug: string
+    sortOrder: number
+    moduleId: string | null
+    module?: {
+        id: string
+        title: string
+        phase?: {
+            id: string
+            title: string
+        } | null
+    } | null
 }
 
 export function LearningProgressCard() {
     const { overallProgress, isLessonComplete } = useProgress()
-    const [allLessons, setAllLessons] = useState(STATIC_LESSONS)
+    const [allLessons, setAllLessons] = useState<DBLesson[]>([])
 
     useEffect(() => {
         async function fetchDBLessons() {
@@ -31,31 +32,42 @@ export function LearningProgressCard() {
                 const res = await fetch('/api/lessons')
                 if (res.ok) {
                     const data: DBLesson[] = await res.json()
-                    const dbEntries = data.map((l) => ({ id: l.id, title: l.title }))
-                    setAllLessons([...STATIC_LESSONS, ...dbEntries])
+                    setAllLessons(data)
                 }
             } catch (e) {
-                // Keep static lessons as fallback
+                // Fail gracefully
             }
         }
         fetchDBLessons()
     }, [])
 
-    // Find next incomplete lesson
-    const nextLesson = allLessons.find(l => !isLessonComplete(l.id))
+    // Only consider curriculum lessons (those assigned to a module)
+    const curriculumLessons = allLessons
+        .filter(l => l.moduleId)
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+
+    // Find next incomplete lesson in the curriculum
+    const nextLesson = curriculumLessons.find(l => !isLessonComplete(l.id))
     const currentLessonId = nextLesson?.id ?? null
-    // DB lessons use /lessons/[id], static use /lesson/[id]
-    const isDBLesson = currentLessonId && !STATIC_LESSONS.some(l => l.id === currentLessonId)
-    const lessonHref = currentLessonId
-        ? isDBLesson ? `/lessons/${currentLessonId}` : `/lesson/${currentLessonId}`
-        : '#'
+    const lessonHref = currentLessonId ? `/lesson/${currentLessonId}` : '#'
+
+    // Determine the current phase from the next lesson
+    const currentPhase = nextLesson?.module?.phase?.title || null
+    const currentModule = nextLesson?.module?.title || null
+
+    // Calculate curriculum-only progress
+    const curriculumCompleted = curriculumLessons.filter(l => isLessonComplete(l.id)).length
+    const curriculumTotal = curriculumLessons.length
+    const curriculumProgress = curriculumTotal > 0
+        ? Math.round((curriculumCompleted / curriculumTotal) * 100)
+        : overallProgress
 
     return (
         <div className={styles.progressCard}>
             <h2 className={styles.progressCardTitle}>Learning Progress</h2>
 
             <div className={styles.progressCardTrack}>
-                Foundation Track
+                {currentPhase || 'AI Compliance Training'}
             </div>
             <div className={styles.progressCardNext}>
                 {nextLesson
@@ -66,12 +78,12 @@ export function LearningProgressCard() {
 
             <div className={styles.progressCardStats}>
                 <span style={{ fontSize: '0.85rem', color: 'hsl(var(--muted-foreground))' }}>
-                    Progress
+                    {curriculumCompleted} of {curriculumTotal} lessons
                 </span>
-                <span className={styles.progressPercent}>{overallProgress}%</span>
+                <span className={styles.progressPercent}>{curriculumProgress}%</span>
             </div>
 
-            <ProgressBar progress={overallProgress} />
+            <ProgressBar progress={curriculumProgress} />
 
             <div className={styles.progressCardFooter}>
                 {currentLessonId ? (

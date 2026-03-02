@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { BookOpen, CheckCircle, ChevronRight, Clock, Layers } from 'lucide-react'
-import { LESSONS } from '@/data/lessons'
+import { BookOpen, CheckCircle, ChevronDown, ChevronRight, Clock, Layers } from 'lucide-react'
 import { useProgress } from '@/lib/ProgressContext'
 import styles from './courses.module.css'
 
@@ -32,35 +31,172 @@ interface DBLesson {
     slug: string
     description: string | null
     difficulty: string
+    sortOrder: number
+    moduleId: string | null
     createdAt: string
     updatedAt: string
+    module?: {
+        id: string
+        title: string
+        phase?: {
+            id: string
+            title: string
+        } | null
+    } | null
+}
+
+interface Phase {
+    id: string
+    title: string
+    slug: string
+    description: string | null
+    sortOrder: number
+    _count: {
+        modules: number
+    }
 }
 
 export default function CoursesPage() {
     const { completedLessons, isLessonComplete } = useProgress()
     const [dbLessons, setDbLessons] = useState<DBLesson[]>([])
+    const [phases, setPhases] = useState<Phase[]>([])
+    const [expandedPhases, setExpandedPhases] = useState<Set<string>>(new Set())
 
     useEffect(() => {
-        async function fetchLessons() {
+        async function fetchData() {
             try {
-                const res = await fetch('/api/lessons')
-                if (res.ok) {
-                    const data = await res.json()
-                    setDbLessons(data)
+                const [lessonsRes, phasesRes] = await Promise.all([
+                    fetch('/api/lessons'),
+                    fetch('/api/phases'),
+                ])
+
+                if (lessonsRes.ok) {
+                    const lessonsData = await lessonsRes.json()
+                    setDbLessons(lessonsData.sort((a: DBLesson, b: DBLesson) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0)))
+                }
+
+                if (phasesRes.ok) {
+                    const phasesData = await phasesRes.json()
+                    const sorted = phasesData.sort((a: Phase, b: Phase) => a.sortOrder - b.sortOrder)
+                    setPhases(sorted)
+                    // Expand all phases by default
+                    setExpandedPhases(new Set(sorted.map((p: Phase) => p.id)))
                 }
             } catch (e) {
-                console.error("Failed to fetch lessons from DB", e)
+                console.error("Failed to fetch data", e)
             }
         }
-        fetchLessons()
+        fetchData()
     }, [])
 
-    // Static lessons from data file
-    const staticLessons = Object.entries(LESSONS).sort(([, a], [, b]) => a.id - b.id)
-
-    // Total count = static + DB lessons
-    const totalCount = staticLessons.length + dbLessons.length
+    const totalCount = dbLessons.length
     const completedCount = completedLessons.length
+
+    const togglePhase = (phaseId: string) => {
+        setExpandedPhases(prev => {
+            const next = new Set(prev)
+            if (next.has(phaseId)) {
+                next.delete(phaseId)
+            } else {
+                next.add(phaseId)
+            }
+            return next
+        })
+    }
+
+    // Group lessons by phase and module
+    const lessonsByPhaseAndModule = () => {
+        const grouped: Record<string, Record<string, DBLesson[]>> = {}
+        const unassigned: DBLesson[] = []
+
+        for (const lesson of dbLessons) {
+            if (!lesson.moduleId || !lesson.module) {
+                unassigned.push(lesson)
+                continue
+            }
+
+            const phaseId = lesson.module.phase?.id || '_no_phase'
+            const moduleId = lesson.module.id
+
+            if (!grouped[phaseId]) grouped[phaseId] = {}
+            if (!grouped[phaseId][moduleId]) grouped[phaseId][moduleId] = []
+            grouped[phaseId][moduleId].push(lesson)
+        }
+
+        return { grouped, unassigned }
+    }
+
+    const { grouped, unassigned } = lessonsByPhaseAndModule()
+
+    // Get module title from any lesson that belongs to it
+    const getModuleTitle = (moduleId: string): string => {
+        const lesson = dbLessons.find(l => l.module?.id === moduleId)
+        return lesson?.module?.title || 'Module'
+    }
+
+    // Calculate phase progress
+    const getPhaseProgress = (phaseId: string): { completed: number; total: number } => {
+        const modules = grouped[phaseId]
+        if (!modules) return { completed: 0, total: 0 }
+        let total = 0
+        let completed = 0
+        for (const lessons of Object.values(modules)) {
+            for (const lesson of lessons) {
+                total++
+                if (isLessonComplete(lesson.id)) completed++
+            }
+        }
+        return { completed, total }
+    }
+
+    const renderLessonCard = (lesson: DBLesson, idx: number) => {
+        const meta = LESSON_META[lesson.id] || {
+            duration: "15 mins",
+            gradient: DYNAMIC_GRADIENTS[idx % DYNAMIC_GRADIENTS.length]
+        }
+        const completed = isLessonComplete(lesson.id)
+
+        return (
+            <Link key={lesson.id} href={`/lesson/${lesson.id}`} className={styles.cardLink}>
+                <div className={`${styles.card} ${completed ? styles.cardCompleted : ''}`}>
+                    <div className={styles.cardBanner} style={{ background: meta.gradient }}>
+                        <span className={styles.cardNumber}>
+                            {parseInt(lesson.id) <= 6 ? `Lesson ${lesson.id}` : lesson.difficulty}
+                        </span>
+                        {completed && (
+                            <span className={styles.cardCompletedBadge}>
+                                <CheckCircle size={14} />
+                                Completed
+                            </span>
+                        )}
+                    </div>
+                    <div className={styles.cardBody}>
+                        <h3 className={styles.cardTitle}>{lesson.title}</h3>
+                        {lesson.description && (
+                            <p style={{ fontSize: '0.85rem', color: 'hsl(var(--muted-foreground))', margin: '0.25rem 0 0.5rem' }}>
+                                {lesson.description}
+                            </p>
+                        )}
+                        <div className={styles.cardMeta}>
+                            <span className={styles.cardMetaItem}>
+                                <Layers size={13} />
+                                {meta.duration}
+                            </span>
+                        </div>
+                        <div className={styles.cardFooter}>
+                            <span className={styles.cardAction}>
+                                {completed ? 'Review Lesson' : 'Start Lesson'}
+                                <ChevronRight size={14} />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </Link>
+        )
+    }
+
+    // If no phases exist, fall back to flat grid (backward compatible)
+    const hasPhases = phases.length > 0
 
     return (
         <div className={styles.container}>
@@ -77,90 +213,86 @@ export default function CoursesPage() {
                 </div>
             </div>
 
-            <div className={styles.grid}>
-                {/* Render static (hardcoded) lessons */}
-                {staticLessons.map(([key, lesson]) => {
-                    const meta = LESSON_META[key] || { duration: "15 mins", gradient: "linear-gradient(135deg, #374151, #4b5563)" }
-                    const completed = isLessonComplete(key)
+            {hasPhases ? (
+                <>
+                    {phases.map(phase => {
+                        const isOpen = expandedPhases.has(phase.id)
+                        const modules = grouped[phase.id]
+                        const { completed: phaseCompleted, total: phaseTotal } = getPhaseProgress(phase.id)
+                        const hasLessons = modules && Object.keys(modules).length > 0
 
-                    return (
-                        <Link key={key} href={`/lesson/${key}`} className={styles.cardLink}>
-                            <div className={`${styles.card} ${completed ? styles.cardCompleted : ''}`}>
-                                <div className={styles.cardBanner} style={{ background: meta.gradient }}>
-                                    <span className={styles.cardNumber}>Lesson {lesson.id}</span>
-                                    {completed && (
-                                        <span className={styles.cardCompletedBadge}>
-                                            <CheckCircle size={14} />
-                                            Completed
-                                        </span>
+                        return (
+                            <div key={phase.id} className={styles.phaseSection}>
+                                <button
+                                    className={`${styles.phaseHeader} ${isOpen ? styles.accordionOpen : styles.accordion}`}
+                                    onClick={() => togglePhase(phase.id)}
+                                    type="button"
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1 }}>
+                                        <ChevronDown
+                                            size={18}
+                                            style={{
+                                                transform: isOpen ? 'rotate(0deg)' : 'rotate(-90deg)',
+                                                transition: 'transform 0.2s',
+                                                flexShrink: 0,
+                                            }}
+                                        />
+                                        <div style={{ flex: 1 }}>
+                                            <h2 className={styles.phaseTitle}>{phase.title}</h2>
+                                            {phase.description && (
+                                                <p className={styles.phaseDescription}>{phase.description}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    {phaseTotal > 0 && (
+                                        <div className={styles.phaseProgress}>
+                                            {phaseCompleted}/{phaseTotal} completed
+                                        </div>
                                     )}
-                                </div>
-                                <div className={styles.cardBody}>
-                                    <h3 className={styles.cardTitle}>{lesson.title}</h3>
-                                    <div className={styles.cardMeta}>
-                                        <span className={styles.cardMetaItem}>
-                                            <Layers size={13} />
-                                            {lesson.sections.length} sections
-                                        </span>
-                                        <span className={styles.cardMetaItem}>
-                                            <Clock size={13} />
-                                            {meta.duration}
-                                        </span>
+                                </button>
+
+                                {isOpen && hasLessons && (
+                                    <div style={{ padding: '0 0 1rem 0' }}>
+                                        {Object.entries(modules).map(([moduleId, lessons]) => (
+                                            <div key={moduleId} className={styles.moduleSection}>
+                                                <div className={styles.moduleHeader}>
+                                                    <BookOpen size={16} />
+                                                    <h3 className={styles.moduleTitle}>
+                                                        {getModuleTitle(moduleId)}
+                                                    </h3>
+                                                </div>
+                                                <div className={styles.grid}>
+                                                    {lessons.map((lesson, idx) => renderLessonCard(lesson, idx))}
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
-                                    <div className={styles.cardFooter}>
-                                        <span className={styles.cardAction}>
-                                            {completed ? 'Review Lesson' : 'Start Lesson'}
-                                            <ChevronRight size={14} />
-                                        </span>
-                                    </div>
-                                </div>
+                                )}
+
+                                {isOpen && !hasLessons && (
+                                    <p style={{ padding: '0.75rem 1rem', color: 'hsl(var(--muted-foreground))', fontSize: '0.875rem' }}>
+                                        No lessons in this phase yet.
+                                    </p>
+                                )}
                             </div>
-                        </Link>
-                    )
-                })}
+                        )
+                    })}
 
-                {/* Render DB-created lessons */}
-                {dbLessons.map((lesson, idx) => {
-                    const gradient = DYNAMIC_GRADIENTS[idx % DYNAMIC_GRADIENTS.length]
-                    const completed = isLessonComplete(lesson.id)
-
-                    return (
-                        <Link key={lesson.id} href={`/lessons/${lesson.id}`} className={styles.cardLink}>
-                            <div className={`${styles.card} ${completed ? styles.cardCompleted : ''}`}>
-                                <div className={styles.cardBanner} style={{ background: gradient }}>
-                                    <span className={styles.cardNumber}>{lesson.difficulty}</span>
-                                    {completed && (
-                                        <span className={styles.cardCompletedBadge}>
-                                            <CheckCircle size={14} />
-                                            Completed
-                                        </span>
-                                    )}
-                                </div>
-                                <div className={styles.cardBody}>
-                                    <h3 className={styles.cardTitle}>{lesson.title}</h3>
-                                    {lesson.description && (
-                                        <p style={{ fontSize: '0.85rem', color: 'hsl(var(--muted-foreground))', margin: '0.25rem 0 0.5rem' }}>
-                                            {lesson.description}
-                                        </p>
-                                    )}
-                                    <div className={styles.cardMeta}>
-                                        <span className={styles.cardMetaItem}>
-                                            <BookOpen size={13} />
-                                            {lesson.slug}
-                                        </span>
-                                    </div>
-                                    <div className={styles.cardFooter}>
-                                        <span className={styles.cardAction}>
-                                            {completed ? 'Review Lesson' : 'Start Lesson'}
-                                            <ChevronRight size={14} />
-                                        </span>
-                                    </div>
-                                </div>
+                    {unassigned.length > 0 && (
+                        <div className={styles.unassignedSection}>
+                            <h2 className={styles.phaseTitle}>Unassigned Lessons</h2>
+                            <div className={styles.grid}>
+                                {unassigned.map((lesson, idx) => renderLessonCard(lesson, idx))}
                             </div>
-                        </Link>
-                    )
-                })}
-            </div>
+                        </div>
+                    )}
+                </>
+            ) : (
+                /* Fallback: flat grid when no phases exist */
+                <div className={styles.grid}>
+                    {dbLessons.map((lesson, idx) => renderLessonCard(lesson, idx))}
+                </div>
+            )}
         </div>
     )
 }

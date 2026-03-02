@@ -1,0 +1,451 @@
+/* Admin Analytics Page */
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Header */
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid hsl(var(--border));
+    padding-bottom: 1.5rem;
+}
+
+.headerLeft {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.headerTitle {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin: 0;
+    color: hsl(var(--foreground));
+}
+
+.headerSub {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Date Filter Tabs */
+.dateFilters {
+    display: flex;
+    gap: 0.25rem;
+    background: hsl(var(--muted));
+    border-radius: 8px;
+    padding: 3px;
+}
+
+.dateBtn {
+    padding: 0.4rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: hsl(var(--muted-foreground));
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.dateBtn:hover {
+    color: hsl(var(--foreground));
+}
+
+.dateBtnActive {
+    background: hsl(var(--card));
+    color: hsl(var(--foreground));
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Summary Stat Cards */
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 900px) {
+    .statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    .statsGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.statCard {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.statCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.statCardLabel {
+    font-size: 0.78rem;
+    color: hsl(var(--muted-foreground));
+    font-weight: 500;
+}
+
+.statCardIcon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.statCardValue {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.statCardSub {
+    font-size: 0.72rem;
+    color: hsl(var(--muted-foreground));
+}
+
+/* Chart Cards */
+.chartCard {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.chartCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid hsl(var(--border));
+}
+
+.chartCardTitle {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+    color: hsl(var(--foreground));
+}
+
+.chartCardSub {
+    font-size: 0.78rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.chartBody {
+    padding: 1.5rem;
+}
+
+/* Two column layout */
+.twoColumn {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+    .twoColumn {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Lesson Performance Table */
+.perfTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.perfTable thead tr {
+    border-bottom: 1px solid hsl(var(--border));
+    text-align: left;
+}
+
+.perfTable th {
+    padding: 0.6rem 1rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.perfTable tbody tr {
+    border-bottom: 1px solid hsl(var(--border));
+    transition: background 0.15s;
+}
+
+.perfTable tbody tr:hover {
+    background: hsl(var(--muted) / 0.5);
+}
+
+.perfTable tbody tr:last-child {
+    border-bottom: none;
+}
+
+.perfTable td {
+    padding: 0.6rem 1rem;
+}
+
+.lessonTitle {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+/* Completion bar */
+.completionBarTrack {
+    width: 100%;
+    height: 6px;
+    background: hsl(var(--muted));
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.completionBarFill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+.completionCell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 120px;
+}
+
+.completionPercent {
+    font-size: 0.78rem;
+    font-weight: 700;
+    min-width: 36px;
+    text-align: right;
+}
+
+/* Scenario list */
+.scenarioList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.scenarioItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid hsl(var(--border));
+}
+
+.scenarioItem:last-child {
+    border-bottom: none;
+}
+
+.scenarioInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.scenarioTitle {
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.scenarioMeta {
+    font-size: 0.72rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.scenarioRate {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.1rem;
+    flex-shrink: 0;
+}
+
+.scenarioRateValue {
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.scenarioRateLabel {
+    font-size: 0.68rem;
+    color: hsl(var(--muted-foreground));
+}
+
+/* Risk badge */
+.riskBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.riskHigh {
+    color: #dc2626;
+    background: #fef2f2;
+}
+
+.riskLimited {
+    color: #c2410c;
+    background: #ffedd5;
+}
+
+.riskMinimal {
+    color: #15803d;
+    background: #dcfce7;
+}
+
+.riskUnacceptable {
+    color: #7c3aed;
+    background: #f3e8ff;
+}
+
+:global(.dark) .riskHigh {
+    color: #fca5a5;
+    background: hsl(0 72% 51% / 0.12);
+}
+
+:global(.dark) .riskLimited {
+    color: #fdba74;
+    background: hsl(25 95% 53% / 0.12);
+}
+
+:global(.dark) .riskMinimal {
+    color: #86efac;
+    background: hsl(142 76% 36% / 0.12);
+}
+
+:global(.dark) .riskUnacceptable {
+    color: #c4b5fd;
+    background: hsl(271 81% 56% / 0.12);
+}
+
+/* Department Leaderboard */
+.deptList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.deptItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.deptItemHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.deptName {
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.deptStat {
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.deptBarTrack {
+    width: 100%;
+    height: 6px;
+    background: hsl(var(--muted));
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.deptBarFill {
+    height: 100%;
+    border-radius: 3px;
+    background: hsl(var(--primary));
+    transition: width 0.4s ease;
+}
+
+.deptMeta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: hsl(var(--muted-foreground));
+}
+
+/* Loading */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.9rem;
+}
+
+/* Empty state */
+.emptyState {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.88rem;
+}
+
+/* Legend */
+.legend {
+    display: flex;
+    gap: 1.5rem;
+    padding: 0 0.5rem;
+}
+
+.legendItem {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.legendDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}

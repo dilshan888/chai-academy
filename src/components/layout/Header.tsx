@@ -4,6 +4,7 @@ import { signOut } from 'next-auth/react'
 import { Menu, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { NotificationBell } from './NotificationBell'
 import styles from './header.module.css'
 
 interface HeaderProps {
@@ -23,6 +24,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
                 </button>
             </div>
             <div className={styles.right}>
+                <NotificationBell />
                 <ThemeToggle />
                 <Button
                     variant="secondary"

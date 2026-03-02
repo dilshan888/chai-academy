@@ -47,6 +47,105 @@
     color: hsl(var(--muted-foreground));
 }
 
+/* Phase / Module / Accordion styles */
+
+.phaseSection {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    margin-bottom: 1.25rem;
+    overflow: hidden;
+}
+
+.phaseHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1rem 1.25rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    color: inherit;
+    font-family: inherit;
+    gap: 1rem;
+    transition: background 0.15s;
+}
+
+.phaseHeader:hover {
+    background: hsl(var(--accent) / 0.05);
+}
+
+.phaseTitle {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.phaseDescription {
+    font-size: 0.82rem;
+    color: hsl(var(--muted-foreground));
+    margin: 0.15rem 0 0;
+    line-height: 1.4;
+}
+
+.phaseProgress {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: hsl(var(--accent));
+    white-space: nowrap;
+    background: hsl(var(--accent) / 0.1);
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    flex-shrink: 0;
+}
+
+.moduleSection {
+    padding: 0 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.moduleHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    margin-bottom: 0.5rem;
+    color: hsl(var(--muted-foreground));
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
+}
+
+.moduleTitle {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+    color: hsl(var(--foreground));
+}
+
+.unassignedSection {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    background: hsl(var(--card));
+    border: 1px dashed hsl(var(--border));
+    border-radius: var(--radius);
+}
+
+.unassignedSection .phaseTitle {
+    margin-bottom: 1rem;
+}
+
+.accordion {
+    /* collapsed state – no extra styles needed */
+}
+
+.accordionOpen {
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
+}
+
+/* Grid */
+
 .grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -62,6 +161,8 @@
         flex-direction: column;
     }
 }
+
+/* Card styles (untouched) */
 
 .cardLink {
     text-decoration: none;

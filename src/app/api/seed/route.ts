@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 
 const SCENARIOS = [
     {
-        lessonId: 1,
+        lessonSlug: 'what-is-ai',
         title: 'The Smart Calendar',
         riskLevel: 'MINIMAL',
         situation: 'You manage scheduling for a busy faculty office. Your university recently adopted a "Smart Calendar" tool that analyzes staff members\' past meeting patterns, email response times, and calendar availability to automatically suggest optimal meeting slots.\n\nThe tool has been incredibly efficient — cutting scheduling time by 70%. However, you notice it consistently avoids scheduling meetings before 10am for one particular professor, even though their calendar shows availability from 8am.',
@@ -40,7 +40,7 @@ const SCENARIOS = [
         sortOrder: 1,
     },
     {
-        lessonId: 2,
+        lessonSlug: 'ai-in-admin',
         title: 'The Admissions Inbox',
         riskLevel: 'HIGH',
         situation: 'It\'s peak admissions season and your university receives over 5,000 applications. The admissions office has deployed an AI system that automatically scans application essays and flags applicants as "High Potential", "Standard", or "Review Required" based on keyword analysis.\n\nYou notice that the system is flagging significantly fewer applicants from non-English-speaking backgrounds as "High Potential", even when their qualifications are strong. A colleague dismisses it: "The AI just looks at language quality — it\'s objective."',
@@ -76,7 +76,7 @@ const SCENARIOS = [
         sortOrder: 2,
     },
     {
-        lessonId: 3,
+        lessonSlug: 'data-privacy-gdpr',
         title: 'The Meeting Minutes',
         riskLevel: 'LIMITED',
         situation: 'You\'ve just finished a two-hour confidential faculty meeting discussing student disciplinary cases, staff performance reviews, and budget allocations. Your manager asks you to produce detailed minutes by tomorrow morning.\n\nA colleague recommends a free online AI transcription tool: "Just upload the recording — it\'ll save you hours!" The tool\'s website mentions it\'s hosted on US servers and uses data to "improve AI models."',
@@ -112,7 +112,7 @@ const SCENARIOS = [
         sortOrder: 3,
     },
     {
-        lessonId: 4,
+        lessonSlug: 'eu-ai-act-overview',
         title: 'Chatbot Disclosure',
         riskLevel: 'LIMITED',
         situation: 'Your university has just launched "UniBot", an AI-powered chatbot on the student services website. It handles common queries about enrollment, fees, deadlines, and accommodation.\n\nThe chatbot is performing well — resolving 80% of queries without human intervention. However, you receive a complaint from a student: "I chatted for 20 minutes thinking I was talking to Sarah from Student Services. When I found out it was a bot, I felt deceived. I shared personal financial information."',
@@ -148,7 +148,7 @@ const SCENARIOS = [
         sortOrder: 4,
     },
     {
-        lessonId: 5,
+        lessonSlug: 'high-vs-low-risk',
         title: 'The CV Sorter',
         riskLevel: 'HIGH',
         situation: 'The HR department has purchased an AI-powered recruitment tool called "TalentMatch" to help screen the 2,000+ CVs received for administrative positions. The tool scores candidates based on keywords, experience patterns, and "culture fit" metrics.\n\nAfter the first batch, you notice that the tool has automatically rejected 85% of candidates over age 50 and candidates with career gaps (often women who took maternity leave). The vendor says this is because "the training data reflects successful hires from the past five years."',
@@ -184,7 +184,7 @@ const SCENARIOS = [
         sortOrder: 5,
     },
     {
-        lessonId: 6,
+        lessonSlug: 'human-oversight',
         title: 'The Grade Dispute',
         riskLevel: 'HIGH',
         situation: 'Your university has piloted an AI grading assistant for a large first-year module with 500 students. The AI grades essay submissions based on rubric criteria, comparing them against thousands of past graded essays.\n\nA student, Maya, receives a failing grade on her essay. She appeals, saying she followed all the rubric criteria. When you investigate, you find the AI downgraded her essay because it used an unconventional argument structure — valid and well-supported, but different from the patterns in the training data.',
@@ -352,33 +352,265 @@ export async function GET() {
             })
         }
 
-        // 5. Seed Lesson records (required for Progress foreign key)
-        const LESSON_SEEDS = [
-            { id: '1', title: 'What AI Is (and Is Not)', slug: 'what-ai-is', difficulty: 'beginner' },
-            { id: '2', title: 'Where AI Appears in University Administration', slug: 'ai-in-admin', difficulty: 'beginner' },
-            { id: '3', title: 'Data, Privacy, and GDPR Basics', slug: 'data-privacy-gdpr', difficulty: 'beginner' },
-            { id: '4', title: 'EU AI Act Overview for Admin Work', slug: 'eu-ai-act-overview', difficulty: 'intermediate' },
-            { id: '5', title: 'High Risk vs Low Risk AI Systems', slug: 'high-vs-low-risk', difficulty: 'intermediate' },
-            { id: '6', title: 'Human Oversight and Responsibility', slug: 'human-oversight', difficulty: 'intermediate' },
-            { id: '7', title: 'Auditing High-Risk AI in Admissions & HR', slug: 'auditing-high-risk-ai', difficulty: 'advanced' },
-            { id: '8', title: 'Developing University AI Policies', slug: 'developing-uni-ai-policies', difficulty: 'advanced' },
-            { id: '9', title: 'Managing AI Vendor Procurement', slug: 'managing-ai-vendor', difficulty: 'advanced' },
+        // 5. Seed Phases, Modules and Lessons
+        const CURRICULUM = [
+            {
+                title: 'Phase 1: Foundations of AI',
+                slug: 'foundations',
+                description: 'Essential concepts and regulatory frameworks for university staff.',
+                sortOrder: 1,
+                modules: [
+                    {
+                        title: 'Module 1: The AI Landscape',
+                        slug: 'ai-landscape',
+                        description: 'Understanding what AI is and where it appears in your daily work.',
+                        sortOrder: 1,
+                        lessons: [
+                            {
+                                id: '1',
+                                title: 'What AI Is (and Is Not)',
+                                slug: 'what-ai-is',
+                                difficulty: 'beginner',
+                                sortOrder: 1,
+                                steps: [
+                                    {
+                                        type: 'text',
+                                        sectionType: 'knowledge',
+                                        content: "Artificial Intelligence isn't magic. It's simply a system that identifies patterns in data to make predictions or decisions. It includes 'Machine Learning' (learning from data) and 'Generative AI' (creating new text/images).",
+                                        sourceUrl: 'https://digital-strategy.ec.europa.eu/en/policies/european-approach-artificial-intelligence',
+                                        sourceLabel: 'European Commission — AI Strategy'
+                                    },
+                                    {
+                                        type: 'text',
+                                        sectionType: 'context',
+                                        content: "You use a scheduling tool that suggests the best meeting times. It doesn't 'know' your preferences; it just calculates probability based on your past accepted invites."
+                                    },
+                                    {
+                                        type: 'quiz',
+                                        sectionType: 'skill',
+                                        question: "Which of these is NOT an example of AI?",
+                                        options: [
+                                            "ChatGPT writing an email draft",
+                                            "A static Excel formula (=SUM)",
+                                            "FaceID unlocking your phone"
+                                        ],
+                                        answer: "A static Excel formula (=SUM)"
+                                    },
+                                    {
+                                        type: 'text',
+                                        sectionType: 'disposition',
+                                        content: "AI is a tool, not a colleague. It can calculate faster than you, but it cannot understand context, empathy, or university policy nuances."
+                                    }
+                                ]
+                            },
+                            {
+                                id: '2',
+                                title: 'Where AI Appears in University Administration',
+                                slug: 'ai-in-admin',
+                                difficulty: 'beginner',
+                                sortOrder: 2,
+                                steps: [
+                                    {
+                                        type: 'text',
+                                        sectionType: 'knowledge',
+                                        content: "AI isn't just robots. In university admin, it appears in: Email filtering (spam), Predictive text (Gmail), Translation tools (DeepL), Recruitment screening tools."
+                                    },
+                                    {
+                                        type: 'text',
+                                        sectionType: 'context',
+                                        content: "Imagine you are an admissions officer. You receive 5,000 emails a week during peak season. You use a tool that automatically tags emails as 'Urgent', 'Standard', or 'SPAM'. This tool is AI."
+                                    },
+                                    {
+                                        type: 'quiz',
+                                        sectionType: 'skill',
+                                        question: "Which of these is likely using AI?",
+                                        options: [
+                                            "A spreadsheet calculating the sum of student fees",
+                                            "A system flagging 'high potential' applicants based on essay keywords",
+                                            "An email merge sending bulk acceptances"
+                                        ],
+                                        answer: "A system flagging 'high potential' applicants based on essay keywords"
+                                    },
+                                    {
+                                        type: 'text',
+                                        sectionType: 'disposition',
+                                        content: "If the AI system flags an applicant as 'Low Potential', should you trust it blindly? What if the AI is biased against certain keywords? Your responsibility is oversight."
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        title: 'Module 2: Privacy & Law',
+                        slug: 'privacy-law',
+                        description: 'Navigating GDPR and the EU AI Act in an educational context.',
+                        sortOrder: 2,
+                        lessons: [
+                            {
+                                id: '3',
+                                title: 'Data, Privacy, and GDPR Basics',
+                                slug: 'data-privacy-gdpr',
+                                difficulty: 'beginner',
+                                sortOrder: 1,
+                                steps: [
+                                    {
+                                        type: 'text',
+                                        sectionType: 'knowledge',
+                                        content: "Data is Fuel. AI needs data to learn. If you put student data (names, grades, medical info) into a public AI tool (like free ChatGPT), that data leaves the university. This is a GDPR violation.",
+                                        sourceUrl: 'https://gdpr-info.eu/',
+                                        sourceLabel: 'GDPR Full Text — gdpr-info.eu'
+                                    },
+                                    {
+                                        type: 'text',
+                                        sectionType: 'context',
+                                        content: "You have a recording of a confidential faculty meeting about student disciplinary actions. You want to use an online tool to transcribe it instantly."
+                                    },
+                                    {
+                                        type: 'quiz',
+                                        sectionType: 'skill',
+                                        question: "What is the safest way to transcribe this meeting?",
+                                        options: [
+                                            "Upload it to a free online AI transcriber",
+                                            "Paste the transcript into ChatGPT to summarize",
+                                            "Use a university-approved, secure transcription tool or type it manually"
+                                        ],
+                                        answer: "Use a university-approved, secure transcription tool or type it manually"
+                                    },
+                                    {
+                                        type: 'text',
+                                        sectionType: 'disposition',
+                                        content: "Convenience is the enemy of privacy. Always assume public AI tools store everything you type."
+                                    }
+                                ]
+                            },
+                            {
+                                id: '4',
+                                title: 'EU AI Act Overview for Admin Work',
+                                slug: 'eu-ai-act-overview',
+                                difficulty: 'intermediate',
+                                sortOrder: 2,
+                                steps: [
+                                    { type: 'text', sectionType: 'knowledge', content: "The EU AI Act groups AI into four risks: Unacceptable (Banned), High Risk (Strict rules), Limited Risk (Transparency), and Minimal Risk (No rules).", sourceUrl: 'https://artificialintelligenceact.eu/', sourceLabel: 'EU AI Act — Full Text & Explained' },
+                                    { type: 'text', sectionType: 'context', content: "Your university installs a chatbot on the student support page. A student asks 'Am I talking to a human?'" },
+                                    { type: 'quiz', sectionType: 'skill', question: "According to the 'Limited Risk' transparency rule, what must the chatbot do?", options: ["Nothing, it's efficient", "Say 'I am an AI'", "Pretend to be 'Sarah from Support'"], answer: "Say 'I am an AI'" },
+                                    { type: 'text', sectionType: 'disposition', content: "Honesty builds trust. Hiding AI usage feels deceptive to students." }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                title: 'Phase 2: Governance & Responsibility',
+                slug: 'governance',
+                description: 'Managing high-risk systems and university-wide policy.',
+                sortOrder: 2,
+                modules: [
+                    {
+                        title: 'Module 3: Risk Management',
+                        slug: 'risk-management',
+                        description: 'Handling AI systems that affect life chances and employment.',
+                        sortOrder: 1,
+                        lessons: [
+                            {
+                                id: '5',
+                                title: 'High Risk vs Low Risk AI Systems',
+                                slug: 'high-vs-low-risk',
+                                difficulty: 'intermediate',
+                                sortOrder: 1,
+                                steps: [
+                                    { type: 'text', sectionType: 'knowledge', content: "AI affecting life chances is High Risk. Education and Employment are High Risk areas. Grading exams, sorting CVs, or assigning students to schools.", sourceUrl: 'https://artificialintelligenceact.eu/high-level-summary/', sourceLabel: 'EU AI Act — High-Level Summary' },
+                                    { type: 'text', sectionType: 'context', content: "HR buys a tool to 'auto-reject' CVs that don't match keywords. This system affects employment opportunities." },
+                                    { type: 'quiz', sectionType: 'skill', question: "Is this CV Sorter 'High Risk' or 'Low Risk'?", options: ["Low Risk (it's just admin)", "High Risk (it decides careers)", "No Risk"], answer: "High Risk (it decides careers)" },
+                                    { type: 'text', sectionType: 'disposition', content: "High Risk doesn't mean 'Do not use'. It means 'Use with extreme care, logs, and human oversight'." }
+                                ]
+                            },
+                            {
+                                id: '6',
+                                title: 'Human Oversight and Responsibility',
+                                slug: 'human-oversight',
+                                difficulty: 'intermediate',
+                                sortOrder: 2,
+                                steps: [
+                                    { type: 'text', sectionType: 'knowledge', content: "The 'Human in the Loop' principle means a human must verify AI decisions before they become final.", sourceUrl: 'https://artificialintelligenceact.eu/article/14/', sourceLabel: 'EU AI Act — Article 14: Human Oversight' },
+                                    { type: 'text', sectionType: 'context', content: "An AI grading assistant gives a student an 'F'. The student appeals. You are the admin in charge." },
+                                    { type: 'quiz', sectionType: 'skill', question: "What is your responsibility?", options: ["Tell the student 'The computer says F'", "Review the paper yourself to verify the grade", "Ignore the email"], answer: "Review the paper yourself to verify the grade" },
+                                    { type: 'text', sectionType: 'disposition', content: "You are accountable. The AI is just a calculator. You sign the paper, not the algorithm." }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        title: 'Module 4: Policy & Strategy',
+                        slug: 'policy-strategy',
+                        description: 'Advanced oversight for leadership and procurement roles.',
+                        sortOrder: 2,
+                        lessons: [
+                            { id: '7', title: 'Auditing High-Risk AI in Admissions & HR', slug: 'auditing-high-risk-ai', difficulty: 'advanced', sortOrder: 1, steps: [] },
+                            { id: '8', title: 'Developing University AI Policies', slug: 'developing-uni-ai-policies', difficulty: 'advanced', sortOrder: 2, steps: [] },
+                            { id: '9', title: 'Managing AI Vendor Procurement', slug: 'managing-ai-vendor', difficulty: 'advanced', sortOrder: 3, steps: [] }
+                        ]
+                    }
+                ]
+            }
         ]
 
-        for (const lesson of LESSON_SEEDS) {
-            await prisma.lesson.upsert({
-                where: { slug: lesson.slug },
-                update: { id: lesson.id, title: lesson.title, difficulty: lesson.difficulty },
-                create: lesson,
+        let totalLessons = 0
+        for (const phaseData of CURRICULUM) {
+            const { modules, ...phaseMeta } = phaseData
+            const phase = await prisma.phase.upsert({
+                where: { slug: phaseMeta.slug },
+                update: phaseMeta,
+                create: phaseMeta,
             })
+
+            for (const moduleData of modules) {
+                const { lessons, ...moduleMeta } = moduleData
+                const module = await prisma.module.upsert({
+                    where: { slug: moduleMeta.slug },
+                    update: { ...moduleMeta, phaseId: phase.id },
+                    create: { ...moduleMeta, phaseId: phase.id },
+                })
+
+                for (const lesson of lessons) {
+                    totalLessons++
+                    const { steps, ...meta } = lesson
+                    await prisma.lesson.upsert({
+                        where: { slug: meta.slug },
+                        update: { 
+                            ...meta,
+                            moduleId: module.id,
+                            content: {
+                                upsert: {
+                                    create: { steps: steps as any },
+                                    update: { steps: steps as any }
+                                }
+                            }
+                        },
+                        create: { 
+                            ...meta,
+                            moduleId: module.id,
+                            content: {
+                                create: { steps: steps as any }
+                            }
+                        },
+                    })
+                }
+            }
         }
 
         // 6. Seed Scenarios
-        for (const scenario of SCENARIOS) {
+        for (const scenarioData of SCENARIOS) {
+            const { lessonSlug, ...rest } = scenarioData
+            const lesson = await prisma.lesson.findUnique({ where: { slug: lessonSlug } })
+            if (!lesson) {
+                console.warn(`Skipping scenario for slug "${lessonSlug}" — lesson not found`)
+                continue
+            }
             await prisma.scenario.upsert({
-                where: { lessonId: scenario.lessonId },
+                where: { lessonId: lesson.id },
                 update: {},
-                create: scenario,
+                create: { ...rest, lessonId: lesson.id },
             })
         }
 
@@ -387,9 +619,13 @@ export async function GET() {
             users: [admin.email, learner.email],
             achievements: ACHIEVEMENTS.length,
             scenarios: SCENARIOS.length,
-            lessons: LESSON_SEEDS.length,
+            lessons: totalLessons,
         })
-    } catch (error) {
-        return NextResponse.json({ error: 'Failed to seed database', details: error }, { status: 500 })
+    } catch (error: any) {
+        console.error('Seed error:', error)
+        return NextResponse.json({ 
+            error: 'Failed to seed database', 
+            details: error.message || String(error) 
+        }, { status: 500 })
     }
 }

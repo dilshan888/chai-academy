@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
         const { searchParams } = new URL(req.url)
         const lessonId = searchParams.get('lessonId')
 
-        const where = lessonId ? { lessonId: parseInt(lessonId) } : {}
+        const where = lessonId ? { lessonId } : {}
 
         const scenarios = await prisma.scenario.findMany({
             where,
