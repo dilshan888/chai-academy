@@ -72,6 +72,10 @@ model Phase {
   title       String
   slug        String   @unique
   description String?
+  imageUrl    String?
+  duration    String?
+  xpReward    Int      @default(500)
+  published   Boolean  @default(true)
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
