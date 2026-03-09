@@ -115,10 +115,38 @@
     padding: 1rem 0.75rem;
     border-top: 1px solid hsl(var(--border));
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
 }
 
+.logoutButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    background: none;
+    color: hsl(var(--muted-foreground));
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
 
+.logoutButton:hover {
+    background: hsl(0 72% 51% / 0.1);
+    color: #dc2626;
+    border-color: hsl(0 72% 51% / 0.2);
+}
 
+:global(.dark) .logoutButton:hover {
+    background: hsl(0 72% 51% / 0.15);
+    color: #fca5a5;
+    border-color: hsl(0 72% 51% / 0.25);
+}
 .userInfo {
     display: flex;
     align-items: center;

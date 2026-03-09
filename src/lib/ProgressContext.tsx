@@ -45,8 +45,6 @@ const DEFAULT_STATS: GamificationStats = {
     badgeCount: 0,
 }
 
-const STATIC_LESSON_COUNT = 6
-
 const ProgressContext = createContext<ProgressContextType | undefined>(undefined)
 
 export function ProgressProvider({ children }: { children: ReactNode }) {
@@ -54,7 +52,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     const [completedLessons, setCompletedLessons] = useState<string[]>([])
     const [stats, setStats] = useState<GamificationStats>(DEFAULT_STATS)
     const [xpNotifications, setXpNotifications] = useState<XPNotification[]>([])
-    const [totalLessons, setTotalLessons] = useState(STATIC_LESSON_COUNT)
+    const [totalLessons, setTotalLessons] = useState(0)
 
     // Load progress and total lesson count from API
     useEffect(() => {
@@ -77,10 +75,10 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
                 const res = await fetch('/api/lessons')
                 if (res.ok) {
                     const data = await res.json()
-                    setTotalLessons(STATIC_LESSON_COUNT + (data?.length ?? 0))
+                    setTotalLessons(data?.length ?? 0)
                 }
             } catch (e) {
-                // Fallback to static count
+                console.error("Failed to load lesson count", e)
             }
         }
 

@@ -1,0 +1,481 @@
+/* Module Management Page */
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Action bar when rendered inside Content Manager (no header) */
+.noHeaderActions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Header */
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid hsl(var(--border));
+    padding-bottom: 1.5rem;
+}
+
+.headerTitle {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin: 0;
+    color: hsl(var(--foreground));
+}
+
+.headerSub {
+    color: hsl(var(--muted-foreground));
+    margin-top: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.headerActions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+/* Filter row */
+.filterRow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.filterSelect {
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius);
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--card));
+    color: hsl(var(--foreground));
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    min-width: 200px;
+    transition: border-color 0.15s;
+}
+
+.filterSelect:focus {
+    outline: none;
+    border-color: hsl(var(--primary));
+}
+
+/* Stats row */
+.statsRow {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 640px) {
+    .statsRow {
+        grid-template-columns: 1fr;
+    }
+}
+
+.statCard {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.statCardLabel {
+    font-size: 0.78rem;
+    color: hsl(var(--muted-foreground));
+    font-weight: 500;
+}
+
+.statCardValue {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+/* Phase badge */
+.phaseBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: hsl(var(--accent-foreground));
+    background: hsl(var(--accent));
+}
+
+:global(.dark) .phaseBadge {
+    color: hsl(var(--accent-foreground));
+    background: hsl(var(--accent) / 0.8);
+}
+
+/* Module Table */
+.tableCard {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.tableHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid hsl(var(--border));
+}
+
+.tableTitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.tableCount {
+    font-size: 0.8rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.tableScroll {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.table thead tr {
+    border-bottom: 1px solid hsl(var(--border));
+    text-align: left;
+}
+
+.table th {
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-size: 0.78rem;
+    color: hsl(var(--muted-foreground));
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid hsl(var(--border));
+    transition: background 0.15s;
+}
+
+.table tbody tr:hover {
+    background: hsl(var(--muted) / 0.5);
+}
+
+.table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.table td {
+    padding: 0.75rem 1rem;
+}
+
+/* Action Buttons */
+.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.actionBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--card));
+    cursor: pointer;
+    transition: all 0.15s;
+    color: hsl(var(--foreground));
+}
+
+.actionBtn:hover {
+    background: hsl(var(--muted));
+}
+
+.deleteBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid #fecaca;
+    background: hsl(var(--card));
+    cursor: pointer;
+    transition: all 0.15s;
+    color: #dc2626;
+}
+
+.deleteBtn:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+}
+
+:global(.dark) .deleteBtn {
+    color: #fca5a5;
+    border-color: hsl(0 72% 51% / 0.3);
+}
+
+:global(.dark) .deleteBtn:hover {
+    background: hsl(0 72% 51% / 0.15);
+    border-color: hsl(0 72% 51% / 0.4);
+}
+
+/* Delete Confirmation Dialog */
+.dialogOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.dialog {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 2rem;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.dialogTitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+}
+
+.dialogText {
+    font-size: 0.88rem;
+    color: hsl(var(--muted-foreground));
+    line-height: 1.5;
+    margin: 0 0 1.5rem;
+}
+
+.dialogActions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+.dialogCancel {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--card));
+    cursor: pointer;
+    transition: all 0.15s;
+    color: hsl(var(--foreground));
+}
+
+.dialogCancel:hover {
+    background: hsl(var(--muted));
+}
+
+.dialogDelete {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: none;
+    background: #dc2626;
+    color: white;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.dialogDelete:hover {
+    background: #b91c1c;
+}
+
+.dialogDelete:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Form Dialog (Create / Edit Modal) */
+.formDialog {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 2rem;
+    max-width: 520px;
+    width: 90%;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    animation: slideUp 0.2s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+}
+
+.formLabel {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+}
+
+.formInput {
+    padding: 0.55rem 0.75rem;
+    border-radius: var(--radius);
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-size: 0.88rem;
+    transition: border-color 0.15s;
+}
+
+.formInput:focus {
+    outline: none;
+    border-color: hsl(var(--primary));
+}
+
+.formSelect {
+    padding: 0.55rem 0.75rem;
+    border-radius: var(--radius);
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: border-color 0.15s;
+}
+
+.formSelect:focus {
+    outline: none;
+    border-color: hsl(var(--primary));
+}
+
+.formTextarea {
+    padding: 0.55rem 0.75rem;
+    border-radius: var(--radius);
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-size: 0.88rem;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color 0.15s;
+}
+
+.formTextarea:focus {
+    outline: none;
+    border-color: hsl(var(--primary));
+}
+
+.formActions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 1.25rem;
+}
+
+.formSave {
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: none;
+    background: hsl(var(--primary));
+    color: hsl(var(--background));
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.formSave:hover {
+    opacity: 0.9;
+}
+
+.formSave:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Loading */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.9rem;
+}
+
+/* Empty state */
+.emptyState {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.emptyIcon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.emptyTitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: hsl(var(--foreground));
+}
+
+.emptyText {
+    font-size: 0.88rem;
+    margin-bottom: 1.5rem;
+}

@@ -53,12 +53,56 @@ export default function LessonEditor({ lessonId }: LessonEditorProps) {
     const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(isEditMode);
 
+    // Phase & Module selection
+    const [phases, setPhases] = useState<{ id: string; title: string }[]>([]);
+    const [modules, setModules] = useState<{ id: string; title: string }[]>([]);
+    const [selectedPhaseId, setSelectedPhaseId] = useState("");
+    const [selectedModuleId, setSelectedModuleId] = useState("");
+    const [sortOrder, setSortOrder] = useState<number>(0);
+
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, {
             coordinateGetter: sortableKeyboardCoordinates,
         })
     );
+
+    // Fetch all phases on mount
+    useEffect(() => {
+        async function fetchPhases() {
+            try {
+                const res = await fetch("/api/phases");
+                if (!res.ok) throw new Error("Failed to fetch phases");
+                const data = await res.json();
+                setPhases(Array.isArray(data) ? data : data.phases ?? []);
+            } catch (error) {
+                console.error("Failed to fetch phases:", error);
+            }
+        }
+        fetchPhases();
+    }, []);
+
+    // Fetch modules when selected phase changes
+    useEffect(() => {
+        if (!selectedPhaseId) {
+            setModules([]);
+            setSelectedModuleId("");
+            return;
+        }
+
+        async function fetchModules() {
+            try {
+                const res = await fetch(`/api/modules?phaseId=${selectedPhaseId}`);
+                if (!res.ok) throw new Error("Failed to fetch modules");
+                const data = await res.json();
+                setModules(Array.isArray(data) ? data : data.modules ?? []);
+            } catch (error) {
+                console.error("Failed to fetch modules:", error);
+                setModules([]);
+            }
+        }
+        fetchModules();
+    }, [selectedPhaseId]);
 
     // Load existing lesson data in edit mode
     useEffect(() => {
@@ -74,6 +118,17 @@ export default function LessonEditor({ lessonId }: LessonEditorProps) {
                 setSlug(data.slug || "");
                 setDescription(data.description || "");
                 setDifficulty(data.difficulty || "beginner");
+
+                // Load phase & module associations
+                if (data.module?.phase?.id) {
+                    setSelectedPhaseId(data.module.phase.id);
+                }
+                if (data.module?.id) {
+                    setSelectedModuleId(data.module.id);
+                }
+                if (data.sortOrder !== undefined) {
+                    setSortOrder(data.sortOrder);
+                }
 
                 // Convert API steps back to editor blocks
                 if (data.content?.steps && Array.isArray(data.content.steps)) {
@@ -175,6 +230,8 @@ export default function LessonEditor({ lessonId }: LessonEditorProps) {
                     description: description || undefined,
                     difficulty,
                     steps,
+                    moduleId: selectedModuleId || undefined,
+                    sortOrder,
                 }),
             });
 
@@ -257,6 +314,55 @@ export default function LessonEditor({ lessonId }: LessonEditorProps) {
                         <option value="intermediate">Intermediate</option>
                         <option value="advanced">Advanced</option>
                     </select>
+                </div>
+            </div>
+
+            {/* Phase, Module & Sort Order */}
+            <div className={styles.metaGrid}>
+                <div className={styles.inputGroup}>
+                    <label className={styles.label}>Phase</label>
+                    <select
+                        className={styles.select}
+                        value={selectedPhaseId}
+                        onChange={(e) => {
+                            setSelectedPhaseId(e.target.value);
+                            setSelectedModuleId("");
+                        }}
+                    >
+                        <option value="">Unassigned</option>
+                        {phases.map((phase) => (
+                            <option key={phase.id} value={phase.id}>
+                                {phase.title}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className={styles.inputGroup}>
+                    <label className={styles.label}>Module</label>
+                    <select
+                        className={styles.select}
+                        value={selectedModuleId}
+                        onChange={(e) => setSelectedModuleId(e.target.value)}
+                        disabled={!selectedPhaseId}
+                    >
+                        <option value="">Unassigned</option>
+                        {modules.map((mod) => (
+                            <option key={mod.id} value={mod.id}>
+                                {mod.title}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className={styles.inputGroup}>
+                    <label className={styles.label}>Sort Order</label>
+                    <input
+                        className={styles.input}
+                        type="number"
+                        min={0}
+                        value={sortOrder}
+                        onChange={(e) => setSortOrder(parseInt(e.target.value, 10) || 0)}
+                        placeholder="0"
+                    />
                 </div>
             </div>
 

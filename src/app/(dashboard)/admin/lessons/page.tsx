@@ -1,5 +1,5 @@
-import { LessonManagementView } from '@/components/features/LessonManagementView'
+import { ContentManager } from '@/components/features/ContentManager'
 
 export default function AdminLessonsPage() {
-    return <LessonManagementView />
+    return <ContentManager />
 }

@@ -5,18 +5,37 @@ import { authOptions } from "@/lib/auth";
 
 // GET /api/lessons
 // Fetch all lessons (metadata only, or with limited content)
-export async function GET() {
+// Supports optional ?moduleId=xxx query param to filter by module
+export async function GET(req: Request) {
     try {
+        const { searchParams } = new URL(req.url);
+        const moduleId = searchParams.get("moduleId");
+
         const lessons = await prisma.lesson.findMany({
-            orderBy: { createdAt: "desc" },
+            where: moduleId ? { moduleId } : undefined,
+            orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
             select: {
                 id: true,
                 title: true,
                 slug: true,
                 description: true,
                 difficulty: true,
+                sortOrder: true,
+                moduleId: true,
                 createdAt: true,
                 updatedAt: true,
+                module: {
+                    select: {
+                        id: true,
+                        title: true,
+                        phase: {
+                            select: {
+                                id: true,
+                                title: true,
+                            },
+                        },
+                    },
+                },
                 // Not selecting 'content' to keep the list lightweight
             },
         });
@@ -41,7 +60,7 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        const { title, slug, description, difficulty, steps } = body;
+        const { title, slug, description, difficulty, steps, moduleId, sortOrder } = body;
 
         // Basic validation
         if (!title || !slug || !steps) {
@@ -60,6 +79,8 @@ export async function POST(req: Request) {
                     slug,
                     description,
                     difficulty: difficulty || "beginner",
+                    moduleId: moduleId || null,
+                    sortOrder: sortOrder ?? 0,
                 },
             });
 

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { awardXP, updateStreak, checkAndAwardBadges, XP_AMOUNTS, getUserStats } from '@/lib/gamification'
+import { awardXP, updateStreak, checkAndAwardBadges, XP_AMOUNTS, getUserStats, createNotification } from '@/lib/gamification'
 
 // GET: Fetch progress for current user
 export async function GET() {
@@ -83,6 +83,18 @@ export async function POST(req: Request) {
 
             // Check and award badges
             newBadges = await checkAndAwardBadges(userId)
+
+            // Create lesson completion notification
+            const lesson = await prisma.lesson.findUnique({
+                where: { id: String(lessonId) },
+                select: { title: true },
+            })
+            await createNotification(
+                userId,
+                'LESSON_COMPLETE',
+                'Lesson Completed!',
+                `You completed "${lesson?.title ?? 'a lesson'}" and earned ${xpResult.xpGained} XP.`
+            )
         }
 
         // Get updated stats
