@@ -2,7 +2,7 @@
 
 import { useEffect, useState, use } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, BookOpen, CheckCircle, ChevronDown, Clock, Layers, Zap, Gamepad2 } from 'lucide-react'
+import { ArrowLeft, BookOpen, CheckCircle, ChevronDown, Clock, Layers, Zap, Gamepad2, Volume2, VolumeX } from 'lucide-react'
 import styles from '../courses.module.css'
 
 interface LessonInfo {
@@ -60,6 +60,15 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
     const [course, setCourse] = useState<CourseDetail | null>(null)
     const [loading, setLoading] = useState(true)
     const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set())
+    const [isReading, setIsReading] = useState(false)
+
+    useEffect(() => {
+        return () => {
+            if (typeof window !== 'undefined' && window.speechSynthesis) {
+                window.speechSynthesis.cancel()
+            }
+        }
+    }, [])
 
     useEffect(() => {
         async function fetchCourse() {
@@ -90,6 +99,27 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
             }
             return next
         })
+    }
+
+    const handleReadAloud = () => {
+        if (typeof window === 'undefined' || !window.speechSynthesis) return;
+
+        if (isReading) {
+            window.speechSynthesis.cancel();
+            setIsReading(false);
+            return;
+        }
+
+        if (!course) return;
+
+        const textToRead = `${course.title}. ${course.description || ''}`;
+        const utterance = new SpeechSynthesisUtterance(textToRead);
+        
+        utterance.onend = () => setIsReading(false);
+        utterance.onerror = () => setIsReading(false);
+        
+        setIsReading(true);
+        window.speechSynthesis.speak(utterance);
     }
 
     if (loading) {
@@ -139,7 +169,17 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
                 style={{ background: COURSE_GRADIENTS[0] }}
             >
                 <div className={styles.courseDetailHeaderContent}>
-                    <h1 className={styles.courseDetailTitle}>{course.title}</h1>
+                    <div className={styles.courseTitleContainer}>
+                        <h1 className={styles.courseDetailTitle}>{course.title}</h1>
+                        <button 
+                            onClick={handleReadAloud} 
+                            className={styles.readAloudButton}
+                            aria-label={isReading ? "Stop reading" : "Read course details"}
+                            title={isReading ? "Stop reading" : "Read course details"}
+                        >
+                            {isReading ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                        </button>
+                    </div>
                     {course.description && (
                         <p className={styles.courseDetailDescription}>{course.description}</p>
                     )}
