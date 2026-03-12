@@ -74,6 +74,12 @@
     background: rgba(255, 255, 255, 0.9) !important;
 }
 
+.heroCTA:focus-visible {
+    outline: 3px solid white;
+    outline-offset: 4px;
+    border-radius: var(--radius);
+}
+
 .heroProgress {
     position: relative;
     z-index: 1;
@@ -241,6 +247,12 @@
     opacity: 0.8;
 }
 
+.sectionLink:focus-visible {
+    outline: 2px solid hsl(var(--accent));
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
 /* ==============================
    Course Progress Cards
    ============================== */
@@ -269,6 +281,12 @@
 .courseProgressCard:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.courseProgressCard:focus-visible {
+    outline: 2px solid hsl(var(--accent));
+    outline-offset: 4px;
+    border-radius: var(--radius);
 }
 
 .courseProgressBanner {
@@ -366,6 +384,12 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
+.upNextCard:focus-visible {
+    outline: 2px solid hsl(var(--accent));
+    outline-offset: 2px;
+    border-radius: var(--radius);
+}
+
 .upNextLeft {
     display: flex;
     align-items: center;
@@ -435,6 +459,12 @@
     margin-top: 0.85rem;
     padding-top: 0.7rem;
     border-top: 1px solid hsl(var(--border));
+}
+
+.sideCardFooterLink:focus-visible {
+    outline: 2px solid hsl(var(--accent));
+    outline-offset: 2px;
+    border-radius: 4px;
 }
 
 /* ==============================

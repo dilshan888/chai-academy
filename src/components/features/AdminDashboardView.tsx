@@ -114,7 +114,7 @@ export function AdminDashboardView() {
                 <StatCard
                     label="Total Learners"
                     value={stats.totalLearners}
-                    icon={<Users size={14} />}
+                    icon={<Users size={14} aria-hidden="true" />}
                     iconBg="hsl(var(--accent) / 0.1)"
                     iconColor="hsl(var(--accent))"
                 />
@@ -122,7 +122,7 @@ export function AdminDashboardView() {
                     label="Avg. Completion"
                     value={`${stats.avgCompletion}%`}
                     sub="of total lessons completed"
-                    icon={<TrendingUp size={14} />}
+                    icon={<TrendingUp size={14} aria-hidden="true" />}
                     iconBg="hsl(210 80% 50% / 0.1)"
                     iconColor="hsl(210 80% 50%)"
                 />
@@ -130,14 +130,14 @@ export function AdminDashboardView() {
                     label="Certified"
                     value={stats.certified}
                     sub={`of ${stats.totalLearners} learners`}
-                    icon={<Award size={14} />}
+                    icon={<Award size={14} aria-hidden="true" />}
                     iconBg="hsl(142 76% 36% / 0.1)"
                     iconColor="#10B981"
                 />
                 <StatCard
                     label="Avg. XP"
                     value={stats.avgXP.toLocaleString()}
-                    icon={<Zap size={14} />}
+                    icon={<Zap size={14} aria-hidden="true" />}
                     iconBg="hsl(45 93% 47% / 0.1)"
                     iconColor="hsl(45 93% 47%)"
                 />
@@ -145,7 +145,7 @@ export function AdminDashboardView() {
                     label="Active Learners"
                     value={stats.activeLearners}
                     sub="with active streaks"
-                    icon={<Flame size={14} />}
+                    icon={<Flame size={14} aria-hidden="true" />}
                     iconBg="hsl(25 95% 53% / 0.1)"
                     iconColor="hsl(25 95% 53%)"
                 />
@@ -163,13 +163,13 @@ export function AdminDashboardView() {
                         <table className={styles.table}>
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Department</th>
-                                    <th title="Percentage of total lessons completed by this learner">Progress</th>
-                                    <th>XP</th>
-                                    <th>Level</th>
-                                    <th>Streak</th>
-                                    <th>Status</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Department</th>
+                                    <th scope="col" title="Percentage of total lessons completed by this learner">Progress</th>
+                                    <th scope="col">XP</th>
+                                    <th scope="col">Level</th>
+                                    <th scope="col">Streak</th>
+                                    <th scope="col">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -200,13 +200,13 @@ export function AdminDashboardView() {
                                             </td>
                                             <td>
                                                 <span className={styles.levelBadge}>
-                                                    <Shield size={10} />
+                                                    <Shield size={10} aria-hidden="true" />
                                                     L{user.level} {user.levelTitle}
                                                 </span>
                                             </td>
                                             <td>
                                                 <span className={styles.streakCell}>
-                                                    {user.currentStreak > 0 && <Flame size={12} style={{ color: 'hsl(25 95% 53%)' }} />}
+                                                    {user.currentStreak > 0 && <Flame size={12} style={{ color: 'hsl(25 95% 53%)' }} aria-hidden="true" />}
                                                     {user.currentStreak}d
                                                 </span>
                                             </td>

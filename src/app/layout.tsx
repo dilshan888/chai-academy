@@ -13,6 +13,7 @@ import { ProgressProvider } from "@/lib/ProgressContext";
 
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { ThemeProvider } from "@/components/providers/ThemeContext";
+import { CookieConsent } from "@/components/ui/CookieConsent";
 
 // ...
 
@@ -24,10 +25,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
         <AuthProvider>
           <ThemeProvider defaultTheme="system" storageKey="chai-academy-theme">
             <ProgressProvider>
               {children}
+              <CookieConsent />
             </ProgressProvider>
           </ThemeProvider>
         </AuthProvider>

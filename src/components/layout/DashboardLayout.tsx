@@ -19,7 +19,7 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
                 />
             </div>
             <Header onMenuToggle={() => setSidebarOpen((prev) => !prev)} />
-            <main className={styles.main}>
+            <main id="main-content" className={styles.main}>
                 {children}
             </main>
             <ChatWidget />
