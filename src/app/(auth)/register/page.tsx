@@ -12,7 +12,8 @@ export default function RegisterPage() {
         email: '',
         password: '',
         expertiseLevel: 'beginner',
-        gamificationOptIn: true
+        gamificationOptIn: true,
+        privacyConsent: false
     })
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
@@ -32,7 +33,8 @@ export default function RegisterPage() {
                     email: formData.email,
                     password: formData.password,
                     learningPace: formData.expertiseLevel,
-                    gamificationOptIn: formData.gamificationOptIn
+                    gamificationOptIn: formData.gamificationOptIn,
+                    privacyConsent: formData.privacyConsent
                 })
             })
 
@@ -75,10 +77,12 @@ export default function RegisterPage() {
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <label style={{ fontSize: '0.875rem', fontWeight: 600 }}>Preferred Name</label>
+                        <label htmlFor="reg-name" style={{ fontSize: '0.875rem', fontWeight: 600 }}>Preferred Name</label>
                         <input
+                            id="reg-name"
                             type="text"
                             required
+                            aria-required="true"
                             placeholder="How should we call you?"
                             value={formData.name}
                             autoComplete="name"
@@ -88,10 +92,12 @@ export default function RegisterPage() {
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <label style={{ fontSize: '0.875rem', fontWeight: 600 }}>Email Address</label>
+                        <label htmlFor="reg-email" style={{ fontSize: '0.875rem', fontWeight: 600 }}>Email Address</label>
                         <input
+                            id="reg-email"
                             type="email"
                             required
+                            aria-required="true"
                             placeholder="name@university.edu"
                             value={formData.email}
                             autoComplete="email"
@@ -101,10 +107,12 @@ export default function RegisterPage() {
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <label style={{ fontSize: '0.875rem', fontWeight: 600 }}>Password</label>
+                        <label htmlFor="reg-password" style={{ fontSize: '0.875rem', fontWeight: 600 }}>Password</label>
                         <input
+                            id="reg-password"
                             type="password"
                             required
+                            aria-required="true"
                             minLength={6}
                             placeholder="Min. 6 characters"
                             value={formData.password}
@@ -115,11 +123,12 @@ export default function RegisterPage() {
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
-                        <label style={{ fontSize: '0.875rem', fontWeight: 600 }}>Your AI Expertise Level</label>
+                        <label htmlFor="reg-expertise" style={{ fontSize: '0.875rem', fontWeight: 600 }}>Your AI Expertise Level</label>
                         <p style={{ fontSize: '0.75rem', color: 'hsl(var(--muted-foreground))', marginTop: '-0.25rem', marginBottom: '0.25rem' }}>
                             We use this to customize your onboarding path.
                         </p>
                         <select
+                            id="reg-expertise"
                             value={formData.expertiseLevel}
                             onChange={e => setFormData({ ...formData, expertiseLevel: e.target.value })}
                             style={{ padding: '0.75rem', borderRadius: '6px', border: '1px solid hsl(var(--border))', background: 'hsl(var(--background))', cursor: 'pointer' }}
@@ -153,8 +162,36 @@ export default function RegisterPage() {
                         </label>
                     </div>
 
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '0.75rem',
+                        marginTop: '0.25rem',
+                        padding: '1rem',
+                        background: 'hsl(var(--muted)/0.3)',
+                        borderRadius: '8px',
+                        border: '1px solid hsl(var(--border))'
+                    }}>
+                        <input
+                            type="checkbox"
+                            id="privacyConsent"
+                            required
+                            aria-required="true"
+                            checked={formData.privacyConsent}
+                            onChange={e => setFormData({ ...formData, privacyConsent: e.target.checked })}
+                            style={{ marginTop: '0.2rem', width: '1.2rem', height: '1.2rem', cursor: 'pointer', accentColor: 'hsl(var(--primary))' }}
+                        />
+                        <label htmlFor="privacyConsent" style={{ fontSize: '0.875rem', lineHeight: '1.4', cursor: 'pointer' }}>
+                            I have read and agree to the{' '}
+                            <Link href="/privacy" target="_blank" style={{ color: 'hsl(var(--primary))', fontWeight: 600, textDecoration: 'underline' }}>
+                                Privacy Policy
+                            </Link>
+                            . I consent to the processing of my personal data as described therein.
+                        </label>
+                    </div>
+
                     {error && (
-                        <div style={{ padding: '0.75rem', background: '#fee2e2', color: '#991b1b', borderRadius: '6px', fontSize: '0.875rem' }}>
+                        <div role="alert" style={{ padding: '0.75rem', background: '#fee2e2', color: '#991b1b', borderRadius: '6px', fontSize: '0.875rem' }}>
                             {error}
                         </div>
                     )}

@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
+import { useEffect } from 'react'
 import {
     LayoutDashboard,
     BookOpen,
@@ -50,6 +51,19 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     const pathname = usePathname()
     const { data: session } = useSession()
 
+    // Close sidebar on Escape key
+    useEffect(() => {
+        function handleKeyDown(e: KeyboardEvent) {
+            if (e.key === 'Escape') {
+                onClose()
+            }
+        }
+        if (isOpen) {
+            document.addEventListener('keydown', handleKeyDown)
+        }
+        return () => document.removeEventListener('keydown', handleKeyDown)
+    }, [isOpen, onClose])
+
     const isAdmin = session?.user?.role === 'ADMIN'
     const userName = session?.user?.name || 'User'
     const initials = userName
@@ -67,7 +81,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
     return (
         <>
-            {isOpen && <div className={styles.overlay} onClick={onClose} />}
+            {isOpen && <div className={styles.overlay} onClick={onClose} aria-hidden="true" />}
             <aside className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ''}`}>
                 <div className={styles.brand}>
                     <div className={styles.brandIcon}>

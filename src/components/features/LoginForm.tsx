@@ -51,25 +51,30 @@ export function LoginForm() {
                 </p>
             </div>
 
-            {error && <div className={styles.error}>{error}</div>}
+            {error && <div className={styles.error} role="alert">{error}</div>}
 
             <div className={styles.field}>
-                <label>Email Address</label>
+                <label htmlFor="login-email">Email Address</label>
                 <input
+                    id="login-email"
                     type="email"
                     required
+                    aria-required="true"
                     className={styles.input}
                     value={email}
                     placeholder="admin@university.edu"
+                    autoComplete="email"
                     onChange={e => setEmail(e.target.value)}
                 />
             </div>
 
             <div className={styles.field}>
-                <label>Password</label>
+                <label htmlFor="login-password">Password</label>
                 <input
+                    id="login-password"
                     type="password"
                     required
+                    aria-required="true"
                     className={styles.input}
                     value={password}
                     placeholder="••••••••"
