@@ -140,10 +140,12 @@ export default function LessonEditor({ lessonId }: LessonEditorProps) {
                             };
                             if (step.type === "text") {
                                 block.content = step.content || "";
+                                block.sourceUrl = step.sourceUrl || "";
                             } else if (step.type === "quiz") {
                                 block.question = step.question || "";
                                 block.options = step.options || ["", ""];
                                 block.answer = step.answer || "";
+                                block.explanation = step.explanation || "";
                             } else if (step.type === "image") {
                                 block.imageUrl = step.url || "";
                                 block.altText = step.alt || "";
@@ -207,12 +209,17 @@ export default function LessonEditor({ lessonId }: LessonEditorProps) {
 
             // Map blocks to API expected structure
             const steps = blocks.map((b) => {
-                if (b.type === "text") return { type: "text", content: b.content };
+                if (b.type === "text") return { 
+                    type: "text", 
+                    content: b.content,
+                    sourceUrl: b.sourceUrl
+                };
                 if (b.type === "quiz") return {
                     type: "quiz",
                     question: b.question || "Untitled Question",
                     options: b.options || [],
-                    answer: b.answer
+                    answer: b.answer,
+                    explanation: b.explanation
                 };
                 if (b.type === "image") return { type: "image", url: b.imageUrl, alt: b.altText };
                 return b;

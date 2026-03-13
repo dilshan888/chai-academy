@@ -41,7 +41,7 @@ const NAV_ITEMS: NavItem[] = [
 
     // Admin items
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, adminOnly: true },
-    { href: '/admin/users', label: 'User Management', icon: Users, adminOnly: true, disabled: true },
+    { href: '/admin/users', label: 'User Management', icon: Users, adminOnly: true },
     { href: '/admin/analytics', label: 'Analytics', icon: BarChart3, adminOnly: true },
     { href: '/admin/lessons', label: 'Content Manager', icon: FileText, adminOnly: true },
     { href: '/admin/settings', label: 'Settings', icon: Settings, adminOnly: true },
@@ -64,7 +64,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         return () => document.removeEventListener('keydown', handleKeyDown)
     }, [isOpen, onClose])
 
-    const isAdmin = session?.user?.role === 'ADMIN'
+    // Use pathname as primary role signal to avoid sidebar flash during session loading
+    const isAdmin = pathname.startsWith('/admin')
+        ? true
+        : session?.user?.role === 'ADMIN'
     const userName = session?.user?.name || 'User'
     const initials = userName
         .split(' ')
