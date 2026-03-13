@@ -140,10 +140,12 @@
     font-size: 0.88rem;
 }
 
-.formInput:focus {
-    outline: none;
+.formInput:focus,
+.formInput:focus-visible {
+    outline: 2px solid hsl(var(--accent));
+    outline-offset: 1px;
     border-color: hsl(var(--accent));
-    box-shadow: 0 0 0 2px hsl(var(--accent) / 0.15);
+    box-shadow: none;
 }
 
 .formSelect {
@@ -156,10 +158,12 @@
     cursor: pointer;
 }
 
-.formSelect:focus {
-    outline: none;
+.formSelect:focus,
+.formSelect:focus-visible {
+    outline: 2px solid hsl(var(--accent));
+    outline-offset: 1px;
     border-color: hsl(var(--accent));
-    box-shadow: 0 0 0 2px hsl(var(--accent) / 0.15);
+    box-shadow: none;
 }
 
 .formActions {
@@ -219,6 +223,11 @@
     position: relative;
     transition: background 0.2s;
     flex-shrink: 0;
+}
+
+.toggle:focus-visible {
+    outline: 2px solid hsl(var(--accent));
+    outline-offset: 2px;
 }
 
 .toggleOn {
@@ -414,4 +423,139 @@
     color: hsl(var(--muted-foreground));
     justify-content: center;
     padding: 0.5rem 0;
+}
+
+/* ===== Data & Privacy Section ===== */
+.privacySection {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.privacyItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid hsl(var(--border));
+    gap: 1rem;
+}
+
+.privacyItem:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.privacyItemTitle {
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 0.15rem;
+}
+
+.privacyItemDesc {
+    font-size: 0.78rem;
+    color: hsl(var(--muted-foreground));
+    line-height: 1.4;
+    max-width: 380px;
+}
+
+.privacyLink {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: hsl(var(--muted));
+    color: hsl(var(--foreground));
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity 0.15s;
+}
+
+.privacyLink:hover {
+    opacity: 0.85;
+}
+
+.privacyItemDanger {
+    /* no special styles needed, children handle it */
+}
+
+.deleteBtn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: #fee2e2;
+    color: #991b1b;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+}
+
+.deleteBtn:hover {
+    background: #fecaca;
+}
+
+:global(.dark) .deleteBtn {
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+}
+
+:global(.dark) .deleteBtn:hover {
+    background: rgba(239, 68, 68, 0.25);
+}
+
+.deleteConfirm {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.deleteConfirmText {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #991b1b;
+    white-space: nowrap;
+}
+
+:global(.dark) .deleteConfirmText {
+    color: #fca5a5;
+}
+
+.deleteConfirmYes {
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: #dc2626;
+    color: white;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.deleteConfirmYes:hover {
+    background: #b91c1c;
+}
+
+.deleteConfirmYes:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.deleteConfirmNo {
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: hsl(var(--muted));
+    color: hsl(var(--foreground));
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
 }

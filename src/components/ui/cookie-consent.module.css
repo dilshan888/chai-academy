@@ -1,0 +1,73 @@
+.banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: hsl(var(--card));
+    border-top: 1px solid hsl(var(--border));
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
+    padding: 1.25rem 1.5rem;
+}
+
+.content {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+}
+
+.text {
+    flex: 1;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: hsl(var(--foreground));
+    margin: 0;
+}
+
+.link {
+    color: hsl(var(--primary));
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-shrink: 0;
+}
+
+.rejectBtn,
+.acceptBtn {
+    padding: 0.6rem 1.25rem;
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.15s;
+}
+
+.rejectBtn:hover,
+.acceptBtn:hover {
+    opacity: 0.9;
+}
+
+.rejectBtn {
+    background: hsl(var(--muted));
+    color: hsl(var(--foreground));
+}
+
+.acceptBtn {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+}

@@ -125,7 +125,7 @@ export function DashboardView() {
                 <div className={styles.heroContent}>
                     <div className={styles.heroText}>
                         <h1 className={styles.heroTitle}>
-                            {getGreeting()}, {userName} <Sparkles size={22} style={{ display: 'inline', verticalAlign: '-3px' }} />
+                            {getGreeting()}, {userName} <Sparkles size={22} style={{ display: 'inline', verticalAlign: '-3px' }} aria-hidden="true" />
                         </h1>
                         <p className={styles.heroSubtitle}>
                             {totalCompleted === totalLessons && totalLessons > 0
@@ -136,8 +136,8 @@ export function DashboardView() {
                         </p>
                     </div>
                     {nextLesson && (
-                        <Link href={`/lesson/${nextLesson.id}`} className={styles.heroCTA}>
-                            <Button>Resume Learning <ChevronRight size={16} /></Button>
+                        <Link href={`/lesson/${nextLesson.id}`} className={styles.heroCTA} aria-label={`Resume learning: ${nextLesson.title}`}>
+                            <Button>Resume Learning <ChevronRight size={16} aria-hidden="true" /></Button>
                         </Link>
                     )}
                 </div>
@@ -158,7 +158,7 @@ export function DashboardView() {
                 <div className={styles.statCardsRow}>
                     <div className={`${styles.statCard} ${styles.statCardXP}`}>
                         <div className={styles.statCardIconCircle} style={{ background: 'rgba(16,185,129,0.12)' }}>
-                            <Zap size={18} style={{ color: '#10B981' }} />
+                            <Zap size={18} style={{ color: '#10B981' }} aria-hidden="true" />
                         </div>
                         <div className={styles.statCardContent}>
                             <span className={styles.statCardLabel}>Total XP</span>
@@ -169,7 +169,7 @@ export function DashboardView() {
 
                     <div className={`${styles.statCard} ${styles.statCardStreak}`}>
                         <div className={styles.statCardIconCircle} style={{ background: 'rgba(249,115,22,0.12)' }}>
-                            <Flame size={18} style={{ color: '#F97316' }} />
+                            <Flame size={18} style={{ color: '#F97316' }} aria-hidden="true" />
                         </div>
                         <div className={styles.statCardContent}>
                             <span className={styles.statCardLabel}>Streak</span>
@@ -184,7 +184,7 @@ export function DashboardView() {
 
                     <div className={`${styles.statCard} ${styles.statCardLevel}`}>
                         <div className={styles.statCardIconCircle} style={{ background: 'hsl(var(--accent) / 0.12)' }}>
-                            <Shield size={18} style={{ color: 'hsl(var(--accent))' }} />
+                            <Shield size={18} style={{ color: 'hsl(var(--accent))' }} aria-hidden="true" />
                         </div>
                         <div className={styles.statCardContent}>
                             <span className={styles.statCardLabel}>Level</span>
@@ -204,11 +204,11 @@ export function DashboardView() {
                     <section>
                         <div className={styles.sectionHeader}>
                             <h2 className={styles.sectionTitle}>My Courses</h2>
-                            <Link href="/courses" className={styles.sectionLink}>View all <ChevronRight size={14} /></Link>
+                            <Link href="/courses" className={styles.sectionLink} aria-label="View all courses">View all <ChevronRight size={14} aria-hidden="true" /></Link>
                         </div>
                         <div className={styles.courseProgressGrid}>
                             {courses.map((course, idx) => (
-                                <Link key={course.id} href={`/courses/${course.slug}`} className={styles.courseProgressCard}>
+                                <Link key={course.id} href={`/courses/${course.slug}`} className={styles.courseProgressCard} aria-label={`Course: ${course.title}, ${course.progress}% completed`}>
                                     <div className={styles.courseProgressBanner} style={{ background: GRADIENTS[idx % GRADIENTS.length] }}>
                                         <span className={styles.courseProgressTag}>
                                             {course.moduleCount} {course.moduleCount === 1 ? 'Module' : 'Modules'}
@@ -218,9 +218,9 @@ export function DashboardView() {
                                         <h3 className={styles.courseProgressName}>{course.title}</h3>
                                         <div className={styles.courseProgressMeta}>
                                             {course.duration && (
-                                                <span><Clock size={12} /> {course.duration}</span>
+                                                <span><Clock size={12} aria-hidden="true" /> {course.duration}</span>
                                             )}
-                                            <span><Zap size={12} /> {course.xpReward} XP</span>
+                                            <span><Zap size={12} aria-hidden="true" /> {course.xpReward} XP</span>
                                         </div>
                                         <div className={styles.courseProgressBarSection}>
                                             <div className={styles.courseProgressTrack}>
@@ -240,10 +240,10 @@ export function DashboardView() {
                             <div className={styles.sectionHeader}>
                                 <h2 className={styles.sectionTitle}>Up Next</h2>
                             </div>
-                            <Link href={`/lesson/${nextLesson.id}`} className={styles.upNextCard}>
+                            <Link href={`/lesson/${nextLesson.id}`} className={styles.upNextCard} aria-label={`Continue lesson: ${nextLesson.title}`}>
                                 <div className={styles.upNextLeft}>
                                     <div className={styles.upNextIcon}>
-                                        <Target size={20} />
+                                        <Target size={20} aria-hidden="true" />
                                     </div>
                                     <div>
                                         <h3 className={styles.upNextTitle}>{nextLesson.title}</h3>
@@ -253,7 +253,7 @@ export function DashboardView() {
                                         </p>
                                     </div>
                                 </div>
-                                <ChevronRight size={18} className={styles.upNextArrow} />
+                                <ChevronRight size={18} className={styles.upNextArrow} aria-hidden="true" />
                             </Link>
                         </section>
                     )}
@@ -264,7 +264,7 @@ export function DashboardView() {
                     {/* Quick Stats Summary */}
                     <div className={styles.sideCard}>
                         <div className={styles.sideCardHeader}>
-                            <TrendingUp size={16} />
+                            <TrendingUp size={16} aria-hidden="true" />
                             <h3>Progress Overview</h3>
                         </div>
                         <div className={styles.progressOverviewItems}>
@@ -289,7 +289,7 @@ export function DashboardView() {
                     {gamificationEnabled && achievements.length > 0 && (
                         <div className={styles.sideCard}>
                             <div className={styles.sideCardHeader}>
-                                <Trophy size={16} />
+                                <Trophy size={16} aria-hidden="true" />
                                 <h3>Recent Achievements</h3>
                             </div>
                             <div className={styles.achievementsList}>
@@ -303,8 +303,8 @@ export function DashboardView() {
                                     </div>
                                 ))}
                             </div>
-                            <Link href="/achievements" className={styles.sideCardFooterLink}>
-                                View all <ChevronRight size={13} />
+                            <Link href="/achievements" className={styles.sideCardFooterLink} aria-label="View all achievements">
+                                View all <ChevronRight size={13} aria-hidden="true" />
                             </Link>
                         </div>
                     )}

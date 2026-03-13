@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
-import { Shield, Zap, Check, Lock, BookOpen, Trophy, TrendingUp, Calendar, Award, Flame } from 'lucide-react'
+import { Shield, Zap, Check, Lock, BookOpen, Trophy, TrendingUp, Calendar, Award, Flame, Download, Trash2, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar } from '@/components/ui/Avatar'
 import { useProgress } from '@/lib/ProgressContext'
+import { signOut } from 'next-auth/react'
 import styles from './profile.module.css'
 
 interface UserProfile {
@@ -51,6 +52,9 @@ export function ProfileView() {
     const [optOutLeaderboard, setOptOutLeaderboard] = useState(false)
     const [saving, setSaving] = useState(false)
     const [message, setMessage] = useState({ type: '', text: '' })
+    const [exporting, setExporting] = useState(false)
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+    const [deleting, setDeleting] = useState(false)
 
     // Fetch profile and lessons
     useEffect(() => {
@@ -126,6 +130,47 @@ export function ProfileView() {
         }
     }
 
+    const handleExportData = async () => {
+        setExporting(true)
+        try {
+            const res = await fetch('/api/user/export')
+            if (!res.ok) throw new Error('Export failed')
+            const blob = await res.blob()
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `chai-academy-data-export-${new Date().toISOString().split('T')[0]}.json`
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+            URL.revokeObjectURL(url)
+        } catch {
+            setMessage({ type: 'error', text: 'Failed to export data. Please try again.' })
+        } finally {
+            setExporting(false)
+        }
+    }
+
+    const handleDeleteAccount = async () => {
+        setDeleting(true)
+        try {
+            const res = await fetch('/api/user/delete', { method: 'DELETE' })
+            if (!res.ok) {
+                const data = await res.json()
+                setMessage({ type: 'error', text: data.error || 'Failed to delete account' })
+                setDeleting(false)
+                setShowDeleteConfirm(false)
+                return
+            }
+            // Sign out and redirect to login
+            signOut({ callbackUrl: '/login' })
+        } catch {
+            setMessage({ type: 'error', text: 'Network error. Please try again.' })
+            setDeleting(false)
+            setShowDeleteConfirm(false)
+        }
+    }
+
     // Build timeline info
     const firstIncomplete = lessonList.find((l) => !completedLessons.includes(String(l.id)))
 
@@ -153,11 +198,11 @@ export function ProfileView() {
                         </p>
                         <div className={styles.profileBadges}>
                             <span className={styles.profileLevelBadge}>
-                                <Shield size={13} />
+                                <Shield size={13} aria-hidden="true" />
                                 Lv.{stats.level} {stats.levelTitle}
                             </span>
                             <span className={styles.profileXP}>
-                                <Zap size={13} /> {stats.totalXP.toLocaleString()} XP
+                                <Zap size={13} aria-hidden="true" /> {stats.totalXP.toLocaleString()} XP
                             </span>
                         </div>
                     </div>
@@ -172,7 +217,7 @@ export function ProfileView() {
                     <div className={styles.statsFooterCard}>
                         <div className={styles.statsFooterValue}>{stats.currentStreak}</div>
                         <div className={styles.statsFooterLabel}>
-                            <Flame size={12} style={{ display: 'inline', verticalAlign: '-1px' }} /> Day Streak
+                            <Flame size={12} style={{ display: 'inline', verticalAlign: '-1px' }} aria-hidden="true" /> Day Streak
                         </div>
                     </div>
                     <div className={styles.statsFooterCard}>
@@ -187,8 +232,9 @@ export function ProfileView() {
 
                     <div className={styles.formGrid}>
                         <div className={styles.formGroup}>
-                            <label className={styles.formLabel}>Full Name</label>
+                            <label htmlFor="name" className={styles.formLabel}>Full Name</label>
                             <input
+                                id="name"
                                 className={styles.formInput}
                                 type="text"
                                 value={name}
@@ -197,8 +243,9 @@ export function ProfileView() {
                             />
                         </div>
                         <div className={styles.formGroup}>
-                            <label className={styles.formLabel}>Email</label>
+                            <label htmlFor="email" className={styles.formLabel}>Email</label>
                             <input
+                                id="email"
                                 className={styles.formInput}
                                 type="email"
                                 value={profile?.email || ''}
@@ -207,8 +254,9 @@ export function ProfileView() {
                             />
                         </div>
                         <div className={styles.formGroup}>
-                            <label className={styles.formLabel}>Department</label>
+                            <label htmlFor="department" className={styles.formLabel}>Department</label>
                             <select
+                                id="department"
                                 className={styles.formSelect}
                                 value={department}
                                 onChange={(e) => setDepartment(e.target.value)}
@@ -220,8 +268,9 @@ export function ProfileView() {
                             </select>
                         </div>
                         <div className={styles.formGroup}>
-                            <label className={styles.formLabel}>Job Title</label>
+                            <label htmlFor="jobTitle" className={styles.formLabel}>Job Title</label>
                             <input
+                                id="jobTitle"
                                 className={styles.formInput}
                                 type="text"
                                 value={jobTitle}
@@ -230,10 +279,11 @@ export function ProfileView() {
                             />
                         </div>
                         <div className={styles.formGroup}>
-                            <label className={styles.formLabel}>
+                            <label htmlFor="password" className={styles.formLabel}>
                                 New Password <span className={styles.formLabelHint}>(leave blank to keep)</span>
                             </label>
                             <input
+                                id="password"
                                 className={styles.formInput}
                                 type="password"
                                 value={password}
@@ -242,8 +292,9 @@ export function ProfileView() {
                             />
                         </div>
                         <div className={styles.formGroup}>
-                            <label className={styles.formLabel}>Learning Pace</label>
+                            <label htmlFor="learningPace" className={styles.formLabel}>Learning Pace</label>
                             <select
+                                id="learningPace"
                                 className={styles.formSelect}
                                 value={learningPace}
                                 onChange={(e) => setLearningPace(e.target.value)}
@@ -255,17 +306,26 @@ export function ProfileView() {
                         </div>
                     </div>
 
-                    {/* Toggles */}
                     <div style={{ marginTop: '1.25rem' }}>
                         <div className={styles.toggleRow}>
                             <div>
-                                <div className={styles.toggleLabel}>Weekly Email Summary</div>
-                                <div className={styles.toggleDesc}>Receive a weekly digest of your learning progress</div>
+                                <div className={styles.toggleLabel} id="weeklyEmailLabel">Weekly Email Summary</div>
+                                <div className={styles.toggleDesc} id="weeklyEmailDesc">Receive a weekly digest of your learning progress</div>
                             </div>
                             <button
                                 type="button"
+                                role="switch"
+                                aria-checked={weeklyEmail}
+                                aria-labelledby="weeklyEmailLabel"
+                                aria-describedby="weeklyEmailDesc"
                                 className={`${styles.toggle} ${weeklyEmail ? styles.toggleOn : styles.toggleOff}`}
                                 onClick={() => setWeeklyEmail(!weeklyEmail)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        setWeeklyEmail(!weeklyEmail);
+                                    }
+                                }}
                             >
                                 <span className={`${styles.toggleKnob} ${weeklyEmail ? styles.toggleKnobOn : styles.toggleKnobOff}`} />
                             </button>
@@ -273,13 +333,23 @@ export function ProfileView() {
 
                         <div className={styles.toggleRow}>
                             <div>
-                                <div className={styles.toggleLabel}>Opt Out of Leaderboard</div>
-                                <div className={styles.toggleDesc}>Hide your name from the public leaderboard</div>
+                                <div className={styles.toggleLabel} id="optOutLabel">Opt Out of Leaderboard</div>
+                                <div className={styles.toggleDesc} id="optOutDesc">Hide your name from the public leaderboard</div>
                             </div>
                             <button
                                 type="button"
+                                role="switch"
+                                aria-checked={optOutLeaderboard}
+                                aria-labelledby="optOutLabel"
+                                aria-describedby="optOutDesc"
                                 className={`${styles.toggle} ${optOutLeaderboard ? styles.toggleOn : styles.toggleOff}`}
                                 onClick={() => setOptOutLeaderboard(!optOutLeaderboard)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        setOptOutLeaderboard(!optOutLeaderboard);
+                                    }
+                                }}
                             >
                                 <span className={`${styles.toggleKnob} ${optOutLeaderboard ? styles.toggleKnobOn : styles.toggleKnobOff}`} />
                             </button>
@@ -304,17 +374,98 @@ export function ProfileView() {
                 {/* Member Since */}
                 {memberSince && (
                     <div className={styles.memberSince}>
-                        <Calendar size={14} />
+                        <Calendar size={14} aria-hidden="true" />
                         Member since {memberSince}
                     </div>
                 )}
+
+                {/* Data & Privacy (GDPR) */}
+                <div className={styles.formCard}>
+                    <h2 className={styles.formCardTitle}>Data &amp; Privacy</h2>
+
+                    <div className={styles.privacySection}>
+                        <div className={styles.privacyItem}>
+                            <div>
+                                <div className={styles.privacyItemTitle}>Export My Data</div>
+                                <div className={styles.privacyItemDesc}>
+                                    Download a copy of all your personal data as a JSON file (GDPR Article 20).
+                                </div>
+                            </div>
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                onClick={handleExportData}
+                                disabled={exporting}
+                            >
+                                <Download size={15} aria-hidden="true" style={{ marginRight: '0.35rem' }} />
+                                {exporting ? 'Exporting...' : 'Export'}
+                            </Button>
+                        </div>
+
+                        <div className={styles.privacyItem}>
+                            <div>
+                                <div className={styles.privacyItemTitle}>Privacy Policy</div>
+                                <div className={styles.privacyItemDesc}>
+                                    Review how we collect, use, and protect your data.
+                                </div>
+                            </div>
+                            <a
+                                href="/privacy"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.privacyLink}
+                            >
+                                <ExternalLink size={15} aria-hidden="true" style={{ marginRight: '0.35rem' }} />
+                                View
+                            </a>
+                        </div>
+
+                        <div className={`${styles.privacyItem} ${styles.privacyItemDanger}`}>
+                            <div>
+                                <div className={styles.privacyItemTitle}>Delete My Account</div>
+                                <div className={styles.privacyItemDesc}>
+                                    Permanently delete your account and all associated data. This action cannot be undone (GDPR Article 17).
+                                </div>
+                            </div>
+                            {!showDeleteConfirm ? (
+                                <button
+                                    type="button"
+                                    className={styles.deleteBtn}
+                                    onClick={() => setShowDeleteConfirm(true)}
+                                >
+                                    <Trash2 size={15} aria-hidden="true" style={{ marginRight: '0.35rem' }} />
+                                    Delete
+                                </button>
+                            ) : (
+                                <div className={styles.deleteConfirm}>
+                                    <span className={styles.deleteConfirmText}>Are you sure?</span>
+                                    <button
+                                        type="button"
+                                        className={styles.deleteConfirmYes}
+                                        onClick={handleDeleteAccount}
+                                        disabled={deleting}
+                                    >
+                                        {deleting ? 'Deleting...' : 'Yes, delete'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={styles.deleteConfirmNo}
+                                        onClick={() => setShowDeleteConfirm(false)}
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* Right Column: Learning Path */}
             <div className={styles.rightColumn}>
                 <div className={styles.timelineCard}>
                     <h2 className={styles.timelineTitle}>
-                        <TrendingUp size={18} style={{ display: 'inline', verticalAlign: '-3px', marginRight: '0.4rem' }} />
+                        <TrendingUp size={18} style={{ display: 'inline', verticalAlign: '-3px', marginRight: '0.4rem' }} aria-hidden="true" />
                         Learning Path
                     </h2>
                     <div className={styles.timeline}>
@@ -326,11 +477,11 @@ export function ProfileView() {
                                 <div key={lesson.id} className={styles.timelineItem}>
                                     <div className={`${styles.timelineDot} ${isCompleted ? styles.timelineDotCompleted : isCurrent ? styles.timelineDotCurrent : styles.timelineDotLocked}`}>
                                         {isCompleted ? (
-                                            <Check size={12} />
+                                            <Check size={12} aria-hidden="true" />
                                         ) : isCurrent ? (
-                                            <BookOpen size={12} />
+                                            <BookOpen size={12} aria-hidden="true" />
                                         ) : (
-                                            <Lock size={10} />
+                                            <Lock size={10} aria-hidden="true" />
                                         )}
                                     </div>
                                     <div className={styles.timelineContent}>

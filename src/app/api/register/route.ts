@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 
 export async function POST(req: Request) {
     try {
-        const { name, email, password, gamificationOptIn, learningPace } = await req.json()
+        const { name, email, password, gamificationOptIn, learningPace, privacyConsent } = await req.json()
 
         // 1. Validate Input
         if (!email || !password || !name) {
@@ -13,6 +13,10 @@ export async function POST(req: Request) {
 
         if (password.length < 6) {
             return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 })
+        }
+
+        if (!privacyConsent) {
+            return NextResponse.json({ error: 'You must agree to the Privacy Policy' }, { status: 400 })
         }
 
         // 2. Check if user exists
@@ -36,6 +40,9 @@ export async function POST(req: Request) {
                 role: 'LEARNER', // Default role
                 learningPace: learningPace || 'beginner',
                 optOutOfLeaderboard: gamificationOptIn !== undefined ? !gamificationOptIn : false,
+                gdprConsentAt: new Date(),
+                privacyPolicyVersion: '1.0',
+                marketingConsent: false,
             },
             select: {
                 id: true,
