@@ -21,14 +21,34 @@ function AssessmentForm() {
     const isPreTest = typeParam === 'pre';
     const type: AssessmentType = isPreTest ? 'PRE_TEST' : 'POST_TEST';
 
-    // Randomize questions on mount
     useEffect(() => {
-        const shuffled = [...assessmentQuestions].sort(() => Math.random() - 0.5);
-        setQuestions(shuffled);
+        const shuffle = <T,>(array: T[]): T[] => {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        };
+
+        setQuestions(shuffle(assessmentQuestions));
     }, []);
 
     const handleAnswerChange = (questionId: string, value: string) => {
         setAnswers(prev => ({ ...prev, [questionId]: value }));
+    };
+
+    const handleOrderingChange = (questionId: string, itemValue: string) => {
+        setAnswers(prev => {
+            const currentOrder = prev[questionId] ? prev[questionId].split(',') : [];
+            let newOrder;
+            if (currentOrder.includes(itemValue)) {
+                newOrder = currentOrder.filter(i => i !== itemValue);
+            } else {
+                newOrder = [...currentOrder, itemValue];
+            }
+            return { ...prev, [questionId]: newOrder.join(',') };
+        });
     };
 
     const calculateProgress = () => {
@@ -38,27 +58,31 @@ function AssessmentForm() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (Object.keys(answers).length < questions.length) {
-            const unansweredQuestion = questions.find(q => !answers[q.id]);
+        
+        // Validate all questions are answered
+        const unansweredQuestion = questions.find(q => {
+            const answer = answers[q.id];
+            if (!answer) return true;
+            if (q.type === 'ORDERING' && answer.split(',').length < (q.items?.length || 0)) return true;
+            return false;
+        });
 
-            if (unansweredQuestion) {
-                setError('Please answer all questions before submitting.');
+        if (unansweredQuestion) {
+            setError(unansweredQuestion.type === 'ORDERING' 
+                ? 'Please complete the ordering for all items.' 
+                : 'Please answer all questions before submitting.');
 
-                const element = document.getElementById(`question-${unansweredQuestion.id}`);
-                if (element) {
-                    setTimeout(() => {
-                        const yPosition = element.getBoundingClientRect().top + window.scrollY - 100;
-                        window.scrollTo({
-                            top: yPosition,
-                            behavior: 'smooth'
-                        });
-                        setBlinkingQuestion(prev => ({ id: unansweredQuestion.id, key: (prev?.key || 0) + 1 }));
-                    }, 50);
+            const element = document.getElementById(`question-${unansweredQuestion.id}`);
+            if (element) {
+                setTimeout(() => {
+                    const yPosition = element.getBoundingClientRect().top + window.scrollY - 100;
+                    window.scrollTo({ top: yPosition, behavior: 'smooth' });
+                    setBlinkingQuestion(prev => ({ id: unansweredQuestion.id, key: (prev?.key || 0) + 1 }));
+                }, 50);
 
-                    setTimeout(() => {
-                        setBlinkingQuestion(null);
-                    }, 1550);
-                }
+                setTimeout(() => {
+                    setBlinkingQuestion(null);
+                }, 1550);
             }
             return;
         }
@@ -89,9 +113,9 @@ function AssessmentForm() {
         );
     }
 
-    const title = isPreTest ? 'Welcome — Initial Assessment' : 'Knowledge Check — Post Assessment';
+    const title = isPreTest ? 'AI Literacy Assessment' : 'Knowledge Check — Post Assessment';
     const description = isPreTest
-        ? 'Before we begin, please complete this brief assessment. This helps us tailor your learning experience. The questions are randomized — just answer to the best of your ability.'
+        ? 'Welcome! This assessment helps us understand your starting point. Please complete both the knowledge and the interest sections honestly.'
         : 'Congratulations on your progress! Please complete this follow-up assessment to help us measure the impact of the platform.';
 
     return (
@@ -124,75 +148,102 @@ function AssessmentForm() {
                         {questions.map((q, index) => {
                             const isUnanswered = error && !answers[q.id];
                             const isBlinking = blinkingQuestion?.id === q.id;
+
                             return (
-                                <div
-                                    key={`${q.id}-${isBlinking ? blinkingQuestion?.key : 'static'}`}
-                                    id={`question-${q.id}`}
-                                    className={`${styles.questionCard} ${isUnanswered ? styles.questionCardUnanswered : ''} ${isBlinking ? 'animate-double-blink' : ''}`}
-                                >
-                                    <div className={styles.questionHeader}>
-                                        <h3 className={styles.questionTitle}>
-                                            <span className={styles.questionNumber}>{index + 1}.</span>
-                                            {q.text}
-                                        </h3>
-                                    </div>
-                                    <div className={styles.questionBody}>
-                                        {q.category === 'LITERACY' && q.options ? (
-                                            <div className={styles.optionsList}>
-                                                {q.options.map(opt => (
-                                                    <div
-                                                        key={opt.value}
-                                                        className={`${styles.optionItem} ${answers[q.id] === opt.value ? styles.optionItemSelected : ''}`}
-                                                        onClick={() => handleAnswerChange(q.id, opt.value)}
-                                                    >
-                                                        <input
-                                                            type="radio"
-                                                            id={`${q.id}-${opt.value}`}
-                                                            name={q.id}
-                                                            value={opt.value}
-                                                            checked={answers[q.id] === opt.value}
-                                                            onChange={() => handleAnswerChange(q.id, opt.value)}
-                                                            className={styles.optionRadio}
-                                                        />
-                                                        <label htmlFor={`${q.id}-${opt.value}`} className={styles.optionLabel}>
-                                                            {opt.label}
-                                                        </label>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <div className={styles.likertContainer}>
-                                                <div className={styles.likertLabels}>
-                                                    <span className={styles.likertLabel}>1 (Strongly disagree)</span>
-                                                    <span className={styles.likertLabel}>5 (Strongly agree)</span>
-                                                </div>
-                                                <div className={styles.likertScale}>
-                                                    {[1, 2, 3, 4, 5].map(val => (
+                                <div key={q.id}>
+                                    <div
+                                        id={`question-${q.id}`}
+                                        className={`${styles.questionCard} ${isUnanswered ? styles.questionCardUnanswered : ''} ${isBlinking ? 'animate-double-blink' : ''}`}
+                                    >
+                                        <div className={styles.questionHeader}>
+                                            <h3 className={styles.questionTitle}>
+                                                <span className={styles.questionNumber}>{index + 1}.</span>
+                                                {q.text}
+                                            </h3>
+                                        </div>
+                                        <div className={styles.questionBody}>
+                                            {q.type === 'MC' && q.options && (
+                                                <div className={styles.optionsList}>
+                                                    {q.options.map(opt => (
                                                         <div
-                                                            key={val}
-                                                            className={`${styles.likertItem} ${answers[q.id] === val.toString() ? styles.likertItemSelected : ''}`}
-                                                            onClick={() => handleAnswerChange(q.id, val.toString())}
+                                                            key={opt.value}
+                                                            className={`${styles.optionItem} ${answers[q.id] === opt.value ? styles.optionItemSelected : ''}`}
+                                                            onClick={() => handleAnswerChange(q.id, opt.value)}
                                                         >
                                                             <input
                                                                 type="radio"
-                                                                id={`${q.id}-${val}`}
+                                                                id={`${q.id}-${opt.value}`}
                                                                 name={q.id}
-                                                                value={val.toString()}
-                                                                checked={answers[q.id] === val.toString()}
-                                                                onChange={() => handleAnswerChange(q.id, val.toString())}
-                                                                className={styles.likertRadio}
+                                                                value={opt.value}
+                                                                checked={answers[q.id] === opt.value}
+                                                                onChange={() => handleAnswerChange(q.id, opt.value)}
+                                                                className={styles.optionRadio}
                                                             />
-                                                            <label htmlFor={`${q.id}-${val}`} className={styles.likertValue}>
-                                                                {val}
+                                                            <label htmlFor={`${q.id}-${opt.value}`} className={styles.optionLabel}>
+                                                                {opt.label}
                                                             </label>
                                                         </div>
                                                     ))}
                                                 </div>
-                                            </div>
-                                        )}
+                                            )}
+
+                                            {q.type === 'ORDERING' && q.items && (
+                                                <div className={styles.orderingContainer}>
+                                                    <p className={styles.orderingHint}>Click labels in order (1 to {q.items.length})</p>
+                                                    <div className={styles.orderingGrid}>
+                                                        {q.items.map((item, i) => {
+                                                            const orderIndex = answers[q.id]?.split(',').indexOf(item);
+                                                            return (
+                                                                <div
+                                                                    key={i}
+                                                                    className={`${styles.orderItem} ${orderIndex !== -1 ? styles.orderItemSelected : ''}`}
+                                                                    onClick={() => handleOrderingChange(q.id, item)}
+                                                                >
+                                                                    <div className={styles.orderBadge}>
+                                                                        {orderIndex !== -1 ? orderIndex + 1 : ''}
+                                                                    </div>
+                                                                    <div className={styles.orderLabel}>{item}</div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {q.type === 'LIKERT' && (
+                                                <div className={styles.likertContainer}>
+                                                    <div className={styles.likertLabels}>
+                                                        <span className={styles.likertLabel}>Strongly disagree</span>
+                                                        <span className={styles.likertLabel}>Strongly agree</span>
+                                                    </div>
+                                                    <div className={styles.likertScale}>
+                                                        {[1, 2, 3, 4, 5].map(val => (
+                                                            <div
+                                                                key={val}
+                                                                className={`${styles.likertItem} ${answers[q.id] === val.toString() ? styles.likertItemSelected : ''}`}
+                                                                onClick={() => handleAnswerChange(q.id, val.toString())}
+                                                            >
+                                                                <input
+                                                                    type="radio"
+                                                                    id={`${q.id}-${val}`}
+                                                                    name={q.id}
+                                                                    value={val.toString()}
+                                                                    checked={answers[q.id] === val.toString()}
+                                                                    onChange={() => handleAnswerChange(q.id, val.toString())}
+                                                                    className={styles.likertRadio}
+                                                                />
+                                                                <label htmlFor={`${q.id}-${val}`} className={styles.likertValue}>
+                                                                    {val}
+                                                                </label>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                            )
+                            );
                         })}
                     </div>
 
