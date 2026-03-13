@@ -55,6 +55,9 @@ export async function GET() {
             }
         })
 
+        // Sort explicitly by sortOrder to ensure Phase 1 is first, Phase 2 is second, etc.
+        result.sort((a, b) => a.sortOrder - b.sortOrder)
+
         return NextResponse.json(result)
     } catch (error) {
         console.error('Error fetching courses:', error)

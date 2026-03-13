@@ -1,9 +1,10 @@
 "use client";
 
+import { useRef } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { BlockType, LessonBlock } from "./LessonEditor";
-import { Trash, GripVertical, Image as ImageIcon, Type, HelpCircle } from "lucide-react";
+import { Trash, GripVertical, Image as ImageIcon, Type, HelpCircle, Bold, Italic, List, Link as LinkIcon } from "lucide-react";
 
 import styles from './LessonEditor.module.css';
 
@@ -61,13 +62,7 @@ export function EditorBlock({ block, onUpdate, onRemove }: EditorBlockProps) {
 
                 {block.type === "text" && (
                     <div>
-                        <textarea
-                            className={styles.textarea}
-                            placeholder="Type your lesson content here..."
-                            value={block.content || ""}
-                            onChange={(e) => onUpdate(block.id, { content: e.target.value })}
-                            rows={4}
-                        />
+                        <TextBlockEditor block={block} onUpdate={onUpdate} />
                         <div style={{ marginTop: '0.5rem' }}>
                             <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem', color: '#64748b' }}>
                                 Source Link (optional "Read More")
@@ -197,4 +192,97 @@ function BlockIcon({ type }: { type: BlockType }) {
         case "quiz": return <HelpCircle size={14} />;
         case "image": return <ImageIcon size={14} />;
     }
+}
+
+function TextBlockEditor({ block, onUpdate }: { block: LessonBlock, onUpdate: (id: string, updates: Partial<LessonBlock>) => void }) {
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    const insertFormatting = (prefix: string, suffix: string = '') => {
+        const textarea = textareaRef.current;
+        if (!textarea) return;
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const currentContent = block.content || "";
+
+        const selectedText = currentContent.substring(start, end);
+        const newText = currentContent.substring(0, start) + prefix + selectedText + suffix + currentContent.substring(end);
+
+        onUpdate(block.id, { content: newText });
+
+        // Restore focus and cursor position
+        setTimeout(() => {
+            textarea.focus();
+            textarea.setSelectionRange(start + prefix.length, end + prefix.length);
+        }, 0);
+    };
+
+    const btnStyle = {
+        padding: '0.35rem 0.5rem',
+        borderRadius: '6px',
+        cursor: 'pointer',
+        border: 'none',
+        background: 'transparent',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'hsl(var(--muted-foreground))',
+        transition: 'all 0.1s'
+    };
+
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            {/* Toolbar */}
+            <div style={{ display: 'flex', gap: '0.25rem', background: 'hsl(var(--muted) / 0.4)', padding: '0.3rem', borderRadius: '8px', border: '1px solid hsl(var(--border))' }}>
+                <button
+                    title="Bold"
+                    type="button"
+                    onClick={() => insertFormatting('**', '**')}
+                    style={btnStyle}
+                    onMouseOver={e => { e.currentTarget.style.background = 'hsl(var(--muted))'; e.currentTarget.style.color = 'hsl(var(--foreground))'; }}
+                    onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'hsl(var(--muted-foreground))'; }}
+                ><Bold size={16} /></button>
+                
+                <button
+                    title="Italic"
+                    type="button"
+                    onClick={() => insertFormatting('*', '*')}
+                    style={btnStyle}
+                    onMouseOver={e => { e.currentTarget.style.background = 'hsl(var(--muted))'; e.currentTarget.style.color = 'hsl(var(--foreground))'; }}
+                    onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'hsl(var(--muted-foreground))'; }}
+                ><Italic size={16} /></button>
+                
+                <div style={{ width: '1px', background: 'hsl(var(--border))', margin: '0.2rem 0.4rem' }} />
+                
+                <button
+                    title="Bullet List"
+                    type="button"
+                    onClick={() => insertFormatting('- ')}
+                    style={btnStyle}
+                    onMouseOver={e => { e.currentTarget.style.background = 'hsl(var(--muted))'; e.currentTarget.style.color = 'hsl(var(--foreground))'; }}
+                    onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'hsl(var(--muted-foreground))'; }}
+                ><List size={16} /></button>
+                
+                <button
+                    title="Insert Link"
+                    type="button"
+                    onClick={() => insertFormatting('[', '](url)')}
+                    style={btnStyle}
+                    onMouseOver={e => { e.currentTarget.style.background = 'hsl(var(--muted))'; e.currentTarget.style.color = 'hsl(var(--foreground))'; }}
+                    onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'hsl(var(--muted-foreground))'; }}
+                ><LinkIcon size={16} /></button>
+            </div>
+            
+            {/* Editor Area */}
+            <textarea
+                ref={textareaRef}
+                className={styles.textarea}
+                placeholder="Type your lesson content here... Use the toolbar above for formatting!"
+                value={block.content || ""}
+                onChange={(e) => onUpdate(block.id, { content: e.target.value })}
+                rows={5}
+                style={{ fontFamily: 'monospace', lineHeight: 1.5 }}
+            />
+        </div>
+    );
 }

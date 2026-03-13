@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { AlertTriangle, ArrowLeft, Zap } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 type BlockType = "text" | "quiz" | "image";
 
@@ -254,7 +256,24 @@ export default function LessonViewer({ lessonId, lessonTitle, initialSteps, onCo
                     {/* Text block */}
                     {currentStep.type === "text" && (
                         <>
-                            <p>{currentStep.content}</p>
+                            <div className="markdown-content" style={{ fontSize: '1rem', lineHeight: '1.7', color: 'hsl(var(--foreground))' }}>
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm]}
+                                    components={{
+                                        p: ({ node, ...props }) => <p style={{ marginBottom: '1rem' }} {...props} />,
+                                        ul: ({ node, ...props }) => <ul style={{ marginBottom: '1rem', paddingLeft: '1.5rem', listStyleType: 'disc' }} {...props} />,
+                                        ol: ({ node, ...props }) => <ol style={{ marginBottom: '1rem', paddingLeft: '1.5rem', listStyleType: 'decimal' }} {...props} />,
+                                        li: ({ node, ...props }) => <li style={{ marginBottom: '0.25rem' }} {...props} />,
+                                        h1: ({ node, ...props }) => <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem', marginTop: '1.5rem' }} {...props} />,
+                                        h2: ({ node, ...props }) => <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '0.75rem', marginTop: '1.25rem' }} {...props} />,
+                                        h3: ({ node, ...props }) => <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.5rem', marginTop: '1rem' }} {...props} />,
+                                        strong: ({ node, ...props }) => <strong style={{ fontWeight: 600, color: 'hsl(var(--foreground))' }} {...props} />,
+                                        a: ({ node, ...props }) => <a style={{ color: 'hsl(var(--primary))', textDecoration: 'underline' }} {...props} />,
+                                    }}
+                                >
+                                    {currentStep.content || ''}
+                                </ReactMarkdown>
+                            </div>
                             {currentStep.sourceUrl && (
                                 <div style={{ marginTop: '1.5rem' }}>
                                     <a

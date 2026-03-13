@@ -7,13 +7,13 @@ import {
     LayoutDashboard,
     BookOpen,
     Trophy,
-    Beaker,
     Settings,
     GraduationCap,
     Users,
     BarChart3,
     FileText,
     LogOut,
+    ClipboardList,
 } from 'lucide-react'
 import styles from './sidebar.module.css'
 
@@ -36,12 +36,12 @@ const NAV_ITEMS: NavItem[] = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, staffOnly: true },
     { href: '/courses', label: 'My Courses', icon: BookOpen, staffOnly: true },
     { href: '/achievements', label: 'Achievements', icon: Trophy, staffOnly: true },
-    { href: '/research', label: 'Research Hub', icon: Beaker, disabled: true, staffOnly: true },
     { href: '/profile', label: 'Profile', icon: Settings, staffOnly: true },
 
     // Admin items
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, adminOnly: true },
     { href: '/admin/users', label: 'User Management', icon: Users, adminOnly: true },
+    { href: '/admin/assessments', label: 'Assessment Results', icon: ClipboardList, adminOnly: true },
     { href: '/admin/analytics', label: 'Analytics', icon: BarChart3, adminOnly: true },
     { href: '/admin/lessons', label: 'Content Manager', icon: FileText, adminOnly: true },
     { href: '/admin/settings', label: 'Settings', icon: Settings, adminOnly: true },

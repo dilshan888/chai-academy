@@ -1,0 +1,424 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+.header {
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.headerTitle {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: hsl(var(--foreground));
+    margin: 0 0 0.25rem;
+}
+
+.headerSub {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Export Buttons */
+.globalExportWrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.exportCellWrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.exportBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--card));
+    color: hsl(var(--foreground));
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.exportBtn:hover:not(:disabled) {
+    background: hsl(var(--muted));
+    border-color: hsl(var(--muted-foreground) / 0.3);
+}
+
+.exportBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.exportBtnPrimary {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border-color: hsl(var(--primary));
+    padding: 0.55rem 1rem;
+    font-size: 0.85rem;
+}
+
+.exportBtnPrimary:hover:not(:disabled) {
+    background: hsl(var(--primary) / 0.9);
+    border-color: hsl(var(--primary) / 0.9);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px hsl(var(--primary) / 0.25);
+}
+
+/* Dropdown */
+.dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    z-index: 50;
+    min-width: 170px;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 0.35rem;
+    animation: dropdownIn 0.15s ease;
+}
+
+@keyframes dropdownIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdownHeader {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: hsl(var(--muted-foreground));
+    padding: 0.5rem 0.75rem 0.25rem;
+}
+
+.dropdownItem {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    border: none;
+    background: none;
+    color: hsl(var(--foreground));
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+
+.dropdownItem:hover {
+    background: hsl(var(--muted));
+}
+
+/* Stats Row */
+.statsRow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.statCard {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.statCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.statIcon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.75rem;
+}
+
+.statIconTotal { background: hsl(var(--primary) / 0.12); color: hsl(var(--primary)); }
+.statIconPre { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
+.statIconPost { background: rgba(16, 185, 129, 0.12); color: #10b981; }
+.statIconUsers { background: rgba(139, 92, 246, 0.12); color: #8b5cf6; }
+
+.statValue {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: hsl(var(--foreground));
+}
+
+.statLabel {
+    font-size: 0.78rem;
+    color: hsl(var(--muted-foreground));
+    margin-top: 0.2rem;
+}
+
+/* Toolbar */
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.searchBox {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: hsl(var(--muted-foreground));
+}
+
+.searchInput {
+    width: 100%;
+    padding: 0.6rem 0.75rem 0.6rem 2.25rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: 8px;
+    font-size: 0.85rem;
+    background: hsl(var(--card));
+    color: hsl(var(--foreground));
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.searchInput:focus {
+    border-color: hsl(var(--primary));
+}
+
+.filterBox {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.filterSelect {
+    padding: 0.55rem 0.75rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: 8px;
+    font-size: 0.85rem;
+    background: hsl(var(--card));
+    color: hsl(var(--foreground));
+    cursor: pointer;
+    outline: none;
+}
+
+.resultCount {
+    font-size: 0.82rem;
+    color: hsl(var(--muted-foreground));
+    margin-left: auto;
+}
+
+/* Table */
+.tableCard {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.tableScroll {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.table thead th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: hsl(var(--muted-foreground));
+    border-bottom: 2px solid hsl(var(--border));
+    background: hsl(var(--muted) / 0.3);
+    white-space: nowrap;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
+    transition: background 0.1s;
+}
+
+.table tbody tr:hover {
+    background: hsl(var(--muted) / 0.25);
+}
+
+.table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.table td {
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+}
+
+.rowSelected {
+    background: hsl(var(--primary) / 0.04) !important;
+}
+
+/* Checkbox */
+.checkboxCol {
+    width: 40px;
+    text-align: center;
+}
+
+.checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid hsl(var(--border));
+    border-radius: 5px;
+    background: hsl(var(--card));
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    padding: 0;
+}
+
+.checkbox:hover {
+    border-color: hsl(var(--primary) / 0.5);
+}
+
+.checkboxChecked {
+    background: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+}
+
+/* User Cell */
+.userCell {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.userAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: hsl(var(--primary) / 0.1);
+    color: hsl(var(--primary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.userName {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: hsl(var(--foreground));
+}
+
+.userEmail {
+    font-size: 0.78rem;
+    color: hsl(var(--muted-foreground));
+}
+
+/* Badges */
+.deptBadge {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+}
+
+.statusBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.statusComplete {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+}
+
+.statusPending {
+    background: hsl(var(--muted) / 0.5);
+    color: hsl(var(--muted-foreground));
+}
+
+/* Empty State */
+.emptyState {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.emptyState h2 {
+    margin: 1rem 0 0.5rem;
+    font-size: 1.2rem;
+    color: hsl(var(--foreground));
+}
+
+.emptyState p {
+    font-size: 0.9rem;
+}
+
+/* Loading */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .statsRow {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .table {
+        font-size: 0.8rem;
+    }
+
+    .table td, .table thead th {
+        padding: 0.6rem 0.75rem;
+    }
+}
