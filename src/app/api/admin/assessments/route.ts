@@ -32,15 +32,22 @@ export async function GET() {
         const enrichedResponses = responses.map(r => {
             const answers = (r.answers as { questionId: string; answer: string }[]).map(a => {
                 const question = questionMap.get(a.questionId)
+                
+                let answerLabel = a.answer;
+                if (question?.type === 'ORDERING') {
+                    // For ordering, the answer is already the item labels separated by commas
+                    // We can join them with arrows for better readability
+                    answerLabel = a.answer.split(',').join(' → ');
+                } else if (question?.options) {
+                    answerLabel = question.options.find(o => o.value === a.answer)?.label || a.answer;
+                }
+
                 return {
                     questionId: a.questionId,
                     questionText: question?.text || 'Unknown Question',
                     category: question?.category || 'UNKNOWN',
                     answer: a.answer,
-                    // For LITERACY questions, map the value back to the label
-                    answerLabel: question?.options
-                        ? question.options.find(o => o.value === a.answer)?.label || a.answer
-                        : a.answer,
+                    answerLabel: answerLabel,
                 }
             })
 

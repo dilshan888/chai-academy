@@ -357,3 +357,96 @@
         text-align: center;
     }
 }
+
+/* Scale Headers for Affective Variables */
+.scaleHeader {
+    margin: 3rem 0 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid hsl(var(--primary) / 0.1);
+}
+
+.scaleTitle {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: hsl(var(--primary));
+    margin-bottom: 0.25rem;
+}
+
+.scaleInstruction {
+    font-size: 0.9rem;
+    color: hsl(var(--muted-foreground));
+    font-style: italic;
+}
+
+/* Ordering Question Styling */
+.orderingContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.orderingHint {
+    font-size: 0.85rem;
+    color: hsl(var(--muted-foreground));
+    background: hsl(var(--muted) / 0.4);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border-left: 3px solid hsl(var(--primary) / 0.4);
+}
+
+.orderingGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.orderItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.orderItem:hover {
+    border-color: hsl(var(--primary) / 0.4);
+    background: hsl(var(--primary) / 0.02);
+}
+
+.orderItemSelected {
+    border-color: hsl(var(--primary));
+    background: hsl(var(--primary) / 0.05);
+    box-shadow: 0 2px 8px hsl(var(--primary) / 0.1);
+}
+
+.orderBadge {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.orderItemSelected .orderBadge {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    transform: scale(1.1);
+}
+
+.orderLabel {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+}
