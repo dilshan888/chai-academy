@@ -42,6 +42,8 @@ model User {
   gdprConsentAt       DateTime?
   privacyPolicyVersion String?
   marketingConsent    Boolean  @default(false)
+  preTestCompleted    Boolean  @default(false)
+  postTestCompleted   Boolean  @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -52,6 +54,7 @@ model User {
   xpHistory     XPTransaction[]
   scenarioResponses ScenarioResponse[]
   notifications     Notification[]
+  assessments   AssessmentResponse[]
 }
 
 model Progress {
@@ -243,3 +246,23 @@ model Notification {
   @@index([userId, read])
   @@index([userId, createdAt])
 }
+
+// === Research Assessment Models ===
+
+enum AssessmentType {
+  PRE_TEST
+  POST_TEST
+}
+
+model AssessmentResponse {
+  id           String         @id @default(cuid())
+  userId       String
+  type         AssessmentType
+  answers      Json           // Array of { questionId, answer }
+  submittedAt  DateTime       @default(now())
+
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+}
+
