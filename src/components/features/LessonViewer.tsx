@@ -38,9 +38,11 @@ interface LessonViewerProps {
     lessonTitle?: string;
     initialSteps: LessonStep[];
     onComplete: () => void;
+    phaseSlug?: string;
+    nextLessonId?: string;
 }
 
-export default function LessonViewer({ lessonId, lessonTitle, initialSteps, onComplete }: LessonViewerProps) {
+export default function LessonViewer({ lessonId, lessonTitle, initialSteps, onComplete, phaseSlug, nextLessonId }: LessonViewerProps) {
     const router = useRouter();
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
     const [quizSelected, setQuizSelected] = useState<string | null>(null);
@@ -169,12 +171,27 @@ export default function LessonViewer({ lessonId, lessonTitle, initialSteps, onCo
                             </div>
                         )}
 
-                        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                            {nextLessonId ? (
+                                <Button 
+                                    onClick={() => router.push(`/lesson/${nextLessonId}`)}
+                                    style={{ background: '#10B981', color: 'white' }}
+                                >
+                                    Next Lesson →
+                                </Button>
+                            ) : phaseSlug && (
+                                <Button 
+                                    onClick={() => router.push(`/courses/${phaseSlug}`)}
+                                    style={{ background: 'hsl(var(--accent))', color: 'white' }}
+                                >
+                                    Back to Course
+                                </Button>
+                            )}
+                            
+                            {!nextLessonId && phaseSlug && null} {/* Already handled in ternary if/else logic */}
+                            
                             <Button variant="secondary" onClick={() => router.push('/dashboard')}>
                                 Back to Dashboard
-                            </Button>
-                            <Button onClick={() => router.push('/courses')}>
-                                More Courses
                             </Button>
                         </div>
                     </div>
