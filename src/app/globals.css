@@ -118,5 +118,25 @@ a {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+}
+}
+
+/* Custom Animations */
+@keyframes double-blink {
+  0%, 100% {
+    border-color: transparent;
+    background-color: transparent;
   }
+  25%, 75% {
+    border-color: hsl(var(--destructive)) !important;
+    background-color: hsl(var(--destructive) / 0.15) !important;
+  }
+  50% {
+    border-color: transparent;
+    background-color: transparent;
+  }
+}
+
+.animate-double-blink {
+  animation: double-blink 1.2s ease-in-out forwards;
 }

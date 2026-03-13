@@ -2,7 +2,7 @@
 
 import { useEffect, useState, use } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, BookOpen, CheckCircle, ChevronDown, Clock, Layers, Zap, Gamepad2 } from 'lucide-react'
+import { ArrowLeft, BookOpen, CheckCircle, ChevronDown, Clock, Layers, Zap, Gamepad2, Volume2, VolumeX } from 'lucide-react'
 import styles from '../courses.module.css'
 
 interface LessonInfo {
@@ -60,6 +60,15 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
     const [course, setCourse] = useState<CourseDetail | null>(null)
     const [loading, setLoading] = useState(true)
     const [expandedModules, setExpandedModules] = useState<Set<string>>(new Set())
+    const [readingId, setReadingId] = useState<string | null>(null)
+
+    useEffect(() => {
+        return () => {
+            if (typeof window !== 'undefined' && window.speechSynthesis) {
+                window.speechSynthesis.cancel()
+            }
+        }
+    }, [])
 
     useEffect(() => {
         async function fetchCourse() {
@@ -90,6 +99,34 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
             }
             return next
         })
+    }
+
+    const togglePlayback = (id: string, textToRead: string, e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
+
+        if (typeof window === 'undefined' || !window.speechSynthesis) return;
+
+        if (readingId === id) {
+            window.speechSynthesis.cancel();
+            setReadingId(null);
+            return;
+        }
+
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(textToRead);
+
+        utterance.onend = () => setReadingId(null);
+        utterance.onerror = () => setReadingId(null);
+
+        setReadingId(id);
+        window.speechSynthesis.speak(utterance);
+    }
+
+    const handleReadCourse = () => {
+        if (!course) return;
+        const textToRead = `${course.title}. ${course.description || ''}`;
+        togglePlayback('course', textToRead);
     }
 
     if (loading) {
@@ -139,7 +176,17 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
                 style={{ background: COURSE_GRADIENTS[0] }}
             >
                 <div className={styles.courseDetailHeaderContent}>
-                    <h1 className={styles.courseDetailTitle}>{course.title}</h1>
+                    <div className={styles.courseTitleContainer}>
+                        <h1 className={styles.courseDetailTitle}>{course.title}</h1>
+                        <button
+                            onClick={handleReadCourse}
+                            className={styles.readAloudButton}
+                            aria-label={readingId === 'course' ? "Stop reading" : "Read course details"}
+                            title={readingId === 'course' ? "Stop reading" : "Read course details"}
+                        >
+                            {readingId === 'course' ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                        </button>
+                    </div>
                     {course.description && (
                         <p className={styles.courseDetailDescription}>{course.description}</p>
                     )}
@@ -184,10 +231,17 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
 
                     return (
                         <div key={mod.id} className={styles.moduleAccordion}>
-                            <button
+                            <div
                                 className={styles.moduleAccordionHeader}
                                 onClick={() => toggleModule(mod.id)}
-                                type="button"
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        toggleModule(mod.id);
+                                    }
+                                }}
                             >
                                 <div className={styles.moduleAccordionLeft}>
                                     <ChevronDown
@@ -195,9 +249,23 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
                                         className={`${styles.moduleChevron} ${isOpen ? styles.moduleChevronOpen : ''}`}
                                     />
                                     <div>
-                                        <h3 className={styles.moduleAccordionTitle}>
-                                            {mod.title}
-                                        </h3>
+                                        <div className={styles.moduleTitleContainer}>
+                                            <h3 className={styles.moduleAccordionTitle}>
+                                                {mod.title}
+                                            </h3>
+                                            <button
+                                                onClick={(e) => {
+                                                    const lessonTitles = mod.lessons.map(l => l.title).join('. ');
+                                                    const text = `Module: ${mod.title}. ${mod.description || ''}. Lessons in this module: ${lessonTitles}.`;
+                                                    togglePlayback(mod.id, text, e);
+                                                }}
+                                                className={styles.moduleReadButton}
+                                                aria-label={readingId === mod.id ? "Stop reading module details" : "Read module details"}
+                                                title={readingId === mod.id ? "Stop reading module details" : "Read module details"}
+                                            >
+                                                {readingId === mod.id ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                                            </button>
+                                        </div>
                                         {mod.description && (
                                             <p className={styles.moduleAccordionDesc}>{mod.description}</p>
                                         )}
@@ -208,7 +276,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
                                         {mod.completedLessons}/{mod.lessonCount}
                                     </span>
                                 </div>
-                            </button>
+                            </div>
 
                             {isOpen && (
                                 <div className={styles.moduleAccordionBody}>
