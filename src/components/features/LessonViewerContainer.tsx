@@ -7,9 +7,11 @@ interface LessonViewerContainerProps {
     lessonId: string;
     lessonTitle?: string;
     steps: LessonStep[];
+    phaseSlug?: string;
+    nextLessonId?: string;
 }
 
-export default function LessonViewerContainer({ lessonId, lessonTitle, steps }: LessonViewerContainerProps) {
+export default function LessonViewerContainer({ lessonId, lessonTitle, steps, phaseSlug, nextLessonId }: LessonViewerContainerProps) {
     const router = useRouter();
 
     const handleComplete = async () => {
@@ -23,6 +25,13 @@ export default function LessonViewerContainer({ lessonId, lessonTitle, steps }: 
         }
     };
 
-    return <LessonViewer lessonId={lessonId} lessonTitle={lessonTitle} initialSteps={steps} onComplete={handleComplete} />;
+    return <LessonViewer 
+        lessonId={lessonId} 
+        lessonTitle={lessonTitle} 
+        initialSteps={steps} 
+        onComplete={handleComplete} 
+        phaseSlug={phaseSlug}
+        nextLessonId={nextLessonId}
+    />;
 }
 
