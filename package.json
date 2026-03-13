@@ -21,6 +21,8 @@
     "ai": "^6.0.3",
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
+    "jspdf": "^4.2.0",
+    "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.556.0",
     "next": "16.0.8",
     "next-auth": "^4.24.13",
@@ -29,7 +31,9 @@
     "prisma": "^5.22.0",
     "react": "19.2.1",
     "react-dom": "19.2.1",
-    "recharts": "^3.7.0"
+    "react-markdown": "^10.1.0",
+    "recharts": "^3.7.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

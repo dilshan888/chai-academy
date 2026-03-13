@@ -13,26 +13,29 @@ export default async function Layout({ children }: { children: React.ReactNode }
             include: { progress: true }
         })
 
-        if (user) {
-            // 1. Check Pre-test
-            if (!user.preTestCompleted) {
-                redirect('/assessment?type=pre')
-            }
+        if (user && user.role !== 'ADMIN') {
+            // Cutoff date: Only enforce assessments for users created after March 10, 2026
+            const NEW_USER_CUTOFF = new Date('2026-03-10T00:00:00Z');
+            const isNewUser = new Date(user.createdAt) >= NEW_USER_CUTOFF;
 
-            // 2. Check Post-test
-            if (!user.postTestCompleted) {
-                // Count completed modules. Progress tracks 'lessonId', but for a simple check:
-                // Let's count lessons completed to infer "two modules". Or better, query modules where all lessons are complete.
-                // The prompt says "after the user finishes any two module". Let's check the distinct modules of completed lessons.
-                const progressRecords = await prisma.progress.findMany({
-                    where: { userId: user.id, completed: true },
-                    include: { lesson: true }
-                })
+            if (isNewUser) {
+                // 1. Check Pre-test
+                if (!user.preTestCompleted) {
+                    redirect('/assessment?type=pre')
+                }
 
-                const completedModuleIds = new Set(progressRecords.map(p => p.lesson.moduleId).filter(Boolean))
+                // 2. Check Post-test (after completing 2+ modules)
+                if (!user.postTestCompleted) {
+                    const progressRecords = await prisma.progress.findMany({
+                        where: { userId: user.id, completed: true },
+                        include: { lesson: true }
+                    })
 
-                if (completedModuleIds.size >= 2) {
-                    redirect('/assessment?type=post')
+                    const completedModuleIds = new Set(progressRecords.map(p => p.lesson.moduleId).filter(Boolean))
+
+                    if (completedModuleIds.size >= 2) {
+                        redirect('/assessment?type=post')
+                    }
                 }
             }
         }
