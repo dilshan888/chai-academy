@@ -13,7 +13,7 @@ export interface AssessmentQuestion {
 export const assessmentQuestions: AssessmentQuestion[] = [
     // --- 1. AI Literacy (Knowledge) - 10 Questions ---
     {
-        id: 'K01',
+        id: 'AI01',
         category: 'LITERACY',
         type: 'MC',
         text: 'In which of these areas is AI typically applied?',
@@ -25,7 +25,7 @@ export const assessmentQuestions: AssessmentQuestion[] = [
         ]
     },
     {
-        id: 'K02',
+        id: 'AI04',
         category: 'LITERACY',
         type: 'MC',
         text: 'Which of the following interdisciplinary research fields is also a subfield of AI?',
@@ -37,7 +37,7 @@ export const assessmentQuestions: AssessmentQuestion[] = [
         ]
     },
     {
-        id: 'K03',
+        id: 'AI09',
         category: 'LITERACY',
         type: 'MC',
         text: 'For which task was AI first shown to be superior to human experts?',
@@ -49,19 +49,19 @@ export const assessmentQuestions: AssessmentQuestion[] = [
         ]
     },
     {
-        id: 'K04',
+        id: 'AI15',
         category: 'LITERACY',
         type: 'MC',
         text: 'How does supervised learning differ from unsupervised learning?',
         options: [
-            { value: '1', label: 'In supervised learning, the output values of the training data are known' },
-            { value: '2', label: 'In supervised learning, humans must supervise the AI during learning' },
-            { value: '3', label: 'In supervised learning, all computational steps are documented' },
-            { value: '4', label: 'In supervised learning, stricter legal regulations apply' }
+            { value: '1', label: 'in supervised learning, the output values of the training data are known' },
+            { value: '2', label: 'in supervised learning, humans must supervise the AI during learning and intervene if necessary' },
+            { value: '3', label: 'in supervised learning, all computational steps are documented' },
+            { value: '4', label: 'in supervised learning, stricter legal regulations apply' }
         ]
     },
     {
-        id: 'K05',
+        id: 'AI17',
         category: 'LITERACY',
         type: 'ORDERING',
         text: 'Sort the process steps in supervised learning into the correct order:',
@@ -74,19 +74,19 @@ export const assessmentQuestions: AssessmentQuestion[] = [
         ]
     },
     {
-        id: 'K06',
+        id: 'AI19',
         category: 'LITERACY',
         type: 'MC',
         text: 'How do AI developers most typically shape the results of the machine learning process?',
         options: [
-            { value: '1', label: 'Accuracy calculation' },
-            { value: '2', label: 'Randomized division' },
-            { value: '3', label: 'Selection of the model' },
-            { value: '4', label: 'Abstraction of the model' }
+            { value: '1', label: 'through calculation of the accuracy of the prediction' },
+            { value: '2', label: 'through randomized division into test and training data' },
+            { value: '3', label: 'through selection of the model' },
+            { value: '4', label: 'through abstraction of the model' }
         ]
     },
     {
-        id: 'K07', // Added to make 10
+        id: 'AI07',
         category: 'LITERACY',
         type: 'MC',
         text: 'In AI, a distinction can be made between "weak" and "strong" AI. "Weak AI" refers to AI systems that have capabilities in a limited area. "Strong AI," on the other hand, is said to be capable of a very broad range of tasks, similar to humans. Which of these examples could be considered strong AI?',
@@ -98,7 +98,7 @@ export const assessmentQuestions: AssessmentQuestion[] = [
         ]
     },
     {
-        id: 'K08', // Added to make 10
+        id: 'AI08',
         category: 'LITERACY',
         type: 'MC',
         text: 'What can weak AI NOT do?',
@@ -110,27 +110,27 @@ export const assessmentQuestions: AssessmentQuestion[] = [
         ]
     },
     {
-        id: 'K09',
+        id: 'AI27',
         category: 'LITERACY',
         type: 'MC',
         text: 'What is the black box problem?',
         options: [
             { value: '1', label: 'AI entails a residual risk that is hard to calculate' },
             { value: '2', label: 'It is often difficult to determine how an AI system makes decisions' },
-            { value: '3', label: 'Users are often not informed AI is being used' },
+            { value: '3', label: 'Users are often not informed that an AI system is being used' },
             { value: '4', label: 'Many users have little knowledge about AI' }
         ]
     },
     {
-        id: 'K10',
+        id: 'AI29',
         category: 'LITERACY',
         type: 'MC',
         text: 'What is a central risk in using AI for predictive policing?',
         options: [
             { value: '1', label: 'vulnerability to hacking' },
             { value: '2', label: 'discrimination against suspects based on origin and status' },
-            { value: '3', label: 'lack of legal certainty' },
-            { value: '4', label: 'undermining authority' }
+            { value: '3', label: 'lack of legal certainty in the event of an AI failure' },
+            { value: '4', label: 'undermining the authority of police officers' }
         ]
     },
 

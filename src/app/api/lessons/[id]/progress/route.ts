@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth"; // Assuming auth is set up
 import { authOptions } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 // POST /api/lessons/[id]/progress
 export async function POST(
@@ -45,6 +46,9 @@ export async function POST(
                 score,
             },
         });
+        
+        // Ensure the layout re-checks the 2-module threshold
+        revalidatePath('/', 'layout');
 
         return NextResponse.json({ success: true });
     } catch (error) {

@@ -31,8 +31,13 @@ function AssessmentForm() {
             return arr;
         };
 
-        setQuestions(shuffle(assessmentQuestions));
-    }, []);
+        // Filter: Pre-test only gets LITERACY questions
+        const filteredQuestions = isPreTest
+            ? assessmentQuestions.filter(q => q.category === 'LITERACY')
+            : assessmentQuestions;
+
+        setQuestions(shuffle(filteredQuestions));
+    }, [isPreTest]);
 
     const handleAnswerChange = (questionId: string, value: string) => {
         setAnswers(prev => ({ ...prev, [questionId]: value }));
@@ -115,7 +120,7 @@ function AssessmentForm() {
 
     const title = isPreTest ? 'AI Literacy Assessment' : 'Knowledge Check — Post Assessment';
     const description = isPreTest
-        ? 'Welcome! This assessment helps us understand your starting point. Please complete both the knowledge and the interest sections honestly.'
+        ? 'Welcome! This assessment helps us understand your starting point. Please answer the knowledge questions honestly.'
         : 'Congratulations on your progress! Please complete this follow-up assessment to help us measure the impact of the platform.';
 
     return (
