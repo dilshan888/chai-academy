@@ -16,10 +16,15 @@ export default function LessonViewerContainer({ lessonId, lessonTitle, steps, ph
 
     const handleComplete = async () => {
         try {
-            await fetch(`/api/lessons/${lessonId}/progress`, {
+            const res = await fetch(`/api/lessons/${lessonId}/progress`, {
                 method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ completed: true }),
             });
+            
+            if (res.ok) {
+                router.refresh();
+            }
         } catch (e) {
             console.error("Failed to save progress", e);
         }
