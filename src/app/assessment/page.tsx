@@ -31,10 +31,8 @@ function AssessmentForm() {
             return arr;
         };
 
-        // Filter: Pre-test only gets LITERACY questions
-        const filteredQuestions = isPreTest
-            ? assessmentQuestions.filter(q => q.category === 'LITERACY')
-            : assessmentQuestions;
+        // Filter: Only literacy questions for all assessments
+        const filteredQuestions = assessmentQuestions.filter(q => q.category === 'LITERACY');
 
         setQuestions(shuffle(filteredQuestions));
     }, [isPreTest]);
@@ -197,7 +195,8 @@ function AssessmentForm() {
                                                     <p className={styles.orderingHint}>Click labels in order (1 to {q.items.length})</p>
                                                     <div className={styles.orderingGrid}>
                                                         {q.items.map((item, i) => {
-                                                            const orderIndex = answers[q.id]?.split(',').indexOf(item);
+                                                            const currentAnswers = answers[q.id]?.split(',') || [];
+                                                            const orderIndex = currentAnswers.indexOf(item);
                                                             return (
                                                                 <div
                                                                     key={i}
