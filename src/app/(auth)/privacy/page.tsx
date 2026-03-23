@@ -110,7 +110,7 @@ export default function PrivacyPolicyPage() {
                     <h2 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem' }}>9. Contact</h2>
                     <p>
                         For any data protection queries, contact your university&apos;s Data Protection Officer
-                        or email <strong>dpo@university.edu</strong>.
+                        or email <strong>info@chai-academy.com</strong>.
                     </p>
                 </section>
 
