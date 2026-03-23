@@ -21,6 +21,12 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
             <Header onMenuToggle={() => setSidebarOpen((prev) => !prev)} />
             <main id="main-content" className={styles.main}>
                 {children}
+                <footer className={styles.globalFooter}>
+                    <p>
+                        This content is adapted from KI-Campus materials (EU AI Act Essentials),
+                        licensed under CC BY-SA 4.0.
+                    </p>
+                </footer>
             </main>
             <ChatWidget />
             <XPNotificationContainer />

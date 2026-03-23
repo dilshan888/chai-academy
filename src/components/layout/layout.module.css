@@ -22,6 +22,17 @@
     max-width: 1200px;
     width: 100%;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.globalFooter {
+    margin-top: auto;
+    padding-top: 2rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: hsl(var(--muted-foreground));
+    border-top: 1px solid hsl(var(--border));
 }
 
 @media (max-width: 768px) {
