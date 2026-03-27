@@ -24,8 +24,8 @@ npx prisma studio  # Browse database in browser UI
 3. Visit `http://localhost:3000/api/seed` once to populate users, achievements, scenarios
 
 **Seed credentials:**
-- Learner: `learner@chai.edu` / `learner123`
-- Admin: `admin@chai.edu` / `admin123`
+- Learner: `staff@uni.edu` / `chai-academy`
+- Admin: `admin@uni.edu` / `chai-academy`
 
 ## Architecture
 
