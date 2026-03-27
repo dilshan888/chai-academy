@@ -5,8 +5,8 @@
 **ChAI Academy** is a gamified EU AI Act compliance training platform for university staff, built with Next.js 16 (App Router), PostgreSQL (Neon), Prisma ORM, NextAuth v4, and vanilla CSS with CSS Modules (NO Tailwind).
 
 **Repo**: https://github.com/dilshan888/chai-academy
-**Current Branch**: `feature/phase-4-interactive-scenarios` (pushed to GitHub)
-**Main Branch**: `main` (has Phases 1-3 merged)
+**Current Branch**: `copilot/finalize-codebase-folder`
+**Main Branch**: `main`
 
 ---
 
@@ -118,8 +118,8 @@
 ### Authentication
 - Two roles: `ADMIN` and `LEARNER`
 - Anyone can register as LEARNER at `/register`
-- Admin created via seed (`admin@chai.edu` / `admin123`) or manual DB change
-- Seeded learner: `learner@chai.edu` / `learner123`
+- Admin created via seed (`admin@uni.edu` / `chai-academy`) or manual DB change
+- Seeded learner: `staff@uni.edu` / `chai-academy`
 - Session includes: `id`, `name`, `email`, `role`
 
 ### Important Patterns
@@ -168,13 +168,12 @@ prisma/schema.prisma
 
 ## How to Continue
 
-1. **Merge Phase 4** to main: `git checkout main && git merge feature/phase-4-interactive-scenarios`
-2. **Create new branch**: `git checkout -b feature/phase-5-course-structure`
-3. **Start Phase 5** following the plan above
-4. **Run dev server**: `npm run dev` (make sure disk space is available)
-5. **Seed database**: Visit `http://localhost:3000/api/seed` after starting
-6. **Push schema changes**: `npx prisma db push`
-7. **Build check**: `npm run build` to verify no TypeScript errors
+1. **Create next feature branch**: `git checkout -b feature/phase-5-course-structure`
+2. **Start Phase 5** following the plan above
+3. **Run dev server**: `npm run dev` (make sure disk space is available)
+4. **Seed database**: Visit `http://localhost:3000/api/seed` after starting
+5. **Push schema changes**: `npx prisma db push`
+6. **Build check**: `npm run build` to verify no TypeScript errors
 
 ---
 
